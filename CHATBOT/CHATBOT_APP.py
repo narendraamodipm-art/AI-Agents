@@ -4,6 +4,7 @@ import os
 import streamlit as st
 from dotenv import load_dotenv
 from mistralai.client import Mistral
+from streamlit.errors import StreamlitSecretNotFoundError
 
 load_dotenv()
 
@@ -194,7 +195,15 @@ SUGGESTIONS = [
 def initialize_client():
     api_key = os.getenv("MISTRAL_API_KEY")
     if not api_key:
-        st.error("MISTRAL_API_KEY not found. Add it to your .env file.")
+        try:
+            api_key = st.secrets.get("MISTRAL_API_KEY")
+        except StreamlitSecretNotFoundError:
+            pass
+    if not api_key:
+        st.error(
+            "MISTRAL_API_KEY not found. Add it to your local .env file or "
+            "Streamlit Cloud app settings under Secrets."
+        )
         st.stop()
     return Mistral(api_key=api_key)
 
