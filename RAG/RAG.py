@@ -13,12 +13,24 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.retrievers import BaseRetriever
 from langchain_core.documents import Document
 from langchain_core.callbacks import CallbackManagerForRetrieverRun
+from streamlit.errors import StreamlitSecretNotFoundError
 from typing import List
 
 load_dotenv()
 
 PINECONE_HOST      = "https://pineconeagents-anpvcrc.svc.aped-4627-b74a.pinecone.io"
 PINECONE_NAMESPACE = "RAG"
+
+
+def get_config_value(key: str) -> str | None:
+    value = os.getenv(key)
+    if value:
+        return value
+    try:
+        return st.secrets.get(key)
+    except StreamlitSecretNotFoundError:
+        return None
+
 
 PROMPT_TEMPLATE = (
     "Use the following context to answer the question.\n"
@@ -143,7 +155,7 @@ def embed_texts(pc: Pinecone, texts: List[str], input_type: str = "passage") -> 
 def get_llm():
     return ChatMistralAI(
         model="mistral-large-latest",
-        api_key=os.getenv("MISTRAL_API_KEY"),
+        api_key=get_config_value("MISTRAL_API_KEY"),
         temperature=0.2,
     )
 
@@ -156,7 +168,7 @@ def load_and_split(file_path: str, url: str):
 
 
 def build_vectorstore(chunks):
-    pc    = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
+    pc    = Pinecone(api_key=get_config_value("PINECONE_API_KEY"))
     index = pc.Index(host=PINECONE_HOST)
 
     # Clear existing RAG namespace before indexing new document
@@ -200,11 +212,17 @@ def main():
     st.set_page_config(page_title="DocChat AI", page_icon="📄", layout="wide")
     st.markdown(PAGE_STYLE, unsafe_allow_html=True)
 
-    if not os.getenv("MISTRAL_API_KEY"):
-        st.error("MISTRAL_API_KEY not found. Add it to your .env file.")
+    if not get_config_value("MISTRAL_API_KEY"):
+        st.error(
+            "MISTRAL_API_KEY not found. Add it to your local .env file or "
+            "Streamlit Cloud app settings under Secrets."
+        )
         st.stop()
-    if not os.getenv("PINECONE_API_KEY"):
-        st.error("PINECONE_API_KEY not found. Add it to your .env file.")
+    if not get_config_value("PINECONE_API_KEY"):
+        st.error(
+            "PINECONE_API_KEY not found. Add it to your local .env file or "
+            "Streamlit Cloud app settings under Secrets."
+        )
         st.stop()
 
     for k, v in {"retriever": None, "messages": [], "doc_name": None, "doc_chunks": 0}.items():
