@@ -1,0 +1,595 @@
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                     GRAPHIFY - BUILD PROMPT FOR CLAUDE                          ║
+║              Code to Knowledge Graph Visualizer - Complete Specification        ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+---
+
+PROJECT OVERVIEW
+=================
+
+GRAPHIFY is an AI-powered code analysis tool that:
+* Analyzes source code in multiple programming languages
+* Extracts code entities (classes, functions, imports, methods, variables)
+* Generates interactive knowledge graphs showing code structure
+* Provides beginner-friendly AI explanations (Claude or Mistral)
+* Visualizes relationships between code components
+* Exports analysis as JSON
+
+Target Users: Beginners learning programming, students, developers exploring codebases
+
+---
+
+CORE FEATURES TO IMPLEMENT
+============================
+
+1. CODE INPUT
+   ✓ Text area for code pasting
+   ✓ File upload (.py, .js, .java, .html, .rs, .hol)
+   ✓ Language selection (7 languages)
+   ✓ Auto-detect language feature
+
+2. CODE PARSING
+   ✓ Parse Python (classes, functions, imports, decorators)
+   ✓ Parse JavaScript (classes, functions, imports, arrow functions)
+   ✓ Parse Java (classes, interfaces, methods, constructors)
+   ✓ Parse HTML (elements, ids, classes, attributes)
+   ✓ Parse Rust (structs, enums, functions, implementations)
+   ✓ Parse Holand (programs, procedures, variables)
+   ✓ Extract statistics (total entities, breakdown by type)
+
+3. GRAPH GENERATION
+   ✓ Create nodes for each entity (classes, functions, imports)
+   ✓ Create edges showing relationships
+   ✓ Color-code nodes by entity type
+   ✓ Color-code by programming language
+   ✓ Calculate automatic layout (force-directed)
+   ✓ Generate statistics panel
+
+4. VISUALIZATION
+   ✓ Interactive React Flow graph
+   ✓ Zoom, pan, drag functionality
+   ✓ Node hover effects
+   ✓ Statistics panel on right side
+   ✓ Responsive design (mobile, tablet, desktop)
+
+5. EXPORT & SHARING
+   ✓ Download graph as JSON
+   ✓ Copy code to clipboard
+   ✓ Share graph data
+   ✓ Future: SVG, PNG export
+
+6. AI ANALYSIS (Optional Enhancement)
+   ✓ Button to select Claude or Mistral
+   ✓ Send code to AI for explanation
+   ✓ Display beginner-friendly breakdown
+   ✓ Show step-by-step execution flow
+   ✓ Include real-world analogies
+
+---
+
+TECHNOLOGY STACK
+=================
+
+Framework: Next.js 14+ (App Router)
+UI Library: React 18+
+Graph Visualization: React Flow (latest)
+Styling: Tailwind CSS 3+
+Icons: Lucide React
+State Management: Zustand
+Code Parsing: Custom Regex + Pattern Matching
+Build Tool: npm/yarn
+Hosting: Vercel (or self-hosted)
+
+Optional AI:
+- Claude API (Anthropic) for explanations
+- Mistral API as alternative
+
+---
+
+FILE STRUCTURE
+================
+
+GRAPHIFY/
+│
+├── app/
+│   ├── page.jsx                    # Main page (UI orchestration)
+│   ├── layout.jsx                  # Root layout wrapper
+│   ├── globals.css                 # Global Tailwind styles
+│   └── api/
+│       └── analyze/
+│           └── route.js            # (Optional) Backend analysis
+│
+├── components/
+│   ├── GraphVisualization.jsx      # React Flow graph component
+│   ├── StatisticsPanel.jsx         # Stats display (right sidebar)
+│   ├── LanguageSelector.jsx        # Language buttons
+│   ├── CodeInput.jsx               # Text area + file upload
+│   └── ExportButtons.jsx           # Download, copy, share
+│
+├── lib/
+│   ├── codeParser.js               # Language parsers
+│   │   ├── parsePython(code)
+│   │   ├── parseJavaScript(code)
+│   │   ├── parseJava(code)
+│   │   ├── parseHTML(code)
+│   │   ├── parseRust(code)
+│   │   ├── parseHoland(code)
+│   │   └── autoDetectLanguage(code)
+│   │
+│   ├── graphUtils.js               # Graph generation
+│   │   ├── createNodesFromEntities(entities)
+│   │   ├── createEdgesFromRelations(entities)
+│   │   ├── calculateLayout(nodes, edges)
+│   │   ├── generateStatistics(entities)
+│   │   └── colorCodeByType(entityType)
+│   │
+│   ├── aiAnalyzer.js               # (Optional) AI integration
+│   │   ├── analyzeWithClaude(code)
+│   │   └── analyzeWithMistral(code)
+│   │
+│   └── store.js                    # Zustand store
+│       ├── setCode
+│       ├── setLanguage
+│       ├── setGraphData
+│       ├── setStatistics
+│       └── reset
+│
+├── public/
+│   └── (images, icons if needed)
+│
+├── .env.example                    # Environment variables template
+├── .env.local                      # (Local secrets - not committed)
+├── package.json                    # Dependencies
+├── next.config.js                  # Next.js config
+├── tailwind.config.js              # Tailwind config
+├── postcss.config.js               # PostCSS config
+├── jsconfig.json                   # JS path aliases
+└── README.md                       # Documentation
+
+---
+
+DETAILED COMPONENT SPECIFICATIONS
+===================================
+
+1. PAGE.JSX (Main Page)
+   ─────────────────────
+   Layout:
+   • Header with title "GRAPHIFY"
+   • Left side: Input panel (70% width on desktop)
+   • Right side: Graph visualization + stats (30% width)
+   • Mobile: Stacked layout
+
+   Sections:
+   ├─ Language Selection Row
+   │  └─ Buttons for: Python, JS, Java, HTML, Rust, Holand, Auto-Detect
+   │
+   ├─ Code Input Section
+   │  ├─ Text area for pasting code
+   │  └─ File upload button
+   │
+   ├─ Action Buttons Row
+   │  ├─ "Generate Graph" (primary button)
+   │  ├─ "Clear" (secondary)
+   │  └─ "AI Analyze" (optional, tertiary)
+   │
+   ├─ Graph Visualization Area
+   │  └─ ReactFlow component (full height)
+   │
+   └─ Export Buttons
+      ├─ "Download JSON"
+      ├─ "Copy Code"
+      └─ "Share"
+
+   State to Track:
+   • code: string
+   • language: string
+   • graphData: {nodes, edges}
+   • statistics: {totalEntities, byType, complexity}
+   • loading: boolean
+   • error: string
+
+2. GRAPHVISUALIZATION.JSX (React Flow Component)
+   ──────────────────────────────────────────────
+   Features:
+   • Display nodes with custom styling
+   • Display edges showing relationships
+   • Allow zoom, pan, drag
+   • Highlight on hover
+   • Color nodes by type (class=pink, function=cyan, etc.)
+   • Show tooltips on hover
+   • Responsive to window size
+
+   Node Types:
+   • Class: Pink (#ec4899), rounded rectangle
+   • Function: Cyan (#06b6d4), rectangle
+   • Method: Amber (#f59e0b), square
+   • Import: Purple (#8b5cf6), diamond
+   • Struct: Green (#10b981), hexagon
+   • Variable: Cyan (#0891b2), circle
+
+   Edge Styling:
+   • Solid line for inheritance
+   • Dashed line for dependencies
+   • Color-coded by relationship type
+
+3. STATISTICSPANEL.JSX (Right Sidebar)
+   ────────────────────────────────────
+   Display:
+   • Total Entities Count
+   • Breakdown by Type:
+     - Classes: X
+     - Functions: X
+     - Methods: X
+     - Imports: X
+     - Variables: X
+     - Other: X
+   • Language: [Detected/Selected]
+   • Complexity Score
+   • Lines of Code
+   • Estimated Learning Difficulty
+
+   Format: Cards with icons from Lucide
+
+4. CODETPARSER.JS (Language Parsers)
+   ──────────────────────────────────
+
+   PYTHON Parser:
+   ─────────────
+   Extract using regex patterns:
+   • Classes: pattern class ClassName
+   • Functions: pattern def function_name
+   • Methods: functions inside classes
+   • Imports: import X, from X import Y
+   • Decorators: @decorator syntax
+
+   Return Structure:
+   {
+     entities: [
+       { id: "ClassName", type: "class", name: "ClassName" },
+       { id: "func1", type: "function", name: "func1" },
+       { id: "import_pandas", type: "import", name: "pandas" }
+     ],
+     relationships: [
+       { source: "ClassName", target: "method1", type: "contains" }
+     ]
+   }
+
+   JAVASCRIPT Parser:
+   ──────────────────
+   Extract:
+   • Classes: class ClassName
+   • Functions: function name(), const name = (), arrow functions
+   • Methods: methods inside classes
+   • Imports: import X from 'Y', require('X')
+   • Exports: export default, export const
+
+   JAVA Parser:
+   ────────────
+   Extract:
+   • Classes: class ClassName
+   • Interfaces: interface InterfaceName
+   • Methods: returnType methodName()
+   • Constructors: ClassName()
+   • Packages: package com.example
+
+   HTML Parser:
+   ────────────
+   Extract:
+   • Tags: <div>, <button>, <form>, etc.
+   • IDs: id="elementId"
+   • Classes: class="elementClass"
+   • Attributes: onclick, data-*, etc.
+
+   RUST Parser:
+   ────────────
+   Extract:
+   • Structs: struct StructName
+   • Enums: enum EnumName
+   • Functions: fn function_name()
+   • Implementations: impl TraitName for Struct
+   • Use statements: use module::item
+
+   HOLAND Parser:
+   ──────────────
+   Extract:
+   • Programs: PROGRAM name
+   • Procedures: PROCEDURE name
+   • Variables: VAR name
+   • Declarations: assignment statements
+
+5. GRAPHUTILS.JS (Graph Generation)
+   ─────────────────────────────────
+
+   createNodesFromEntities(entities):
+   • For each entity, create a node object
+   • Assign unique ID
+   • Set node type (class, function, import, etc.)
+   • Assign color based on type
+   • Set label to entity name
+   • Return array of node objects
+
+   createEdgesFromRelations(relationships):
+   • For each relationship, create edge
+   • Set source and target
+   • Style based on relationship type
+   • Set label if needed
+   • Return array of edge objects
+
+   calculateLayout(nodes, edges):
+   • Use force-directed layout algorithm
+   • Prevent node overlap
+   • Organize by entity type
+   • Return positions for each node
+
+   generateStatistics(entities):
+   • Count total entities
+   • Count by type
+   • Calculate complexity score
+   • Return statistics object
+
+   Color Coding Functions:
+   • colorByType(entityType) → returns hex color
+   • colorByLanguage(language) → returns hex color
+
+6. STORE.JS (Zustand State Management)
+   ────────────────────────────────────
+
+   Create store with:
+   • code: string (user input)
+   • language: string (selected/detected)
+   • entities: array (parsed entities)
+   • graphData: {nodes, edges}
+   • statistics: object
+   • loading: boolean
+   • error: string
+
+   Actions:
+   • setCode(code)
+   • setLanguage(lang)
+   • setGraphData(nodes, edges)
+   • setStatistics(stats)
+   • setLoading(bool)
+   • setError(error)
+   • reset()
+
+---
+
+STYLING GUIDELINES
+===================
+
+Color Scheme:
+* Background: Dark gradient (bg-slate-950 to bg-slate-900)
+* Primary: Indigo (text-indigo-500, bg-indigo-600)
+* Accent: Pink (#ec4899), Cyan (#06b6d4)
+* Success: Green (#10b981)
+* Error: Red (#ef4444)
+* Border: Slate-700
+
+Typography:
+* Headings: Inter font, bold
+* Body: Inter font, regular
+* Code: Mono font (Courier, Menlo)
+
+Spacing:
+* Use Tailwind spacing scale (p-4, m-8, etc.)
+* Consistent padding/margin throughout
+* Proper whitespace between sections
+
+Components Style:
+* Buttons: Rounded-lg, py-2 px-4, with hover effects
+* Cards: bg-slate-800, rounded-lg, border border-slate-700
+* Inputs: bg-slate-900, border-slate-700, focus:ring-indigo-500
+* Text: text-slate-100 on dark backgrounds
+
+Responsive Design:
+* Mobile (< 640px): Single column, stacked layout
+* Tablet (640px - 1024px): Adjusted spacing
+* Desktop (> 1024px): Two-column layout
+
+Accessibility:
+* Proper aria-labels on buttons
+* Keyboard navigation support
+* High contrast colors
+* Focus indicators visible
+
+---
+
+API INTEGRATION (OPTIONAL)
+===========================
+
+Claude API Integration:
+* Endpoint: https://api.anthropic.com/v1/messages
+* Method: POST
+* Authentication: Bearer token from .env
+* Prompt: Analyze code and explain to beginners
+* Model: claude-3-sonnet (or specified model)
+
+Mistral API Integration:
+* Endpoint: https://api.mistral.ai/v1/chat/completions
+* Method: POST
+* Authentication: Bearer token from .env
+* Model: mistral-medium
+* Similar prompt structure
+
+Environment Variables (.env.local):
+ANTHROPIC_API_KEY=sk-ant-xxxxxxxxxxxxx
+MISTRAL_API_KEY=xxxxxxxxxxxxx
+NEXT_PUBLIC_API_URL=http://localhost:3000
+
+---
+
+DEPLOYMENT INSTRUCTIONS
+========================
+
+Vercel Deployment (Recommended):
+1. Push code to GitHub
+2. Visit https://vercel.com
+3. Click "Add New Project"
+4. Select GitHub repository
+5. Add environment variables (.env)
+6. Click "Deploy"
+7. App available at: graphify-xxxxx.vercel.app
+
+Self-Hosted:
+1. npm install
+2. npm run build
+3. npm run start
+4. Access at http://localhost:3000
+
+Docker:
+1. Create Dockerfile
+2. docker build -t graphify .
+3. docker run -p 3000:3000 graphify
+
+---
+
+TESTING REQUIREMENTS
+=====================
+
+Unit Tests:
+* Test each language parser with sample code
+* Test graph generation functions
+* Test statistics calculation
+* Test color assignment logic
+
+Integration Tests:
+* Test end-to-end flow (input → parse → generate → display)
+* Test file upload functionality
+* Test export functionality
+* Test language detection
+
+UI Tests:
+* Test responsive layout
+* Test zoom/pan functionality
+* Test button interactions
+* Test error handling
+
+---
+
+PERFORMANCE OPTIMIZATION
+==========================
+
+* Memoize heavy components with React.memo
+* Use useCallback for event handlers
+* Lazy load graph visualization
+* Optimize regex patterns in parsers
+* Cache parsed results
+* Limit graph size for large codebases
+* Debounce input changes
+
+---
+
+ERROR HANDLING
+===============
+
+Handle these scenarios:
+* Empty code input → Show "Please enter code"
+* No entities found → Show "No code entities detected"
+* Invalid syntax → Show "Syntax error in code"
+* Large files → Show "File too large (max 1MB)"
+* API errors → Show "Analysis failed, try again"
+* Network errors → Show connection error
+
+---
+
+FUTURE ENHANCEMENTS
+====================
+
+Phase 2:
+* Support Go, Ruby, PHP, C++
+* Export to SVG, PNG, XML
+* Dependency graph analysis
+* Code metrics dashboard
+* Dark/light theme toggle
+* Browser storage for history
+
+Phase 3:
+* Real-time collaboration
+* Custom graph layouts
+* Code quality metrics
+* Performance analysis
+* Integration with GitHub
+* Slack bot integration
+
+---
+
+ACCEPTANCE CRITERIA
+====================
+
+✓ App loads without errors
+✓ Can select language and input code
+✓ Graph generates and displays correctly
+✓ Nodes colored by type
+✓ Edges show relationships
+✓ Can zoom, pan, drag nodes
+✓ Statistics panel updates
+✓ Can download graph as JSON
+✓ Can copy code
+✓ Works on mobile/tablet/desktop
+✓ All 6 languages parse correctly
+✓ No console errors
+✓ Performance acceptable (< 2s for parse)
+✓ Responsive design working
+✓ Accessibility features present
+
+---
+
+BUILD INSTRUCTIONS FOR CLAUDE
+================================
+
+1. START WITH:
+   • Next.js app with App Router
+   • Set up Tailwind CSS
+   • Create folder structure from above
+
+2. IMPLEMENT IN ORDER:
+   a) Basic layout and components
+   b) Language selector and code input
+   c) Code parser (start with Python)
+   d) Graph utilities
+   e) React Flow visualization
+   f) Statistics panel
+   g) Export functionality
+   h) Add remaining language parsers
+   i) Add optional AI analysis
+   j) Add styling and responsive design
+   k) Testing and optimization
+
+3. DEPENDENCIES TO INSTALL:
+   npm install next react react-dom reactflow tailwindcss lucide-react zustand
+
+4. CREATE .ENV.LOCAL:
+   ANTHROPIC_API_KEY=your_key_here (optional)
+   MISTRAL_API_KEY=your_key_here (optional)
+
+5. RUN:
+   npm run dev
+   Visit: http://localhost:3000
+
+---
+
+REFERENCES
+===========
+
+* React Flow Docs: https://reactflow.dev/
+* Tailwind CSS: https://tailwindcss.com/
+* Zustand: https://github.com/pmndrs/zustand
+* Lucide Icons: https://lucide.dev/
+* Next.js: https://nextjs.org/docs
+
+---
+
+CONTACT & NOTES
+================
+
+Project Type: Full-Stack Web Application
+Complexity: Medium (parsing + visualization)
+Estimated Build Time: 6-12 hours
+Difficulty: Intermediate
+
+This prompt covers all aspects needed to build GRAPHIFY.
+Feel free to adjust based on your preferences!
+
+═══════════════════════════════════════════════════════════════════════════════════
+                              END OF BUILD PROMPT
