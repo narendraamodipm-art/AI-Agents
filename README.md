@@ -4,7 +4,7 @@ This repository contains two Streamlit apps: HahaBot, a Mistral-powered
 chatbot, and DocChat AI, a RAG app that answers questions about uploaded PDFs
 or webpages using Mistral AI and Pinecone.
 
-## Deploy on Streamlit Community Cloud
+## Deploy on Streamlit Community Cloud...
 
 Push this repository to GitHub, then create a separate app for each interface
 in [Streamlit Community Cloud](https://share.streamlit.io/). For each app,
