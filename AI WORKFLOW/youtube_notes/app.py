@@ -14,12 +14,14 @@ import re
 import time
 from pathlib import Path
 
+import requests
 import streamlit as st
 from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_mistralai import ChatMistralAI
 from pydantic import BaseModel, Field
-from youtube_transcript_api import YouTubeTranscriptApi
+from youtube_transcript_api import NoTranscriptFound, RequestBlocked, YouTubeTranscriptApi
+from youtube_transcript_api.proxies import GenericProxyConfig, WebshareProxyConfig
 
 
 # ── Setup ────────────────────────────────────────────────────────────────────
@@ -82,18 +84,66 @@ def extract_video_id(url: str):
 
 
 # ── Step 2: video id → transcript ────────────────────────────────────────────
+def proxy_config():
+    """YouTube blocks cloud-server IPs. Set a proxy in .env to get around it:
+    WEBSHARE_PROXY_USERNAME + WEBSHARE_PROXY_PASSWORD (rotating residential), or
+    PROXY_URL=http://user:pass@host:port (any HTTP proxy)."""
+    if os.getenv("WEBSHARE_PROXY_USERNAME"):
+        return WebshareProxyConfig(
+            proxy_username=os.getenv("WEBSHARE_PROXY_USERNAME"),
+            proxy_password=os.getenv("WEBSHARE_PROXY_PASSWORD"),
+        )
+    if os.getenv("PROXY_URL"):
+        return GenericProxyConfig(http_url=os.getenv("PROXY_URL"),
+                                  https_url=os.getenv("PROXY_URL"))
+    return None
+
+
+def fetch_via_relay(relay_url: str, video_id: str):
+    """Ask relay.py (running on a home PC) for the transcript."""
+    try:
+        resp = requests.get(f"{relay_url.rstrip('/')}/transcript",
+                            params={"video_id": video_id},
+                            headers={"X-Relay-Token": os.getenv("RELAY_TOKEN", "")},
+                            timeout=60)
+    except requests.RequestException as e:
+        raise RuntimeError(f"Relay not reachable — is relay.py and the tunnel running? ({e})")
+    body = resp.json()
+    if resp.status_code != 200:
+        raise RuntimeError(f"Relay error: {body.get('error')}")
+    return body["snippets"], body["language_code"]
+
+
 @st.cache_data(show_spinner=False)
 def fetch_transcript(video_id: str):
     """Return ([{start, text}, ...], language_code). Prefers English."""
-    api = YouTubeTranscriptApi()
+    if os.getenv("TRANSCRIPT_RELAY_URL"):
+        return fetch_via_relay(os.getenv("TRANSCRIPT_RELAY_URL"), video_id)
+    api = YouTubeTranscriptApi(proxy_config=proxy_config())
     try:
         transcript = api.fetch(video_id, languages=["en", "en-US", "en-GB"])
-    except Exception:
+    except NoTranscriptFound:
         # no English captions → take the first available language
         available = api.list(video_id)
         transcript = next(iter(available)).fetch()
     snippets = [{"start": s.start, "text": s.text} for s in transcript.snippets]
     return snippets, transcript.language_code
+
+
+def parse_pasted_transcript(text: str):
+    """Parse text copied from YouTube's 'Show transcript' panel.
+    Timestamp lines (0:05, 1:02:30) mark the start of the text that follows."""
+    snippets, start = [], 0.0
+    for line in text.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        if re.fullmatch(r"\d{1,2}(:\d{2}){1,2}", line):
+            parts = [int(p) for p in line.split(":")]
+            start = sum(p * 60 ** i for i, p in enumerate(reversed(parts)))
+            continue
+        snippets.append({"start": start, "text": line})
+    return snippets
 
 
 def fmt_time(seconds: float) -> str:
@@ -178,7 +228,7 @@ def make_study_material(llm, notes, n_flashcards, n_quiz, language):
     return material
 
 
-def run_workflow(url, model, language, n_flashcards, n_quiz):
+def run_workflow(url, model, language, n_flashcards, n_quiz, pasted=""):
     """The fixed AI workflow. Each step always runs in the same order."""
     with st.status("Generating study notes…", expanded=True) as status:
         st.write("1️⃣ Reading the video id")
@@ -187,12 +237,27 @@ def run_workflow(url, model, language, n_flashcards, n_quiz):
             status.update(label="Invalid YouTube URL", state="error")
             st.stop()
 
-        st.write("2️⃣ Fetching the transcript")
-        try:
-            snippets, lang_code = fetch_transcript(video_id)
-        except Exception as e:
-            status.update(label="Could not get a transcript", state="error")
-            st.error(f"This video has no available captions, or YouTube blocked the request.\n\n{type(e).__name__}: {e}")
+        if pasted.strip():
+            st.write("2️⃣ Using the pasted transcript")
+            snippets, lang_code = parse_pasted_transcript(pasted), "pasted"
+        else:
+            st.write("2️⃣ Fetching the transcript")
+            try:
+                snippets, lang_code = fetch_transcript(video_id)
+            except RequestBlocked:
+                status.update(label="YouTube blocked the request", state="error")
+                st.error("YouTube is blocking transcript requests from this server's IP "
+                         "(common on cloud hosts like Streamlit Cloud).\n\n"
+                         "Free fix: on YouTube open the video → **...more → Show transcript**, "
+                         "copy it, and paste it into **Paste transcript instead** above.")
+                st.stop()
+            except Exception as e:
+                status.update(label="Could not get a transcript", state="error")
+                st.error(f"This video has no available captions, or YouTube blocked the request.\n\n{type(e).__name__}: {e}")
+                st.stop()
+
+        if not snippets:
+            status.update(label="Transcript is empty", state="error")
             st.stop()
 
         if language == "Same as video":
@@ -269,8 +334,11 @@ def main():
         st.stop()
 
     url = st.text_input("YouTube URL", placeholder="https://www.youtube.com/watch?v=...")
+    with st.expander("Paste transcript instead (if YouTube blocks the request)"):
+        st.caption("On YouTube: **...more → Show transcript**, select all of it, copy, paste here.")
+        pasted = st.text_area("Transcript", height=200, label_visibility="collapsed")
     if st.button("Generate notes", type="primary", disabled=not url):
-        st.session_state.result = run_workflow(url, model, language, n_flashcards, n_quiz)
+        st.session_state.result = run_workflow(url, model, language, n_flashcards, n_quiz, pasted)
         st.session_state.answers_checked = False
 
     result = st.session_state.get("result")

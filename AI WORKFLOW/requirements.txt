@@ -6,3 +6,4 @@ python-dotenv>=1.0
 youtube-transcript-api>=1.2
 pypdf>=5.0
 numpy>=1.26
+requests>=2.31
