@@ -13,6 +13,7 @@ and resume tips, then sends you the apply link.
 import html
 import json
 import re
+import subprocess
 import sys
 from concurrent.futures import ThreadPoolExecutor
 from datetime import date
@@ -251,6 +252,14 @@ def approve(con, no, resume_txt=None, resume=None) -> dict:
     return {**row, **kit}
 
 
+def start_auto_fill(numbers):
+    """Open Edge and fill the applications in the background (apply_bot.py); you click Submit."""
+    log_file = open(config.DATA_DIR / "apply_bot.log", "a", encoding="utf-8")
+    subprocess.Popen([sys.executable, str(Path(__file__).with_name("apply_bot.py")), *map(str, numbers)],
+                     stdout=log_file, stderr=subprocess.STDOUT,
+                     creationflags=subprocess.CREATE_NEW_PROCESS_GROUP | subprocess.DETACHED_PROCESS)
+
+
 def parse_command(text):
     m = re.match(r"\s*/?(apply|applied|skip|list|help)\b(.*)", text, re.I | re.S)
     if not m:
@@ -284,7 +293,7 @@ def answer(con, command, numbers) -> list[str]:
         return [f"👋 <b>Hi! I'm your GCC Job Agent.</b>\n"
                 f"Every morning I send new data-engineering jobs at GCCs in India that fit your resume.\n\n{HELP}"]
 
-    out = []
+    out, approved = [], []
     for no in numbers:
         row = store.job(con, no)
         if not row:
@@ -300,8 +309,14 @@ def answer(con, command, numbers) -> list[str]:
             try:
                 kit = approve(con, no)
                 out.append(kit_message(enrich(con, row), kit))
+                approved.append(no)
             except Exception as e:
                 out.append(f"⚠️ Couldn't prepare the kit for <b>#{no}</b> ({type(e).__name__}). Try again in a minute.")
+    if approved and config.AUTO_FILL:
+        start_auto_fill(approved)
+        out.append(f"🤖 <b>Auto-fill started</b> for {', '.join(f'#{n}' for n in approved)}\n"
+                   "Edge is opening on your PC and filling the form(s). I'll message you when each one is "
+                   "ready for your review. <b>I never click Submit</b> — you do.")
     return out
 
 

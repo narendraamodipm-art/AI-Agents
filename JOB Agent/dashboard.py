@@ -91,7 +91,11 @@ def job_detail(con, j):
         st.markdown("**❌ Missing required**  " + chips(gap["missing_required"], "#dc2626"), unsafe_allow_html=True)
         st.markdown("**👍 Matched nice-to-have**  " + chips(gap["matched_nice_to_have"], "#2563eb"), unsafe_allow_html=True)
 
-    b1, b2, b3, b4 = st.columns(4)
+    b1, b2, b5, b3, b4 = st.columns(5)
+    if b5.button("🤖 Auto-fill in Edge", disabled=not j["letter"], width="stretch",
+                 help="Opens Edge on this PC and fills the application. You review and click Submit."):
+        agent.start_auto_fill([j["no"]])
+        st.toast("Edge is opening — the form is filled in, you click Submit.")
     b1.link_button("🔗 Open apply page", j["url"], width="stretch")
     if b2.button("✅ Approve + write kit", disabled=j["fit"] is None, width="stretch"):
         with st.spinner("Writing cover letter and resume tips…"):

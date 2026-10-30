@@ -64,6 +64,7 @@ COLLECT_FIELDS_JS = r"""
     const type = tag === 'input' ? (el.type || 'text').toLowerCase() : tag === 'button' ? 'listbox' : tag;
     if (['hidden', 'submit', 'button', 'file', 'password', 'checkbox', 'image', 'reset', 'search'].includes(type)) return;
     if (el.disabled || el.readOnly) return;
+    if (el.getAttribute('data-automation-id') === 'beecatcher') return;   // Workday's bot trap — never fill
     if (type === 'radio') {
       const box = el.closest('fieldset, [role="radiogroup"]');
       const key = el.name || (box && box.innerText) || labelOf(el);
@@ -295,15 +296,30 @@ def next_button(page):
     return None
 
 
+def wait_for(page, selector, seconds=30) -> bool:
+    try:
+        page.locator(selector).first.wait_for(state="visible", timeout=seconds * 1000)
+        return True
+    except Exception:
+        return False
+
+
 def workday(page, row, details, log, test=False) -> str:
-    click(page, '[data-automation-id="adventureButton"]')                 # "Apply"
-    if not (click(page, '[data-automation-id="autofillWithResume"]')
-            or click(page, '[data-automation-id="applyManually"]')):
-        click(page, '[data-automation-id="useMyLastApplication"]')
+    click(page, '[data-automation-id="adventureButton"]')                 # "Apply" → popup with options
+    choice = ('[data-automation-id="useMyLastApplication"], [data-automation-id="autofillWithResume"], '
+              '[data-automation-id="applyManually"]')
+    if wait_for(page, choice, 15):
+        click(page, '[data-automation-id="useMyLastApplication"]', 1500) or \
+            click(page, '[data-automation-id="autofillWithResume"]', 1500) or \
+            click(page, '[data-automation-id="applyManually"]', 1500)
+    # the apply flow takes ~10 s to load: either the account form or (already signed in) the first page
+    wait_for(page, '[data-automation-id="email"], input[type="file"], ' + ", ".join(NEXT_BUTTONS), 40)
     if test:
         return "reached sign-in" if visible(page, '[data-automation-id="email"]') else f"at: {page.url}"
-    if visible(page, '[data-automation-id="email"]') and not workday_login(page, log):
-        return "needs you to sign in / verify your email in the Edge window"
+    if visible(page, '[data-automation-id="email"]'):
+        if not workday_login(page, log):
+            return "needs you to sign in / verify your email in the Edge window"
+        wait_for(page, 'input[type="file"], ' + ", ".join(NEXT_BUTTONS), 40)
 
     for step in range(15):
         page.wait_for_timeout(2500)
@@ -339,7 +355,11 @@ def greenhouse(page, row, details, log) -> str:
 # ── Running it ───────────────────────────────────────────────────────────────
 def fill_application(context, row, log, test=False) -> tuple:
     page = context.new_page()
-    page.goto(row["url"], timeout=60000)
+    url = row["url"]
+    if row["key"].startswith("gh:"):                    # go straight to the Greenhouse form, not the company page
+        _, token, job_id = row["key"].split(":")
+        url = f"https://job-boards.greenhouse.io/{token}/jobs/{job_id}"
+    page.goto(url, timeout=60000)
     page.wait_for_timeout(4000)
     details = candidate_details(row)
     url = page.url.lower()

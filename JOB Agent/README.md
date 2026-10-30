@@ -29,6 +29,8 @@ final submit, so nothing is ever sent in your name without you seeing it.
 | `telegram_bot.py` | Telegram bot: send messages + read your replies |
 | `agent.py` | `run` (daily pipeline), `replies` / `listen` (act on your replies), `chat-id` (setup) |
 | `dashboard.py` | Streamlit UI: browse matches, approve, read cover letters, mark applied |
+| `apply_bot.py` | Auto-fill: opens Edge, signs in to Workday / fills Greenhouse forms from `applicant.json`, stops before Submit |
+| `applicant.json` | Your details + screening answers for auto-fill (gitignored — fill in the blanks) |
 | `run_agent.bat` | Launcher for Windows Task Scheduler; logs to `data/agent.log` |
 | `schedule_tasks.ps1` | Registers the daily 9:00 run + 15-minute reply check in Task Scheduler |
 
