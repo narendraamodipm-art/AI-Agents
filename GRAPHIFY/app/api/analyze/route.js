@@ -47,6 +47,78 @@ ${code}
 
 Be concise and visual. Use arrows and indentation.`
 
+const refactorPrompt = (code, language) => `You are a senior ${language} engineer. Refactor the code below.
+
+Rules:
+1. Remove functions/methods/classes that are never called or used anywhere.
+   Keep entry points: main(), constructors (e.g. __init__), code run at top level or under if __name__ == "__main__", and anything exported.
+2. Remove duplicate functions (same name defined more than once, or the same logic written twice). Keep one version and update its callers.
+3. Remove unused variables, unused parameters and unused imports.
+4. Apply the standard ${language} naming convention to variables, functions, classes and constants
+   (e.g. Python: snake_case functions/variables, PascalCase classes, UPPER_CASE constants; JavaScript/Java: camelCase, PascalCase classes).
+   Replace unclear names (x, temp, data1, fn) with descriptive ones. Rename every usage consistently.
+5. Do NOT change what the code does. Do not add new features.
+
+Reply in exactly this format and nothing else:
+
+## CHANGES
+- <one line per change, e.g. "Removed unused function calc_tax()", "Renamed getData -> get_data">
+
+## REFACTORED CODE
+\`\`\`${language}
+<the complete refactored code>
+\`\`\`
+
+CODE:
+\`\`\`${language}
+${code}
+\`\`\``
+
+async function refactorWithMistral(code, language) {
+  const apiKey = process.env.MISTRAL_API_KEY
+
+  if (!apiKey) {
+    throw new Error('MISTRAL_API_KEY not configured')
+  }
+
+  const response = await fetch('https://api.mistral.ai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model: 'ministral-8b-latest',
+      messages: [{ role: 'user', content: refactorPrompt(code, language) }],
+      max_tokens: 4000,
+      temperature: 0.1,
+    }),
+  })
+
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.message || 'Mistral API error')
+  }
+
+  const data = await response.json()
+  const text = data.choices[0].message.content
+
+  // The last fenced block is the refactored code; the bullet list before it is the change log
+  const blocks = [...text.matchAll(/```[\w+-]*\n([\s\S]*?)```/g)]
+  const refactored = blocks.length ? blocks[blocks.length - 1][1].trimEnd() : ''
+  const changesSection = text.split(/##\s*REFACTORED CODE/i)[0]
+  const changes = changesSection
+    .split('\n')
+    .filter((line) => /^\s*[-*]\s+/.test(line))
+    .map((line) => line.replace(/^\s*[-*]\s+/, '').trim())
+
+  if (!refactored) {
+    throw new Error('Mistral did not return refactored code. Try again.')
+  }
+
+  return { refactored, changes }
+}
+
 async function analyzeWithClaude(code, language) {
   const message = await claudeClient.messages.create({
     model: 'claude-3-5-sonnet-20241022',
@@ -388,6 +460,16 @@ export async function POST(request) {
         { error: 'Code and language are required' },
         { status: 400 }
       )
+    }
+
+    if (type === 'refactor') {
+      const { refactored, changes } = await refactorWithMistral(code, language)
+      return Response.json({
+        success: true,
+        refactored,
+        changes,
+        language,
+      })
     }
 
     if (type === 'structure') {

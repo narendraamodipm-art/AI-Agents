@@ -25,12 +25,11 @@ export default function Home() {
   const [graphData, setGraphData] = useState(null)
   const [stats, setStats] = useState(null)
   const [fileName, setFileName] = useState('')
-  const [aiModel, setAiModel] = useState('claude')
   const [generating, setGenerating] = useState(false)
   const [fullscreen, setFullscreen] = useState(false)
 
   const languages = ['python', 'javascript', 'java', 'html', 'rust', 'sql', 'holand']
-  const aiModels = ['claude', 'gemini', 'groq', 'mistral']
+  const aiModel = 'mistral'
 
   const handleCodeChange = (e) => {
     setCode(e.target.value)
@@ -215,40 +214,6 @@ export default function Home() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 py-8">
-        {/* AI Model Selector */}
-        <div className="mb-6 p-4 bg-gradient-to-r from-indigo-900/30 to-purple-900/30 rounded-lg border border-indigo-700/30">
-          <label className="block text-sm font-semibold text-slate-300 mb-3">
-            🧠 AI Model for Analysis
-          </label>
-          <div className="flex flex-wrap gap-2 mb-2">
-            {aiModels.map((model) => (
-              <button
-                key={model}
-                onClick={() => setAiModel(model)}
-                className={`px-4 py-2 rounded-lg font-medium transition ${
-                  aiModel === model
-                    ? 'bg-indigo-600 text-white shadow-lg'
-                    : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-                }`}
-              >
-                {model === 'claude' && '✨ Claude'}
-                {model === 'gemini' && '🔮 Gemini'}
-                {model === 'groq' && '🔥 GROQ'}
-                {model === 'mistral' && '🚀 Mistral'}
-              </button>
-            ))}
-          </div>
-          <p className="text-xs text-slate-400">
-            {aiModel === 'claude'
-              ? '✨ Claude: Best detailed (requires ANTHROPIC_API_KEY)'
-              : aiModel === 'gemini'
-              ? '🔮 Gemini: Free & powerful (requires GOOGLE_API_KEY)'
-              : aiModel === 'groq'
-              ? '🔥 GROQ: Fastest! (requires GROQ_API_KEY)'
-              : '🚀 Mistral: Fast alternative (requires MISTRAL_API_KEY)'}
-          </p>
-        </div>
-
         {/* Language Selector */}
         <div className="mb-6">
           <label className="block text-sm font-semibold text-slate-300 mb-3">
@@ -464,7 +429,7 @@ export default function Home() {
 
         {/* AI Analysis Section */}
         <div className="mb-8">
-          <AIAnalysis code={code} language={language} aiModel={aiModel} />
+          <AIAnalysis code={code} language={language} aiModel={aiModel} onApplyCode={setCode} />
         </div>
 
         {/* Info Cards */}
