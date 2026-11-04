@@ -1,7 +1,10 @@
 """RAG application using Mistral AI, Pinecone, and Streamlit."""
 
 import os
+import tempfile
 import uuid
+
+os.environ.setdefault("USER_AGENT", "DocChat-AI")   # WebBaseLoader warns without it; must be set before import
 import streamlit as st
 from dotenv import load_dotenv
 from langchain_mistralai import ChatMistralAI
@@ -20,6 +23,7 @@ load_dotenv()
 
 PINECONE_HOST      = "https://pineconeagents-anpvcrc.svc.aped-4627-b74a.pinecone.io"
 PINECONE_NAMESPACE = "RAG"
+LLM_MODEL          = "ministral-8b-latest"   # mistral-large-latest returns 403 on the current plan
 
 
 def get_config_value(key: str) -> str | None:
@@ -154,7 +158,7 @@ def embed_texts(pc: Pinecone, texts: List[str], input_type: str = "passage") -> 
 
 def get_llm():
     return ChatMistralAI(
-        model="mistral-large-latest",
+        model=LLM_MODEL,
         api_key=get_config_value("MISTRAL_API_KEY"),
         temperature=0.2,
     )
@@ -249,7 +253,7 @@ def main():
                 try:
                     chunks = source_name = None
                     if uploaded_file:
-                        tmp_path = f"/tmp/{uploaded_file.name}"
+                        tmp_path = os.path.join(tempfile.gettempdir(), uploaded_file.name)
                         with open(tmp_path, "wb") as f:
                             f.write(uploaded_file.read())
                         source_name = uploaded_file.name
@@ -284,7 +288,7 @@ def main():
                 <p>🧩 <strong>{st.session_state.doc_chunks}</strong> chunks indexed</p>
                 <p>🗄️ Vector DB: <strong>Pinecone</strong> · namespace <strong>RAG</strong></p>
                 <p>🧠 Embeddings: <strong>llama-text-embed-v2</strong> (Pinecone inference)</p>
-                <p>🤖 LLM: <strong>Mistral Large</strong></p>
+                <p>🤖 LLM: <strong>{LLM_MODEL}</strong></p>
                 <p>🔍 Retrieval: top <strong>4</strong> chunks</p>
             </div>""", unsafe_allow_html=True)
             st.markdown("""
