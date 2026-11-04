@@ -12,7 +12,7 @@ from pinecone import Pinecone
 from langchain_community.document_loaders import PyPDFLoader, WebBaseLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_classic.chains import RetrievalQA
-from langchain_core.prompts import PromptTemplate
+from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.retrievers import BaseRetriever
 from langchain_core.documents import Document
 from langchain_core.callbacks import CallbackManagerForRetrieverRun
@@ -36,11 +36,17 @@ def get_config_value(key: str) -> str | None:
         return None
 
 
-PROMPT_TEMPLATE = (
-    "Use the following context to answer the question.\n"
-    "If you don't know the answer from the context, say \"I don't have enough information to answer that.\"\n"
-    "\nContext:\n{context}\n\nQuestion: {question}\n\nAnswer:"
+SYSTEM_PROMPT = (
+    "You are a professional document assistant. You answer the user's questions "
+    "using only the content of the document provided in the context.\n"
+    "- Give clear, accurate, well-structured answers in a professional tone.\n"
+    "- Use bullet points or short sections when they make the answer easier to read.\n"
+    "- Do not invent facts or use knowledge from outside the document.\n"
+    "- If you don't know the answer from the context, say "
+    "\"I don't have enough information to answer that.\""
 )
+
+HUMAN_PROMPT = "Context:\n{context}\n\nQuestion: {question}"
 
 PAGE_STYLE = """
 <style>
@@ -117,6 +123,19 @@ html, body, [class*="css"] { font-family: 'Inter', 'Segoe UI', sans-serif; }
 
 .tip-box { background: #1e1b4b; border-left: 3px solid #818cf8; border-radius: 6px; padding: 0.6rem 0.9rem; margin-top: 0.8rem; }
 .tip-box p { color: #c7d2fe; font-size: 0.8rem; margin: 0; }
+
+.rag-flow {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem;
+    background: #161b27; border: 1px solid #2d3748; border-radius: 12px;
+    padding: 0.8rem 1rem; margin-bottom: 1.2rem;
+}
+.rag-flow .title { color: #a5b4fc; font-weight: 700; font-size: 0.85rem; margin-right: 0.4rem; }
+.rag-flow .step {
+    background: #1a2235; border: 1px solid #2d4a6e; border-radius: 8px;
+    padding: 0.35rem 0.65rem; color: #cbd5e1; font-size: 0.8rem;
+}
+.rag-flow .step strong { color: #60a5fa; }
+.rag-flow .arrow { color: #64748b; font-size: 0.9rem; }
 </style>
 """
 
@@ -198,10 +217,10 @@ def build_vectorstore(chunks):
 
 
 def build_qa_chain(retriever):
-    prompt = PromptTemplate(
-        template=PROMPT_TEMPLATE,
-        input_variables=["context", "question"],
-    )
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", SYSTEM_PROMPT),
+        ("human", HUMAN_PROMPT),
+    ])
     return RetrievalQA.from_chain_type(
         llm=get_llm(),
         chain_type="stuff",
@@ -301,6 +320,17 @@ def main():
     <div class='hero-box'>
         <h1>DocChat AI</h1>
         <p>Upload a PDF or paste a URL — then ask anything about it. Powered by Mistral AI + Pinecone RAG.</p>
+    </div>""", unsafe_allow_html=True)
+
+    st.markdown(f"""
+    <div class='rag-flow'>
+        <span class='title'>RAG Flow</span>
+        <span class='step'>📄 <strong>Load</strong> PDF / URL</span><span class='arrow'>→</span>
+        <span class='step'>✂️ <strong>Chunk</strong> 1000 chars</span><span class='arrow'>→</span>
+        <span class='step'>🧠 <strong>Embed</strong> llama-text-embed-v2</span><span class='arrow'>→</span>
+        <span class='step'>🗄️ <strong>Store</strong> Pinecone</span><span class='arrow'>→</span>
+        <span class='step'>🔍 <strong>Retrieve</strong> top 4 chunks</span><span class='arrow'>→</span>
+        <span class='step'>🤖 <strong>Answer</strong> {LLM_MODEL}</span>
     </div>""", unsafe_allow_html=True)
 
     if st.session_state.retriever is not None:
