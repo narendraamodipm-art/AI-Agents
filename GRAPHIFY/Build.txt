@@ -409,7 +409,7 @@ Mistral API Integration:
 * Endpoint: https://api.mistral.ai/v1/chat/completions
 * Method: POST
 * Authentication: Bearer token from .env
-* Model: mistral-medium
+* Model: ministral-8b-latest
 * Similar prompt structure
 
 Environment Variables (.env.local):

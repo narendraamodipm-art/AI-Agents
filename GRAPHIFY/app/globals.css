@@ -1,0 +1,123 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  background: linear-gradient(135deg, #0f172a 0%, #1a1f35 50%, #0d1b2a 100%);
+  color: #e2e8f0;
+}
+
+.glass-effect {
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #6366f1, #ec4899, #06b6d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.card-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+}
+
+.btn-primary {
+  @apply bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition duration-200;
+}
+
+.btn-secondary {
+  @apply bg-slate-700 hover:bg-slate-600 text-white px-3 py-1.5 rounded-lg font-medium transition duration-200;
+}
+
+.code-input {
+  @apply bg-slate-900 border border-slate-700 text-slate-100 rounded-lg p-4 font-mono text-sm;
+}
+
+.node-python {
+  background: linear-gradient(135deg, #3776ab, #4b8bbe);
+}
+
+.node-javascript {
+  background: linear-gradient(135deg, #f1e05a, #f7df1e);
+}
+
+.node-java {
+  background: linear-gradient(135deg, #007396, #5382a1);
+}
+
+.node-html {
+  background: linear-gradient(135deg, #e34c26, #ff6b35);
+}
+
+.node-rust {
+  background: linear-gradient(135deg, #ce422b, #f74c1c);
+}
+
+.node-entity {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border: 2px solid rgba(99, 102, 241, 0.5);
+}
+
+.rf-node {
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.rf-connection path {
+  stroke: rgba(148, 163, 184, 0.3);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.4);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.7);
+}
+
+/* Animations */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
