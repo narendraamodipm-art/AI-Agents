@@ -47,8 +47,63 @@ ${code}
 
 Be concise and visual. Use arrows and indentation.`
 
-const refactorPrompt = (code, language) => `You are a senior ${language} engineer. Refactor the code below.
+// Cheap static scan so the small model doesn't have to spot unused names on its own
+const ENTRY_POINTS = new Set(['main', '__init__', 'constructor', 'render', 'setup'])
 
+function findUnusedNames(code) {
+  const countRefs = (name) => (code.match(new RegExp(`\\b${name}\\b`, 'g')) || []).length
+
+  const definedFunctions = [
+    ...code.matchAll(/^\s*(?:async\s+)?def\s+(\w+)/gm),
+    ...code.matchAll(/^\s*(?:export\s+)?(?:async\s+)?function\s+(\w+)/gm),
+  ].map((m) => m[1])
+
+  const unusedFunctions = [...new Set(definedFunctions)].filter(
+    (name) => !ENTRY_POINTS.has(name) && !name.startsWith('__') && countRefs(name) <= definedFunctions.filter((n) => n === name).length
+  )
+
+  const importedNames = []
+  for (const m of code.matchAll(/^\s*import\s+([\w., ]+?)\s*$/gm)) {
+    m[1].split(',').forEach((part) => importedNames.push(part.trim().split(/\s+as\s+/).pop().split('.')[0]))
+  }
+  for (const m of code.matchAll(/^\s*from\s+[\w.]+\s+import\s+([\w, ]+?)\s*$/gm)) {
+    m[1].split(',').forEach((part) => importedNames.push(part.trim().split(/\s+as\s+/).pop()))
+  }
+  // Count uses outside the import lines, so "from datetime import datetime" doesn't count as a use
+  const codeWithoutImports = code.replace(/^\s*(?:import|from)\s.*$/gm, '')
+  const unusedImports = [...new Set(importedNames.filter(Boolean))].filter(
+    (name) => !new RegExp(`\\b${name}\\b`).test(codeWithoutImports)
+  )
+
+  // A variable is unused when every mention of it is an assignment (x = ..., self.x = ...)
+  const assignedVariables = [...code.matchAll(/^\s*(?:const\s+|let\s+|var\s+)?([A-Za-z_]\w*)\s*=(?!=)/gm)].map((m) => m[1])
+  const unusedVariables = [...new Set(assignedVariables)].filter(
+    (name) => name !== '_' && countRefs(name) <= assignedVariables.filter((n) => n === name).length
+  )
+
+  const assignedAttributes = [...code.matchAll(/\b(?:self|this)\.(\w+)\s*=(?!=)/g)].map((m) => m[1])
+  const unusedAttributes = [...new Set(assignedAttributes)].filter(
+    (name) => (code.match(new RegExp(`\\.${name}\\b`, 'g')) || []).length <= assignedAttributes.filter((n) => n === name).length
+  )
+
+  return { unusedFunctions, unusedImports, unusedVariables, unusedAttributes }
+}
+
+function describeUnused(code) {
+  const { unusedFunctions, unusedImports, unusedVariables, unusedAttributes } = findUnusedNames(code)
+  return [
+    unusedFunctions.length && `- Functions/methods never called: ${unusedFunctions.join(', ')}`,
+    unusedImports.length && `- Imports never used: ${unusedImports.join(', ')}`,
+    unusedVariables.length && `- Variables/constants assigned but never read: ${unusedVariables.join(', ')}`,
+    unusedAttributes.length && `- Attributes assigned but never read: ${unusedAttributes.map((a) => `self.${a}`).join(', ')}`,
+  ].filter(Boolean).join('\n')
+}
+
+const refactorPrompt = (code, language) => {
+  const hints = describeUnused(code)
+
+  return `You are a senior ${language} engineer. Refactor the code below.
+${hints ? `\nA static scan already found these unused items. DELETE every one of them entirely (do not rename them):\n${hints}\n` : ''}
 Rules:
 1. Remove functions/methods/classes that are never called or used anywhere.
    Keep entry points: main(), constructors (e.g. __init__), code run at top level or under if __name__ == "__main__", and anything exported.
@@ -57,7 +112,13 @@ Rules:
 4. Apply the standard ${language} naming convention to variables, functions, classes and constants
    (e.g. Python: snake_case functions/variables, PascalCase classes, UPPER_CASE constants; JavaScript/Java: camelCase, PascalCase classes).
    Replace unclear names (x, temp, data1, fn) with descriptive ones. Rename every usage consistently.
+   Do NOT rename names that already follow the convention and are already descriptive.
 5. Do NOT change what the code does. Do not add new features.
+   Keep each function where it is: do not move functions into or out of classes.
+6. The CHANGES list must describe only what you actually did in the refactored code.
+   Never remove a parameter or variable that is read somewhere.
+7. If the code is already clean, return it unchanged and write "- No changes needed" under CHANGES.
+   Always include the REFACTORED CODE block.
 
 Reply in exactly this format and nothing else:
 
@@ -73,8 +134,30 @@ CODE:
 \`\`\`${language}
 ${code}
 \`\`\``
+}
 
-async function refactorWithMistral(code, language) {
+const cleanupPrompt = (code, language, leftovers) => `This ${language} code still contains unused items:
+${leftovers}
+
+Delete each of them entirely (the definition, assignment or import line). If deleting one makes an import unused, delete that import too.
+Change nothing else: keep every other name, line and behaviour exactly as it is.
+
+Reply in exactly this format and nothing else:
+
+## CHANGES
+- <one line per item removed>
+
+## REFACTORED CODE
+\`\`\`${language}
+<the complete code>
+\`\`\`
+
+CODE:
+\`\`\`${language}
+${code}
+\`\`\``
+
+async function askMistralForRefactor(content) {
   const apiKey = process.env.MISTRAL_API_KEY
 
   if (!apiKey) {
@@ -89,7 +172,7 @@ async function refactorWithMistral(code, language) {
     },
     body: JSON.stringify({
       model: 'ministral-8b-latest',
-      messages: [{ role: 'user', content: refactorPrompt(code, language) }],
+      messages: [{ role: 'user', content }],
       max_tokens: 4000,
       temperature: 0.1,
     }),
@@ -101,22 +184,51 @@ async function refactorWithMistral(code, language) {
   }
 
   const data = await response.json()
-  const text = data.choices[0].message.content
+  const text = (data.choices?.[0]?.message?.content || '').replace(/\r\n/g, '\n')
+  const truncated = data.choices?.[0]?.finish_reason === 'length'
 
-  // The last fenced block is the refactored code; the bullet list before it is the change log
-  const blocks = [...text.matchAll(/```[\w+-]*\n([\s\S]*?)```/g)]
-  const refactored = blocks.length ? blocks[blocks.length - 1][1].trimEnd() : ''
-  const changesSection = text.split(/##\s*REFACTORED CODE/i)[0]
+  // The code is after the "REFACTORED CODE" heading; fall back to the last fenced block anywhere
+  const [changesSection, codeSection = ''] = text.split(/#*\s*\**REFACTORED CODE\**:?/i)
+  const source = codeSection || text
+  const blocks = [...source.matchAll(/```[^\n]*\n([\s\S]*?)(?:```|$)/g)]
+  let refactored = blocks.length ? blocks[blocks.length - 1][1].trimEnd() : ''
+  if (!refactored && codeSection.trim()) {
+    refactored = codeSection.trim()   // model skipped the fences
+  }
+  if (!refactored) {
+    console.error('Refactor reply had no code block. finish_reason:', data.choices?.[0]?.finish_reason, '\n', text.slice(0, 2000))
+  }
+  if (truncated) {
+    throw new Error('The code is too long for one refactor (Mistral reply was cut off). Try a smaller piece of code.')
+  }
+
   const changes = changesSection
     .split('\n')
     .filter((line) => /^\s*[-*]\s+/.test(line))
     .map((line) => line.replace(/^\s*[-*]\s+/, '').trim())
 
-  if (!refactored) {
+  return { refactored, changes }
+}
+
+async function refactorWithMistral(code, language) {
+  const first = await askMistralForRefactor(refactorPrompt(code, language))
+
+  if (!first.refactored) {
     throw new Error('Mistral did not return refactored code. Try again.')
   }
 
-  return { refactored, changes }
+  // The small model often renames unused items instead of deleting them, so re-scan and clean up once
+  const leftovers = describeUnused(first.refactored)
+  if (!leftovers) {
+    return first
+  }
+
+  const second = await askMistralForRefactor(cleanupPrompt(first.refactored, language, leftovers))
+  if (!second.refactored) {
+    return first
+  }
+
+  return { refactored: second.refactored, changes: [...first.changes, ...second.changes] }
 }
 
 async function analyzeWithClaude(code, language) {
@@ -455,7 +567,7 @@ export async function POST(request) {
     const body = await request.json()
     const { code, language, aiModel, type } = body
 
-    if (!code || !language) {
+    if (typeof code !== 'string' || !code || !language) {
       return Response.json(
         { error: 'Code and language are required' },
         { status: 400 }

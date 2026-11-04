@@ -229,10 +229,10 @@ export default function AIAnalysis({ code, language, aiModel, onApplyCode }) {
           <div className="mt-4 p-3 bg-slate-800 rounded-lg text-sm text-slate-300">
             <p className="font-semibold mb-2">💡 Beginner Tips:</p>
             <ul className="space-y-1 text-xs">
-              <li>✓ Read the "What This Code Does" section first</li>
-              <li>✓ Look at the "Real-World Analogy" to understand the concept</li>
-              <li>✓ Follow the "Step-by-Step Flow" to trace execution</li>
-              <li>✓ Use "Key Concepts Explained" to learn new terms</li>
+              <li>✓ Read the &quot;What This Code Does&quot; section first</li>
+              <li>✓ Look at the &quot;Real-World Analogy&quot; to understand the concept</li>
+              <li>✓ Follow the &quot;Step-by-Step Flow&quot; to trace execution</li>
+              <li>✓ Use &quot;Key Concepts Explained&quot; to learn new terms</li>
             </ul>
           </div>
         </div>
