@@ -31,8 +31,8 @@ AI-Agents/
 ├── travel_planner/       Travel Planner ReAct agent
 ├── GRAPHIFY/             Code → knowledge graph web app (Next.js); see its README
 ├── JOB Agent/            Daily job-search agent with Telegram alerts; see its README
-├── docs/                 Portfolio website (static HTML/CSS/JS, served by GitHub Pages)
-├── .github/              Workflow that keeps the Streamlit apps awake
+├── MY_PORTFOLIO/         Portfolio website (static HTML/CSS/JS, deployed to GitHub Pages)
+├── .github/              Workflows: deploy the portfolio, keep the Streamlit apps awake
 ├── Nikhil_Kumar_Resume.pdf
 └── requirements.txt      Dependencies for HahaBot and DocChat AI
 ```
@@ -83,4 +83,4 @@ Streamlit Community Cloud puts free apps to sleep when nobody visits them. The [
 
 ## Portfolio website
 
-The portfolio in [`docs/`](docs) is a single page built with plain HTML, CSS and JavaScript. It needs no build step. GitHub Pages publishes it from the `main` branch's `/docs` folder. To update the resume on the site, replace `docs/Nikhil_Kumar_Resume.pdf` and keep the same filename.
+The portfolio in [`MY_PORTFOLIO/`](MY_PORTFOLIO) is a single page built with plain HTML, CSS and JavaScript. It needs no build step. The [deploy workflow](.github/workflows/deploy-portfolio.yml) publishes it to GitHub Pages whenever anything in `MY_PORTFOLIO/` changes on `main`. For this to work, the repo's **Settings → Pages → Source** must be set to **GitHub Actions**. To update the resume on the site, replace `MY_PORTFOLIO/Nikhil_Kumar_Resume.pdf` and keep the same filename.
