@@ -4,7 +4,7 @@ An AI AGENT (the LLM decides the steps):
     Goal → LLM thinks → picks a tool (web search / weather / budget) → code runs it
          → result goes back to the LLM → repeat until the LLM writes the final plan
 
-LLM:   Groq (OpenAI-compatible API) — gpt-oss / qwen models with tool calling
+LLM:   Mistral ministral-8b-latest (OpenAI-compatible API) with tool calling
 Tools: Tavily (web search), OpenWeather (forecast), Python (budget maths)
 
 Run:  streamlit run "AI AGENTS/travel_planner/app.py"
@@ -36,22 +36,22 @@ def load_env():
 
 load_env()
 
-GROQ_BASE_URL = "https://api.groq.com/openai/v1"
-MODELS = ["openai/gpt-oss-120b", "openai/gpt-oss-20b", "qwen/qwen3.8-27b"]
+MISTRAL_BASE_URL = "https://api.mistral.ai/v1"
+MODEL = "ministral-8b-latest"
 MAX_STEPS = 12                  # safety limit: the agent can't loop forever
-MAX_OUTPUT_TOKENS = 2000        # cap each reply (Groq counts this against the limit)
+MAX_OUTPUT_TOKENS = 2000        # cap each reply
 
-# Groq's free tier allows only 8,000 tokens PER MINUTE per model, and every agent
-# step re-sends the whole conversation. So the context must stay small:
+# Every agent step re-sends the whole conversation, so keep the context small
+# (faster, cheaper, and stays clear of free-tier rate limits):
 MAX_TOOL_RESULT_CHARS = 2000    # a single tool result sent back to the LLM
 KEEP_FULL_RESULTS = 3           # the latest N tool results stay complete …
 TRIMMED_RESULT_CHARS = 400      # … older ones are cut to this length
 
-REQUIRED_KEYS = ["GROQ_API_KEY", "TAVILY_API_KEY", "OPENWEATHER_API_KEY"]
+REQUIRED_KEYS = ["MISTRAL_API_KEY", "TAVILY_API_KEY", "OPENWEATHER_API_KEY"]
 
 
 def call_with_retry(fn, *args, retries=8, **kwargs):
-    """Retry on rate limits (HTTP 429). Groq says how long to wait — use that."""
+    """Retry on rate limits (HTTP 429), waiting longer each time (or as long as the API says)."""
     delay = 2
     for attempt in range(retries):
         try:
@@ -282,28 +282,26 @@ def clean_markdown(text: str) -> str:
 
 def trim_old_results(messages):
     """Short-term memory management: keep the latest tool results in full and cut
-    older ones down. The agent has already used them, and Groq's free tier only
-    allows 8,000 tokens per minute."""
+    older ones down. The agent has already used them, and a smaller context keeps
+    each step fast and within free-tier limits."""
     tool_msgs = [m for m in messages if m["role"] == "tool"]
     for m in tool_msgs[:-KEEP_FULL_RESULTS]:
         if len(m["content"]) > TRIMMED_RESULT_CHARS:
             m["content"] = m["content"][:TRIMMED_RESULT_CHARS] + " …(older result trimmed)"
 
 
-def llm_call(client, model, messages, use_tools=True):
-    """One LLM call. gpt-oss models get low reasoning effort to save tokens."""
-    kwargs = {"model": model, "messages": messages, "temperature": 0.3,
-              "max_completion_tokens": MAX_OUTPUT_TOKENS}
+def llm_call(client, messages, use_tools=True):
+    """One LLM call to Mistral."""
+    kwargs = {"model": MODEL, "messages": messages, "temperature": 0.3,
+              "max_tokens": MAX_OUTPUT_TOKENS}
     if use_tools:
         kwargs.update(tools=TOOLS, tool_choice="auto")
-    if "gpt-oss" in model:
-        kwargs["reasoning_effort"] = "low"
     return call_with_retry(client.chat.completions.create, **kwargs)
 
 
-def run_agent(request_text: str, model: str, on_step):
+def run_agent(request_text: str, on_step):
     """Run the agent until it answers without a tool call (or hits MAX_STEPS)."""
-    client = OpenAI(api_key=os.getenv("GROQ_API_KEY"), base_url=GROQ_BASE_URL)
+    client = OpenAI(api_key=os.getenv("MISTRAL_API_KEY"), base_url=MISTRAL_BASE_URL)
     today = dt.date.today().strftime("%A, %d %B %Y")
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT.format(today=today)},
@@ -314,7 +312,7 @@ def run_agent(request_text: str, model: str, on_step):
     for _ in range(MAX_STEPS):
         trim_old_results(messages)
         # REASON: the LLM looks at everything so far and decides what to do next
-        response = llm_call(client, model, messages)
+        response = llm_call(client, messages)
         msg = response.choices[0].message
 
         # no tool requested → this is the final answer
@@ -346,7 +344,7 @@ def run_agent(request_text: str, model: str, on_step):
     messages.append({"role": "user", "content": "Step limit reached. Write the final plan now "
                                                 "using the information you already have."})
     trim_old_results(messages)
-    response = llm_call(client, model, messages, use_tools=False)
+    response = llm_call(client, messages, use_tools=False)
     return clean_markdown(response.choices[0].message.content), steps
 
 
@@ -377,11 +375,11 @@ def main():
     st.set_page_config(page_title="Travel Planner Agent", page_icon="✈️", layout="wide")
     st.title("✈️ Travel Planner Agent")
     st.caption("An AI agent that searches the web, checks the weather and balances your budget "
-               "— deciding each step by itself. Powered by Groq, Tavily and OpenWeather.")
+               "— deciding each step by itself. Powered by Mistral, Tavily and OpenWeather.")
 
     with st.sidebar:
         st.header("Settings")
-        model = st.selectbox("Groq model", MODELS)
+        st.markdown(f"🤖 Model: `{MODEL}` (Mistral)")
         st.divider()
         st.markdown(
             "**How the agent works**\n\n"
@@ -394,8 +392,8 @@ def main():
             "4. 🔁 Repeats until the plan is ready\n\n"
             f"Safety limit: {MAX_STEPS} steps"
         )
-        st.caption("Groq free tier allows 8,000 tokens/min, so planning can take 1–3 minutes "
-                   "while the agent waits out rate limits.")
+        st.caption("Planning usually takes under a minute; it can take longer if the "
+                   "agent has to wait out API rate limits.")
 
     missing = [k for k in REQUIRED_KEYS if not os.getenv(k)]
     if missing:
@@ -436,11 +434,11 @@ def main():
                 st.caption(summarise_result(step))
 
             try:
-                plan, steps = run_agent(request_text, model, show_step)
+                plan, steps = run_agent(request_text, show_step)
             except Exception as e:
                 status.update(label="Agent error", state="error")
                 st.error(f"{type(e).__name__}: {e}\n\nIf this is a rate-limit (429) error, "
-                         "wait a minute or pick another model in the sidebar.")
+                         "wait a minute and try again.")
                 st.stop()
             status.update(label=f"✅ Plan ready — {len(steps)} tool calls", state="complete",
                           expanded=False)

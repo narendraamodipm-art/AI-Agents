@@ -13,3 +13,5 @@ beautifulsoup4
 youtube-transcript-api>=1.2
 numpy>=1.26
 requests>=2.31
+openai>=1.40
+tavily-python>=0.5
