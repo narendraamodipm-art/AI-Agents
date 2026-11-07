@@ -1,0 +1,29 @@
+name: Keep Streamlit apps awake
+
+on:
+  schedule:
+    # Every 4 hours (UTC). Streamlit Community Cloud sleeps apps after a period with no visits.
+    - cron: "17 */4 * * *"
+  workflow_dispatch: # allows a manual run from the Actions tab
+
+permissions:
+  contents: read
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Playwright
+        run: |
+          pip install playwright==1.47.0
+          python -m playwright install --with-deps chromium
+
+      - name: Visit apps
+        run: python .github/scripts/keep_awake.py
