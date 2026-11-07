@@ -15,6 +15,7 @@ APPS = [
     "https://ai-smart-notes-maker.streamlit.app/",
     "https://haha-funny-bot-h.streamlit.app/",
     "https://rag-for-study-and-reser.streamlit.app/",
+    "https://ai-agents-plan-my-trip.streamlit.app/",
 ]
 
 # Text on the button Streamlit shows for a sleeping app

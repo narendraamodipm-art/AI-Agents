@@ -10,6 +10,7 @@
     'hahabot': 'https://haha-funny-bot-h.streamlit.app/',
     'docchat': 'https://rag-for-study-and-reser.streamlit.app/',
     'graphify': 'https://ai-agents-sage-ten.vercel.app/',
+    'travel': 'https://ai-agents-plan-my-trip.streamlit.app/',
   };
   const tree = (p) => REPO + '/tree/main/' + encodeURI(p);
 
@@ -104,7 +105,7 @@
       id: 'travel', icon: '✈️', type: 'agent', label: 'Agent',
       title: 'Travel Planner AI Agent',
       short: 'An autonomous ReAct agent that picks its own tools (web search, weather forecasts, a budget calculator) to build day-by-day itineraries that fit the weather and the budget.',
-      tags: ['Python', 'Groq', 'Tavily', 'OpenWeather', 'Streamlit'],
+      tags: ['Python', 'Mistral', 'Tavily', 'OpenWeather', 'Streamlit'],
       steps: [
         'User gives a destination, dates and a budget',
         'The LLM reasons about what it needs next (ReAct loop)',
@@ -117,7 +118,7 @@
         'Exponential backoff retry for flaky APIs',
         'A step-limit cap prevents runaway loops',
       ],
-      link: null,
+      link: tree('travel_planner'),
     },
     {
       id: 'graphify', icon: '🕸️', type: 'web', label: 'Web app',
