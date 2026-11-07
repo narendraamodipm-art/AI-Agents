@@ -1,39 +1,86 @@
-# AI-Agents Streamlit Apps
+# AI-Agents
 
-This repository contains two Streamlit apps: HahaBot, a Mistral-powered
-chatbot, and DocChat AI, a RAG app that answers questions about uploaded PDFs
-or webpages using Mistral AI and Pinecone.
+AI agents, LLM workflows and RAG apps built by **Nikhil Kumar**, a Data Engineer and Cloud Engineer in Bengaluru. This repo also hosts my portfolio website.
 
-## Deploy on Streamlit Community Cloud...
+**🌐 Portfolio:** https://narendraamodipm-art.github.io/AI-Agents/
+**📄 Resume:** [Nikhil_Kumar_Resume.pdf](Nikhil_Kumar_Resume.pdf)
+**✉️ Contact:** [Nikhil.nk0101@gmail.com](mailto:Nikhil.nk0101@gmail.com)
 
-Push this repository to GitHub, then create a separate app for each interface
-in [Streamlit Community Cloud](https://share.streamlit.io/). For each app,
-select this repository and the `main` branch, then choose its main file:
+---
 
-- HahaBot: `CHATBOT/CHATBOT_APP.py`
-- DocChat AI (RAG): `RAG/RAG.py`
+## Live demos
 
-After creating each app, open **Settings > Secrets**, add the required secrets
-in TOML format, and save. Keep API keys out of the source code and GitHub.
+All of these run on free hosting. A GitHub Actions workflow keeps the Streamlit apps awake, but if one is asleep it can take a minute to start.
 
-HahaBot requires:
+| Project | What it does | Stack | Live demo | Code |
+|---|---|---|---|---|
+| **Resume Matcher + Cover Letter Writer** | Scores how well a resume fits a job description, shows the skill gaps, rewrites bullets and writes a cover letter. A guardrail flags any invented numbers. | Python, LangChain, Mistral, Pydantic, Streamlit | [Open app](https://ai-resume-validator.streamlit.app/) | [`AI WORKFLOW/resume_matcher`](AI%20WORKFLOW/resume_matcher) |
+| **YouTube → Study Notes** | Turns a YouTube video into timestamped notes, Anki flashcards and a quiz, using map-reduce summarisation. | Python, LangChain, Mistral, Streamlit | [Open app](https://ai-smart-notes-maker.streamlit.app/) | [`AI WORKFLOW/youtube_notes`](AI%20WORKFLOW/youtube_notes) |
+| **DocChat AI (RAG)** | Answers questions about any PDF or web page, grounded in the top-4 chunks retrieved from Pinecone. | Python, LangChain, Mistral, Pinecone, Streamlit | [Open app](https://rag-for-study-and-reser.streamlit.app/) | [`RAG`](RAG) |
+| **Travel Planner AI Agent** | A ReAct agent that chooses between web search, weather forecasts and a budget calculator to build day-by-day trip plans. | Python, Mistral, Tavily, OpenWeather, Streamlit | [Open app](https://ai-agents-plan-my-trip.streamlit.app/) | [`travel_planner`](travel_planner) |
+| **GRAPHIFY** | Turns source code (Python, JS/TS, Java, HTML, Rust) into an interactive knowledge graph, with AI explanations. | Next.js, React Flow, Tailwind, Claude / Mistral | [Open app](https://ai-agents-sage-ten.vercel.app/) | [`GRAPHIFY`](GRAPHIFY) |
+| **HahaBot** | A friendly chatbot built on Mistral. | Python, Mistral, Streamlit | [Open app](https://haha-funny-bot-h.streamlit.app/) | [`CHATBOT`](CHATBOT) |
 
-```toml
-MISTRAL_API_KEY = "your-mistral-api-key"
+## Repository layout
+
+```
+AI-Agents/
+├── AI WORKFLOW/          Resume Matcher and YouTube Notes (fixed-step LLM workflows); see readme.txt
+├── CHATBOT/              HahaBot chatbot
+├── RAG/                  DocChat AI RAG app
+├── travel_planner/       Travel Planner ReAct agent
+├── GRAPHIFY/             Code → knowledge graph web app (Next.js); see its README
+├── JOB Agent/            Daily job-search agent with Telegram alerts; see its README
+├── docs/                 Portfolio website (static HTML/CSS/JS, served by GitHub Pages)
+├── .github/              Workflow that keeps the Streamlit apps awake
+├── Nikhil_Kumar_Resume.pdf
+└── requirements.txt      Dependencies for HahaBot and DocChat AI
 ```
 
-DocChat AI requires both:
+## Running the apps locally
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate          # macOS/Linux: source .venv/bin/activate
+pip install -r requirements.txt  # HahaBot + DocChat AI
+streamlit run CHATBOT/CHATBOT_APP.py
+```
+
+Some apps have their own requirements file:
+
+| App | Install | Run |
+|---|---|---|
+| Resume Matcher / YouTube Notes | `pip install -r "AI WORKFLOW/requirements.txt"` | `streamlit run "AI WORKFLOW/resume_matcher/app.py"` |
+| Travel Planner | `pip install -r travel_planner/requirements.txt` | `streamlit run travel_planner/app.py` |
+| GRAPHIFY | `cd GRAPHIFY && npm install` | `npm run dev` |
+
+Put API keys in a `.env` file. `.env` and local Streamlit secrets files are ignored by Git, so keys never go into the repo.
+
+## Deploying on Streamlit Community Cloud
+
+Create a separate app for each one in [Streamlit Community Cloud](https://share.streamlit.io/). Select this repository and the `main` branch, then choose its main file:
+
+| App | Main file | Secrets |
+|---|---|---|
+| HahaBot | `CHATBOT/CHATBOT_APP.py` | `MISTRAL_API_KEY` |
+| DocChat AI | `RAG/RAG.py` | `MISTRAL_API_KEY`, `PINECONE_API_KEY` |
+| Resume Matcher | `AI WORKFLOW/resume_matcher/app.py` | `MISTRAL_API_KEY` |
+| YouTube Notes | `AI WORKFLOW/youtube_notes/app.py` | `MISTRAL_API_KEY` |
+| Travel Planner | `travel_planner/app.py` | `MISTRAL_API_KEY`, `TAVILY_API_KEY`, `OPENWEATHER_API_KEY` |
+
+After creating each app, open **Settings → Secrets** and add its keys in TOML format, for example:
 
 ```toml
 MISTRAL_API_KEY = "your-mistral-api-key"
 PINECONE_API_KEY = "your-pinecone-api-key"
 ```
 
-The RAG app connects to the Pinecone index configured in `RAG/RAG.py`. Its
-document processing replaces the contents of the app's configured `RAG`
-namespace, so processing a new document removes previously indexed content in
-that namespace.
+DocChat AI connects to the Pinecone index configured in `RAG/RAG.py`. Processing a new document replaces everything in the app's `RAG` namespace, so content indexed earlier is removed.
 
-Dependencies for both apps are listed in the repository-root
-`requirements.txt`. For local development, use a `.env` file; `.env` and local
-Streamlit secrets files are ignored by Git.
+## Keeping the demos awake
+
+Streamlit Community Cloud puts free apps to sleep when nobody visits them. The [keep-awake workflow](.github/workflows/keep-streamlit-awake.yml) runs every 4 hours. It opens each app in a headless browser and clicks the wake-up button if the app is asleep. To run it by hand, go to **Actions → Keep Streamlit apps awake → Run workflow**. To add a new app, add its URL to `APPS` in [`.github/scripts/keep_awake.py`](.github/scripts/keep_awake.py).
+
+## Portfolio website
+
+The portfolio in [`docs/`](docs) is a single page built with plain HTML, CSS and JavaScript. It needs no build step. GitHub Pages publishes it from the `main` branch's `/docs` folder. To update the resume on the site, replace `docs/Nikhil_Kumar_Resume.pdf` and keep the same filename.
