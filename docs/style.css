@@ -230,28 +230,10 @@ main { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
 .avatar:hover { transform: scale(1.08) rotate(-4deg); }
 
 /* About */
-.about-grid { display: grid; grid-template-columns: 300px 1fr; grid-template-areas: "photo text" "cards cards"; gap: 32px 40px; align-items: start; }
-.portrait { grid-area: photo; margin: 0; position: relative; isolation: isolate; }
-.portrait img {
-  display: block; width: 100%; height: auto; border-radius: 22px; border: 1px solid var(--border);
-  box-shadow: var(--shadow-lg); transition: transform .4s ease;
-}
-.portrait::before {
-  content: ""; position: absolute; inset: 14px -14px -14px 14px; border-radius: 22px; z-index: -1;
-  background: linear-gradient(135deg, var(--accent), var(--accent-2)); opacity: .35; transition: inset .4s ease;
-}
-.portrait:hover img { transform: translate(-4px, -4px); }
-.portrait:hover::before { inset: 20px -20px -20px 20px; }
-.portrait figcaption {
-  position: absolute; left: 14px; bottom: 14px; display: inline-flex; align-items: center; gap: 8px;
-  padding: 6px 12px; border-radius: 999px; font-size: 13px; font-weight: 600; color: #fff;
-  background: rgba(10, 14, 23, .65); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-}
-.about-text { grid-area: text; }
-.about-cards { grid-area: cards; }
+.about-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 40px; }
 .about-text p { color: var(--text-2); font-size: 17px; margin: 0 0 16px; }
 .about-text strong { color: var(--text); }
-.about-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.about-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .mini-card {
   padding: 20px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--border);
   transition: transform .25s, border-color .25s, box-shadow .25s;
@@ -459,8 +441,7 @@ main { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
 /* ========== Responsive ========== */
 @media (max-width: 960px) {
   .hero { grid-template-columns: 1fr; min-height: auto; padding: 40px 0; gap: 36px; }
-  .about-grid { grid-template-columns: 240px 1fr; }
-  .about-cards { grid-template-columns: 1fr 1fr; }
+  .about-grid { grid-template-columns: 1fr; }
   .achievements { grid-template-columns: 1fr; }
   .resume-wrap { grid-template-columns: 1fr; }
   .resume-side { position: static; }
@@ -482,8 +463,6 @@ main { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
   .section { padding-top: 72px; }
   .stats { gap: 20px; }
   .stats strong { font-size: 28px; }
-  .about-grid { grid-template-columns: 1fr; grid-template-areas: "photo" "text" "cards"; }
-  .portrait { max-width: 280px; margin: 0 auto 8px; }
   .about-cards { grid-template-columns: 1fr 1fr; }
   .avatar { width: 68px; height: 68px; }
   .project-grid { grid-template-columns: 1fr; }
