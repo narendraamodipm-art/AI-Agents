@@ -39,27 +39,6 @@
 
   const PROJECTS = [
     {
-      id: 'job-agent', icon: '🎯', type: 'agent', label: 'Agent',
-      title: 'GCC Job Agent',
-      short: 'Each morning it finds new data engineering jobs at India GCCs, scores them against my resume and sends a Telegram shortlist. Reply "APPLY 8" to get a tailored cover letter.',
-      tags: ['Python', 'Mistral', 'Tavily', 'Telegram', 'SQLite', 'Streamlit'],
-      steps: [
-        'Pull jobs from 26 Workday and 9 Greenhouse GCC career feeds, filtered by title, India location and the last 3 days',
-        'Search news with Tavily; Mistral picks out newly announced GCCs, then Tavily finds jobs there',
-        'Store new jobs in SQLite and skip duplicates',
-        'Score each job: Mistral extracts JD skills and finds gaps, embeddings measure similarity, Python computes the fit score',
-        'Fit ≥ 50 → send a Telegram shortlist with fit scores',
-        'Reply APPLY / SKIP / APPLIED / LIST; APPLY writes a cover letter and resume tips and sends the apply link',
-      ],
-      highlights: [
-        'Runs on its own through Windows Task Scheduler: a daily 9:00 run plus a reply check every 15 minutes',
-        'Human in the loop: nothing is ever submitted without my review',
-        'Auto-fill bot opens Edge, fills Workday and Greenhouse forms, and stops before Submit',
-        'Streamlit dashboard to browse matches, read cover letters and mark jobs applied',
-      ],
-      link: tree('JOB Agent'),
-    },
-    {
       id: 'resume-matcher', icon: '📄', type: 'workflow', label: 'Workflow',
       title: 'Resume Matcher + Cover Letter Writer',
       short: 'An 8-step AI workflow that scores how well a resume fits a job description, shows the skill gaps, rewrites bullets and writes a cover letter. A guardrail flags any invented numbers.',
