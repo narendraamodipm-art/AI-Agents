@@ -356,6 +356,7 @@
       '  <b>experience</b>   work history',
       '  <b>education</b>    degree',
       '  <b>contact</b>      how to reach me',
+      '  <b>resume</b>       download my resume (PDF)',
       '  <b>sql</b>          run a query 😉',
       '  <b>theme</b>        toggle light/dark',
       '  <b>clear</b>        clear the screen',
@@ -398,6 +399,16 @@
       '1 row returned in 0.004s ⚡',
     ],
     theme: () => { $('#themeToggle').click(); return ['Theme switched to <b>' + currentTheme() + '</b>.']; },
+    resume: () => {
+      const a = document.createElement('a');
+      a.href = 'Nikhil_Kumar_Resume.pdf';
+      a.download = 'Nikhil_Kumar_Resume.pdf';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      return ['Downloading <b>Nikhil_Kumar_Resume.pdf</b>… 📄',
+        'Or <a href="Nikhil_Kumar_Resume.pdf" target="_blank" rel="noopener">open it in a new tab</a>.'];
+    },
     sudo: () => ['<span class="err">Nice try. Permission denied. 🔒</span>'],
     ls: () => ['about/  skills/  experience/  projects/  contact/'],
   };
@@ -496,6 +507,58 @@
     });
   }, { rootMargin: '-45% 0px -50% 0px' });
   $$('main section[id]').forEach((s) => navObs.observe(s));
+
+  /* ---------------- Resume preview (PDF.js, loaded when the section is near) ---------------- */
+  const RESUME = 'Nikhil_Kumar_Resume.pdf';
+  const PDFJS = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
+  const viewer = $('#resumeViewer');
+
+  function iframeFallback() {
+    viewer.innerHTML = '<iframe src="' + RESUME + '#view=FitH" title="Nikhil Kumar resume preview"></iframe>';
+  }
+
+  function loadScript(src) {
+    return new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = src;
+      s.onload = resolve;
+      s.onerror = reject;
+      document.head.appendChild(s);
+    });
+  }
+
+  async function renderResume() {
+    try {
+      if (!window.pdfjsLib) await loadScript(PDFJS + 'pdf.min.js');
+      const pdfjs = window.pdfjsLib;
+      pdfjs.GlobalWorkerOptions.workerSrc = PDFJS + 'pdf.worker.min.js';
+      const pdf = await pdfjs.getDocument(RESUME).promise;
+      viewer.innerHTML = '';
+      const ratio = Math.min(window.devicePixelRatio || 1, 2);
+      const width = viewer.clientWidth - 32;
+      for (let n = 1; n <= pdf.numPages; n++) {
+        const page = await pdf.getPage(n);
+        const base = page.getViewport({ scale: 1 });
+        const vp = page.getViewport({ scale: (width / base.width) * ratio });
+        const canvas = document.createElement('canvas');
+        canvas.width = vp.width;
+        canvas.height = vp.height;
+        canvas.setAttribute('aria-label', 'Resume page ' + n);
+        viewer.appendChild(canvas);
+        await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
+      }
+    } catch (e) {
+      iframeFallback();
+    }
+  }
+
+  const resumeObs = new IntersectionObserver((entries) => {
+    if (entries.some((en) => en.isIntersecting)) {
+      resumeObs.disconnect();
+      renderResume();
+    }
+  }, { rootMargin: '400px 0px' });
+  resumeObs.observe(viewer);
 
   $('#year').textContent = new Date().getFullYear();
 })();

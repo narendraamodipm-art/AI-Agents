@@ -25,6 +25,7 @@
       <a href="#experience">Experience</a>
       <a href="#projects">Projects</a>
       <a href="#terminal">Terminal</a>
+      <a href="#resume">Resume</a>
       <a href="#contact">Contact</a>
     </nav>
     <div class="nav-actions">
@@ -48,6 +49,10 @@
         <p class="lead">I build data pipelines that move from raw events to analytics-ready tables on Snowflake, BigQuery and AWS. In my own time I build AI agents and LLM workflows with LangChain and Mistral.</p>
         <div class="cta-row">
           <a class="btn primary" href="#projects">View projects</a>
+          <a class="btn ghost" href="Nikhil_Kumar_Resume.pdf" download="Nikhil_Kumar_Resume.pdf">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
+            Download resume
+          </a>
           <a class="btn ghost" href="#contact">Get in touch</a>
           <a class="btn ghost" href="https://github.com/narendraamodipm-art/AI-Agents" target="_blank" rel="noopener">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.1c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.9 1.3 1.9 1.3 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.7 1.7.3 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .5z"/></svg>
@@ -287,7 +292,42 @@
         <button class="chip-btn" data-cmd="projects">projects</button>
         <button class="chip-btn" data-cmd="experience">experience</button>
         <button class="chip-btn" data-cmd="contact">contact</button>
+        <button class="chip-btn" data-cmd="resume">resume</button>
         <button class="chip-btn" data-cmd="sql">sql</button>
+      </div>
+    </section>
+
+    <!-- RESUME -->
+    <section id="resume" class="section reveal">
+      <div class="section-head">
+        <span class="num">06</span><h2>Resume</h2>
+      </div>
+      <div class="resume-wrap">
+        <div class="resume-side">
+          <div class="resume-file">
+            <span class="pdf-badge">PDF</span>
+            <div>
+              <h3>Nikhil_Kumar_Resume.pdf</h3>
+              <p>2 pages · ~90 KB</p>
+            </div>
+          </div>
+          <ul class="resume-points">
+            <li>Data Engineer / Cloud Engineer: about 4 years</li>
+            <li>Albertsons · MathCo</li>
+            <li>Snowflake · BigQuery · Airflow · IICS · Kafka</li>
+            <li>AI projects: RAG, ReAct agents, LLM workflows</li>
+          </ul>
+          <div class="resume-actions">
+            <a class="btn primary" href="Nikhil_Kumar_Resume.pdf" download="Nikhil_Kumar_Resume.pdf">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
+              Download PDF
+            </a>
+            <a class="btn ghost" href="Nikhil_Kumar_Resume.pdf" target="_blank" rel="noopener">Open in new tab ↗</a>
+          </div>
+        </div>
+        <div class="resume-viewer" id="resumeViewer" aria-label="Resume preview">
+          <p class="resume-loading">Loading resume preview…</p>
+        </div>
       </div>
     </section>
 
