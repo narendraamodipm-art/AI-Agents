@@ -308,6 +308,11 @@ main { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
 .pcard-more::after { content: "→"; transition: transform .2s; }
 .pcard:hover .pcard-more::after { transform: translateX(4px); }
 
+.live-badge {
+  align-self: flex-start; margin-top: 10px; font: 600 11px "JetBrains Mono", monospace;
+  padding: 4px 10px; border-radius: 999px; color: #16a34a; background: rgba(22, 163, 74, .12);
+}
+
 /* Modal */
 .modal {
   width: min(720px, calc(100vw - 32px)); max-height: calc(100vh - 48px); padding: 32px;

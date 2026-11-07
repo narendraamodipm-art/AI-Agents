@@ -2,6 +2,14 @@
   'use strict';
 
   const REPO = 'https://github.com/narendraamodipm-art/AI-Agents';
+
+  // Live Streamlit Cloud demos: paste each app's URL here (leave '' to hide the button)
+  const DEMOS = {
+    'resume-matcher': 'https://ai-resume-validator.streamlit.app/',
+    'yt-notes': 'https://ai-smart-notes-maker.streamlit.app/',
+    'hahabot': 'https://haha-funny-bot-h.streamlit.app/',
+    'docchat': 'https://rag-for-study-and-reser.streamlit.app/',
+  };
   const tree = (p) => REPO + '/tree/main/' + encodeURI(p);
 
   /* ---------------- Data ---------------- */
@@ -292,7 +300,8 @@
         '<h3>' + esc(p.title) + '</h3>' +
         '<p>' + esc(p.short) + '</p>' +
         '<div class="tags">' + p.tags.map((t) => '<span class="tag">' + esc(t) + '</span>').join('') + '</div>' +
-        '<span class="pcard-more">How it works</span>';
+        '<span class="pcard-more">How it works</span>' +
+        (DEMOS[p.id] ? '<span class="live-badge">● Live demo</span>' : '');
       card.addEventListener('mousemove', (e) => {
         const r = card.getBoundingClientRect();
         card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
@@ -321,7 +330,9 @@
       '<h4>Highlights</h4>' +
       '<ul class="hl">' + p.highlights.map((h) => '<li>' + esc(h) + '</li>').join('') + '</ul>' +
       '<div class="modal-actions">' +
-        (p.link ? '<a class="btn primary" href="' + p.link + '" target="_blank" rel="noopener">View code on GitHub</a>' : '<span class="tag">Code available on request</span>') +
+        (DEMOS[p.id] ? '<a class="btn primary" href="' + esc(DEMOS[p.id]) + '" target="_blank" rel="noopener">▶ Try the live app</a>' : '') +
+        (p.link && DEMOS[p.id] ? '<a class="btn ghost" href="' + p.link + '" target="_blank" rel="noopener">View code on GitHub</a>' : '') +
+        (p.link && DEMOS[p.id] ? '' : p.link ? '<a class="btn primary" href="' + p.link + '" target="_blank" rel="noopener">View code on GitHub</a>' : '<span class="tag">Code available on request</span>') +
       '</div>';
     if (typeof modal.showModal === 'function') modal.showModal();
     else modal.setAttribute('open', '');
