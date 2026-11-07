@@ -375,6 +375,9 @@ main { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
 .contact-card h2 { font-size: clamp(28px, 4.5vw, 44px); font-weight: 800; letter-spacing: -1px; position: relative; }
 .contact-card > p { color: var(--text-2); max-width: 520px; margin: 14px auto 28px; position: relative; }
 .contact-row { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; position: relative; }
+.contact-phone { margin-top: 12px; }
+.btn.whatsapp { background: #25d366; color: #fff; }
+.btn.whatsapp:hover { background: #1ebe5b; box-shadow: 0 8px 24px rgba(37, 211, 102, .35); }
 .contact-card .loc { color: var(--muted); margin: 24px 0 0; font-size: 14px; }
 
 /* Footer */

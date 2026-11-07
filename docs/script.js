@@ -382,9 +382,11 @@
     ],
     education: () => ['B.E. Electronics &amp; Communication: Siddaganga Institute of Technology (2018–2022), CGPA 7.4'],
     contact: () => [
-      'email   → <a href="mailto:Nikhil.nk0101@gmail.com">Nikhil.nk0101@gmail.com</a>',
-      'github  → <a href="' + REPO + '" target="_blank" rel="noopener">narendraamodipm-art/AI-Agents</a>',
-      'where   → Bengaluru, India',
+      'email    → <a href="mailto:Nikhil.nk0101@gmail.com">Nikhil.nk0101@gmail.com</a>',
+      'phone    → <a href="tel:+917338657300">+91 73386 57300</a>',
+      'whatsapp → <a href="https://wa.me/917338657300" target="_blank" rel="noopener">chat on WhatsApp</a>',
+      'github   → <a href="' + REPO + '" target="_blank" rel="noopener">narendraamodipm-art/AI-Agents</a>',
+      'where    → Bengaluru, India',
     ],
     sql: () => [
       '<span class="muted">SELECT name, role, open_to_work FROM engineers WHERE passion = \'data\';</span>',
