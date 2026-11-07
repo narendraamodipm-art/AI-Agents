@@ -63,28 +63,58 @@
 
       <!-- Animated pipeline -->
       <figure class="pipeline" aria-label="Animated diagram of a data pipeline: sources flow through orchestration into a warehouse and on to AI apps">
-        <svg viewBox="0 0 420 360" role="img">
+        <svg viewBox="0 0 460 420" role="img">
           <defs>
             <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="var(--accent)"/><stop offset="1" stop-color="var(--accent-2)"/></linearGradient>
           </defs>
-          <path id="p1" class="flow" d="M80 70 C 160 70, 150 180, 210 180"/>
-          <path id="p2" class="flow" d="M80 180 L 210 180"/>
-          <path id="p3" class="flow" d="M80 290 C 160 290, 150 180, 210 180"/>
-          <path id="p4" class="flow" d="M210 180 C 270 180, 270 110, 340 110"/>
-          <path id="p5" class="flow" d="M210 180 C 270 180, 270 250, 340 250"/>
+          <!-- sources → Airflow -->
+          <path id="s1" class="flow" d="M122 50 C 165 50, 160 210, 188 210"/>
+          <path id="s2" class="flow" d="M122 130 C 160 130, 160 210, 188 210"/>
+          <path id="s3" class="flow" d="M122 210 L 188 210"/>
+          <path id="s4" class="flow" d="M122 290 C 160 290, 160 210, 188 210"/>
+          <path id="s5" class="flow" d="M122 370 C 165 370, 160 210, 188 210"/>
+          <!-- Spark ↔ Airflow ↔ Data Quality -->
+          <path id="v1" class="flow" d="M230 168 L 230 78"/>
+          <path id="v2" class="flow" d="M230 252 L 230 342"/>
+          <!-- Airflow → destinations -->
+          <path id="d1" class="flow" d="M272 210 C 300 210, 295 50, 338 50"/>
+          <path id="d2" class="flow" d="M272 210 C 300 210, 300 130, 338 130"/>
+          <path id="d3" class="flow" d="M272 210 L 338 210"/>
+          <path id="d4" class="flow" d="M272 210 C 300 210, 300 290, 338 290"/>
+          <path id="d5" class="flow" d="M272 210 C 300 210, 295 370, 338 370"/>
 
-          <g class="node" data-tip="Social media REST APIs, eCommerce events"><rect x="20" y="48" width="120" height="44" rx="10"/><text x="80" y="75">REST APIs</text></g>
-          <g class="node" data-tip="Confluent Kafka · Pub/Sub · Kinesis"><rect x="20" y="158" width="120" height="44" rx="10"/><text x="80" y="185">Kafka</text></g>
-          <g class="node" data-tip="GCS · S3 · Blob Storage"><rect x="20" y="268" width="120" height="44" rx="10"/><text x="80" y="295">Cloud Storage</text></g>
-          <g class="node hub" data-tip="Apache Airflow · Informatica IICS · Glue · ADF"><circle cx="210" cy="180" r="42"/><text x="210" y="176">Airflow</text><text x="210" y="193" class="sub">orchestrate</text></g>
-          <g class="node" data-tip="SCD Type 2, stored procedures, data quality rules"><rect x="290" y="88" width="120" height="44" rx="10"/><text x="350" y="115">Snowflake / BQ</text></g>
-          <g class="node ai" data-tip="RAG, agents and LLM workflows"><rect x="290" y="228" width="120" height="44" rx="10"/><text x="350" y="255">LLM Apps</text></g>
+          <!-- Sources -->
+          <g class="node" data-tip="Social media REST APIs: campaign data for the Marketing Data Lake"><rect x="10" y="30" width="112" height="40" rx="10"/><text x="66" y="55">REST APIs</text></g>
+          <g class="node" data-tip="Confluent Kafka: streaming eCommerce fulfillment events"><rect x="10" y="110" width="112" height="40" rx="10"/><text x="66" y="135">Kafka</text></g>
+          <g class="node" data-tip="Google Pub/Sub · Amazon Kinesis: real-time messaging"><rect x="10" y="190" width="112" height="40" rx="10"/><text x="66" y="215">Pub/Sub</text></g>
+          <g class="node" data-tip="GCS · S3 · Azure Blob: raw and processed data lake zones"><rect x="10" y="270" width="112" height="40" rx="10"/><text x="66" y="295">Cloud Storage</text></g>
+          <g class="node" data-tip="MySQL · MongoDB: operational databases"><rect x="10" y="350" width="112" height="40" rx="10"/><text x="66" y="375">MySQL / Mongo</text></g>
 
-          <circle class="packet" r="4"><animateMotion dur="2.6s" repeatCount="indefinite"><mpath href="#p1"/></animateMotion></circle>
-          <circle class="packet" r="4"><animateMotion dur="2.2s" begin=".5s" repeatCount="indefinite"><mpath href="#p2"/></animateMotion></circle>
-          <circle class="packet" r="4"><animateMotion dur="2.8s" begin="1s" repeatCount="indefinite"><mpath href="#p3"/></animateMotion></circle>
-          <circle class="packet alt" r="4"><animateMotion dur="2.4s" begin=".3s" repeatCount="indefinite"><mpath href="#p4"/></animateMotion></circle>
-          <circle class="packet alt" r="4"><animateMotion dur="2.4s" begin="1.4s" repeatCount="indefinite"><mpath href="#p5"/></animateMotion></circle>
+          <!-- Core -->
+          <g class="node" data-tip="Apache Spark · Databricks · Dataproc: distributed transforms"><rect x="180" y="42" width="100" height="36" rx="10"/><text x="230" y="65">Spark</text></g>
+          <g class="node hub" data-tip="Apache Airflow · Informatica IICS · AWS Glue · ADF · Step Functions"><circle cx="230" cy="210" r="42"/><text x="230" y="206">Airflow</text><text x="230" y="223" class="sub">orchestrate</text></g>
+          <g class="node dq" data-tip="Data Quality Framework: Streamlit + Snowflake rules, audit logging"><rect x="172" y="342" width="116" height="36" rx="10"/><text x="230" y="365">Data Quality</text></g>
+
+          <!-- Destinations -->
+          <g class="node" data-tip="Snowflake: Snowpark, stored procedures, tasks"><rect x="338" y="30" width="112" height="40" rx="10"/><text x="394" y="55">Snowflake</text></g>
+          <g class="node" data-tip="BigQuery: JSON parsing procedures, SCD Type 2 loads"><rect x="338" y="110" width="112" height="40" rx="10"/><text x="394" y="135">BigQuery</text></g>
+          <g class="node" data-tip="Amazon Redshift · Athena: AWS analytics"><rect x="338" y="190" width="112" height="40" rx="10"/><text x="394" y="215">Redshift</text></g>
+          <g class="node ai" data-tip="RAG, ReAct agents and LLM workflows (LangChain + Mistral)"><rect x="338" y="270" width="112" height="40" rx="10"/><text x="394" y="295">LLM Apps</text></g>
+          <g class="node" data-tip="Streamlit dashboards and BI reporting"><rect x="338" y="350" width="112" height="40" rx="10"/><text x="394" y="375">Dashboards</text></g>
+
+          <!-- Packets -->
+          <circle class="packet" r="4"><animateMotion dur="2.6s" repeatCount="indefinite"><mpath href="#s1"/></animateMotion></circle>
+          <circle class="packet" r="4"><animateMotion dur="2.2s" begin=".4s" repeatCount="indefinite"><mpath href="#s2"/></animateMotion></circle>
+          <circle class="packet" r="4"><animateMotion dur="1.8s" begin=".9s" repeatCount="indefinite"><mpath href="#s3"/></animateMotion></circle>
+          <circle class="packet" r="4"><animateMotion dur="2.3s" begin=".2s" repeatCount="indefinite"><mpath href="#s4"/></animateMotion></circle>
+          <circle class="packet" r="4"><animateMotion dur="2.7s" begin="1.2s" repeatCount="indefinite"><mpath href="#s5"/></animateMotion></circle>
+          <circle class="packet warn" r="3.5"><animateMotion dur="1.6s" repeatCount="indefinite"><mpath href="#v1"/></animateMotion></circle>
+          <circle class="packet warn" r="3.5"><animateMotion dur="1.6s" begin=".8s" repeatCount="indefinite"><mpath href="#v2"/></animateMotion></circle>
+          <circle class="packet alt" r="4"><animateMotion dur="2.5s" begin=".3s" repeatCount="indefinite"><mpath href="#d1"/></animateMotion></circle>
+          <circle class="packet alt" r="4"><animateMotion dur="2.1s" begin="1s" repeatCount="indefinite"><mpath href="#d2"/></animateMotion></circle>
+          <circle class="packet alt" r="4"><animateMotion dur="1.8s" begin=".6s" repeatCount="indefinite"><mpath href="#d3"/></animateMotion></circle>
+          <circle class="packet alt" r="4"><animateMotion dur="2.2s" begin="1.4s" repeatCount="indefinite"><mpath href="#d4"/></animateMotion></circle>
+          <circle class="packet alt" r="4"><animateMotion dur="2.6s" begin=".1s" repeatCount="indefinite"><mpath href="#d5"/></animateMotion></circle>
         </svg>
         <figcaption id="pipeTip">Hover a node to see what runs there</figcaption>
       </figure>

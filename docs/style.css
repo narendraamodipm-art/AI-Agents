@@ -197,6 +197,8 @@ main { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
 .node:hover rect, .node:hover circle, .node.lit rect, .node.lit circle { stroke: var(--accent); fill: var(--accent-soft); }
 .node.hub circle { stroke: url(#g1); stroke-width: 2.5; }
 .node.ai rect { stroke: var(--accent-2); }
+.node.dq rect { stroke: var(--accent-3); }
+.packet.warn { fill: var(--accent-3); filter: drop-shadow(0 0 4px var(--accent-3)); }
 .packet { fill: var(--accent); filter: drop-shadow(0 0 4px var(--accent)); }
 .packet.alt { fill: var(--accent-2); filter: drop-shadow(0 0 4px var(--accent-2)); }
 .pipeline figcaption {
