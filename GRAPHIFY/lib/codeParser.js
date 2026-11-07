@@ -1,20 +1,25 @@
-export const detectLanguage = (code) => {
-  const patterns = {
-    sql: /^(SELECT|INSERT|UPDATE|DELETE|CREATE|ALTER|DROP|WITH)\s+/im,
-    python: /^(import|from|def|class|@|\bif __name__|async def)/m,
-    javascript: /^(import|export|const|let|var|function|=>|class|async|await)/m,
-    java: /^(import|package|public|private|class|interface|@Override)/m,
-    html: /^<!DOCTYPE|<html|<head|<body|<div|<span/m,
-    rust: /^(fn|mod|use|impl|struct|enum|trait|async)/m,
-    holand: /^(program|procedure|variable|input|output|if|while)/m,
-  }
+// Score every language by its telltale patterns; the first matching keyword alone is too ambiguous
+// (e.g. "import" starts Python, JavaScript and Java files)
+const LANGUAGE_SIGNALS = {
+  sql: [/^\s*(SELECT|INSERT\s+INTO|UPDATE|DELETE\s+FROM|CREATE\s+(TABLE|VIEW|INDEX)|ALTER\s+TABLE|DROP\s+TABLE|WITH\s+\w+\s+AS\s*\()/gim, /\b(FROM|WHERE|JOIN|GROUP\s+BY|ORDER\s+BY|VALUES)\b/g],
+  python: [/^\s*def\s+\w+\s*\(.*\)\s*(->.*)?:\s*$/gm, /^\s*class\s+\w+(\(.*\))?:\s*$/gm, /^\s*(from\s+[\w.]+\s+)?import\s+[\w.]+(\s+as\s+\w+)?\s*$/gm, /\bself\./g, /if __name__ == ['"]__main__['"]/g, /\b(elif|None|True|False)\b/g],
+  javascript: [/\b(const|let|var)\s+\w+\s*=/g, /=>/g, /\bfunction\s*\w*\s*\(/g, /\bconsole\.log\(/g, /^\s*(import .* from ['"]|export\s+(default\s+)?)/gm, /\b(document|window|require)\b/g],
+  java: [/\b(public|private|protected)\s+(static\s+)?(final\s+)?[\w<>\[\]]+\s+\w+\s*\(/g, /\bSystem\.out\.print/g, /^\s*package\s+[\w.]+;/gm, /\bnew\s+\w+(<.*>)?\(/g, /@Override/g],
+  html: [/<!DOCTYPE html>/gi, /<\/?(html|head|body|div|span|p|a|ul|li|form|input|script|style)\b/gi],
+  rust: [/\bfn\s+\w+\s*(<.*>)?\(/g, /\blet\s+mut\b/g, /\bimpl\b/g, /println!\(/g, /::/g, /^\s*use\s+[\w:]+;/gm],
+}
 
-  for (const [lang, pattern] of Object.entries(patterns)) {
-    if (pattern.test(code.trim())) {
-      return lang
+export const detectLanguage = (code) => {
+  let best = 'unknown'
+  let bestScore = 0
+  for (const [lang, patterns] of Object.entries(LANGUAGE_SIGNALS)) {
+    const score = patterns.reduce((sum, pattern) => sum + (code.match(pattern) || []).length, 0)
+    if (score > bestScore) {
+      best = lang
+      bestScore = score
     }
   }
-  return 'unknown'
+  return best
 }
 
 export const parseCode = (code, language) => {

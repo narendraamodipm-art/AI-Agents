@@ -349,10 +349,12 @@ export const createGraphFromStructure = (structure, language) => {
 
 export const generateStructureStats = (structure) => {
   return {
-    totalClasses: structure.statistics?.totalClasses || 0,
-    totalFunctions: structure.statistics?.totalFunctions || 0,
-    totalLoops: structure.statistics?.totalLoops || 0,
-    duplicateFunctions: structure.statistics?.duplicateFunctions || [],
+    items: [
+      { icon: '📦', label: 'Classes', value: structure.statistics?.totalClasses || 0, color: 'text-pink-400' },
+      { icon: '⚙️', label: 'Functions', value: structure.statistics?.totalFunctions || 0, color: 'text-cyan-400' },
+      { icon: '🔄', label: 'Loops', value: structure.statistics?.totalLoops || 0, color: 'text-orange-400' },
+    ],
+    issues: (structure.statistics?.duplicateFunctions || []).map((dup) => ({ name: dup.name, note: `×${dup.count}` })),
     summary: structure.summary || '',
   }
 }

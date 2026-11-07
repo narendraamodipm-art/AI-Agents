@@ -3,9 +3,21 @@
 import { useState } from 'react'
 import { Upload, Zap, Copy, Download, Maximize2, Minimize2 } from 'lucide-react'
 import dynamic from 'next/dynamic'
-import { detectLanguage, parseCode } from '@/lib/codeParser'
-import { createGraphFromEntities, generateGraphStats, getLanguageIcon, createGraphFromStructure, generateStructureStats } from '@/lib/graphUtils'
+import { detectLanguage } from '@/lib/codeParser'
+import { createGraphFromStructure, generateStructureStats } from '@/lib/graphUtils'
+import { analyzeSql, createGraphFromSql, generateSqlStats } from '@/lib/sqlAnalyzer'
+import { createGraphFromLlm, generateLlmStats } from '@/lib/llmGraph'
 import AIAnalysis from '@/components/AIAnalysis'
+import Salahkar from '@/components/Salahkar'
+
+const EXTENSION_LANGUAGES = {
+  py: 'python', js: 'javascript', jsx: 'javascript', mjs: 'javascript', ts: 'typescript', tsx: 'typescript',
+  java: 'java', c: 'c', h: 'c', cpp: 'cpp', cc: 'cpp', hpp: 'cpp', cs: 'csharp', go: 'go', rs: 'rust',
+  php: 'php', rb: 'ruby', kt: 'kotlin', swift: 'swift', sql: 'sql', html: 'html', htm: 'html', css: 'css', sh: 'bash',
+}
+
+const LANGUAGE_NAMES = { javascript: 'JavaScript', typescript: 'TypeScript', cpp: 'C++', csharp: 'C#', sql: 'SQL', html: 'HTML', css: 'CSS', php: 'PHP' }
+const formatLanguage = (lang) => LANGUAGE_NAMES[lang] || lang.charAt(0).toUpperCase() + lang.slice(1)
 
 const GraphVisualization = dynamic(() => import('@/components/GraphVisualization'), {
   ssr: false,
@@ -28,20 +40,36 @@ export default function Home() {
   const [generating, setGenerating] = useState(false)
   const [fullscreen, setFullscreen] = useState(false)
 
-  const languages = ['python', 'javascript', 'java', 'html', 'rust', 'sql', 'holand']
   const aiModel = 'mistral'
 
+  // The language is never picked by hand: a quick local guess while typing, then Mistral's answer
   const handleCodeChange = (e) => {
     setCode(e.target.value)
+    setLanguage(detectLanguage(e.target.value))
   }
 
-  const handleLanguageSelect = (lang) => {
-    setLanguage(lang)
+  const postAnalyze = async (body) => {
+    const response = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+    const data = await response.json()
+    if (!response.ok) throw new Error(data.error || 'Unknown error')
+    return data
   }
 
-  const handleAutoDetect = () => {
-    const detected = detectLanguage(code)
-    setLanguage(detected !== 'unknown' ? detected : 'python')
+  // Used only if Mistral can't produce the graph: local SQL analysis, or the older structure call
+  const generateFallbackGraph = async () => {
+    if (language === 'sql') {
+      const analysis = analyzeSql(code)
+      setGraphData(createGraphFromSql(analysis))
+      setStats(generateSqlStats(analysis))
+      return
+    }
+    const data = await postAnalyze({ code, language, type: 'structure' })
+    setGraphData(createGraphFromStructure(data.structure, language))
+    setStats(generateStructureStats(data.structure))
   }
 
   const generateGraph = async () => {
@@ -52,35 +80,19 @@ export default function Home() {
 
     setGenerating(true)
     try {
-      const response = await fetch('/api/analyze', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          code,
-          language,
-          type: 'structure',
-        }),
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        alert('Error generating graph: ' + (data.error || 'Unknown error'))
-        return
+      const { graph } = await postAnalyze({ code, language, type: 'graph' })
+      if (graph.language && graph.language !== 'other' && graph.language !== 'unknown') {
+        setLanguage(graph.language)
       }
-
-      if (data.structure) {
-        const graph = createGraphFromStructure(data.structure, language)
-        const statsData = generateStructureStats(data.structure)
-
-        setGraphData(graph)
-        setStats(statsData)
-      } else {
-        alert('No structure data received')
-      }
+      setGraphData(createGraphFromLlm(graph))
+      setStats(generateLlmStats(graph))
     } catch (error) {
-      console.error('Error generating graph:', error)
-      alert('Failed to generate graph: ' + error.message)
+      console.error('LLM graph failed, using fallback:', error)
+      try {
+        await generateFallbackGraph()
+      } catch (fallbackError) {
+        alert('Failed to generate graph: ' + fallbackError.message)
+      }
     } finally {
       setGenerating(false)
     }
@@ -91,28 +103,13 @@ export default function Home() {
     if (file) {
       const reader = new FileReader()
       reader.onload = (event) => {
-        const content = event.target?.result
-        setCode(content || '')
+        const content = event.target?.result || ''
+        setCode(content)
         setFileName(file.name)
 
-        // Auto-detect language from file extension
+        // The file extension is the most reliable hint; fall back to reading the code
         const ext = file.name.split('.').pop()?.toLowerCase()
-        const extToLang = {
-          py: 'python',
-          js: 'javascript',
-          jsx: 'javascript',
-          ts: 'javascript',
-          tsx: 'javascript',
-          java: 'java',
-          html: 'html',
-          htm: 'html',
-          rs: 'rust',
-          sql: 'sql',
-          hol: 'holand',
-        }
-        if (ext && extToLang[ext]) {
-          setLanguage(extToLang[ext])
-        }
+        setLanguage(EXTENSION_LANGUAGES[ext] || detectLanguage(content))
       }
       reader.readAsText(file)
     }
@@ -214,44 +211,21 @@ export default function Home() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 py-8">
-        {/* Language Selector */}
-        <div className="mb-6">
-          <label className="block text-sm font-semibold text-slate-300 mb-3">
-            Select Language
-          </label>
-          <div className="flex flex-wrap gap-2">
-            {languages.map((lang) => (
-              <button
-                key={lang}
-                onClick={() => handleLanguageSelect(lang)}
-                className={`px-4 py-2 rounded-lg font-medium transition ${
-                  language === lang
-                    ? 'bg-indigo-600 text-white shadow-lg'
-                    : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-                }`}
-              >
-                <span className="mr-1">{getLanguageIcon(lang)}</span>
-                {lang.charAt(0).toUpperCase() + lang.slice(1)}
-              </button>
-            ))}
-            <button
-              onClick={handleAutoDetect}
-              className="px-4 py-2 rounded-lg font-medium bg-slate-700 text-slate-300 hover:bg-slate-600 transition"
-              title="Auto-detect language from code"
-            >
-              🔍 Auto-Detect
-            </button>
-          </div>
-        </div>
-
         {/* Code Input Area */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           {/* Left Panel */}
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-semibold text-slate-300 mb-2">
-                Code Input
-              </label>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-sm font-semibold text-slate-300">
+                  Code Input
+                </label>
+                {code.trim() && (
+                  <span className="text-xs px-2 py-1 rounded-full bg-slate-800 border border-slate-600 text-slate-300">
+                    🔍 Detected: <strong className="text-indigo-300">{language === 'unknown' ? 'Unknown' : formatLanguage(language)}</strong>
+                  </span>
+                )}
+              </div>
               <div className="flex gap-2 mb-2">
                 <label className="flex-1">
                   <div className="flex items-center justify-center gap-2 px-4 py-3 bg-indigo-600 hover:bg-indigo-700 rounded-lg cursor-pointer font-medium transition">
@@ -262,7 +236,6 @@ export default function Home() {
                     type="file"
                     onChange={handleFileUpload}
                     className="hidden"
-                    accept=".py,.js,.java,.html,.rs,.sql,.hol,.jsx,.ts,.tsx"
                   />
                 </label>
                 <button
@@ -319,33 +292,32 @@ export default function Home() {
               <div className="glass-effect p-6 rounded-lg space-y-4 h-96 overflow-auto">
                 {stats ? (
                   <>
-                    <div className="border-b border-slate-600 pb-4">
-                      <p className="text-slate-400 text-sm">📦 Classes</p>
-                      <p className="text-3xl font-bold text-pink-400">{stats.totalClasses}</p>
+                    <div className="grid grid-cols-2 gap-4 border-b border-slate-600 pb-4">
+                      {stats.items.map((item) => (
+                        <div key={item.label}>
+                          <p className="text-slate-400 text-sm">{item.icon} {item.label}</p>
+                          <p className={`text-3xl font-bold ${item.color}`}>{item.value}</p>
+                          {item.detail && <p className="text-xs text-slate-400 mt-1">{item.detail}</p>}
+                        </div>
+                      ))}
                     </div>
 
-                    <div className="border-b border-slate-600 pb-4">
-                      <p className="text-slate-400 text-sm">⚙️ Functions</p>
-                      <p className="text-3xl font-bold text-cyan-400">{stats.totalFunctions}</p>
-                    </div>
-
-                    <div className="border-b border-slate-600 pb-4">
-                      <p className="text-slate-400 text-sm">🔄 Loops</p>
-                      <p className="text-3xl font-bold text-orange-400">{stats.totalLoops}</p>
-                    </div>
-
-                    {stats.duplicateFunctions && stats.duplicateFunctions.length > 0 && (
+                    {stats.issues.length > 0 && (
                       <div className="border-b border-slate-600 pb-4">
-                        <p className="text-slate-400 text-sm font-semibold mb-2">🔁 Duplicate Functions</p>
+                        <p className="text-slate-400 text-sm font-semibold mb-2">⚠️ Issues Found</p>
                         <div className="space-y-1 text-xs">
-                          {stats.duplicateFunctions.map((dup) => (
-                            <div key={dup.name} className="flex justify-between">
-                              <span className="text-slate-300">{dup.name}</span>
-                              <span className="bg-red-900 text-red-200 px-2 py-0.5 rounded">×{dup.count}</span>
+                          {stats.issues.map((issue) => (
+                            <div key={issue.name + issue.note} className="flex justify-between gap-2">
+                              <span className="text-slate-300">{issue.name}</span>
+                              <span className="bg-red-900 text-red-200 px-2 py-0.5 rounded whitespace-nowrap">{issue.note}</span>
                             </div>
                           ))}
                         </div>
                       </div>
+                    )}
+
+                    {stats.summary === null && (
+                      <p className="text-xs text-slate-400">📝 Generating summary…</p>
                     )}
 
                     {stats.summary && (
@@ -422,7 +394,11 @@ export default function Home() {
                   : 'h-[600px] rounded-xl border border-slate-700'
               } overflow-hidden bg-slate-900`}
             >
-              <GraphVisualization nodes={graphData.nodes} edges={graphData.edges} />
+              <GraphVisualization
+                key={graphData.nodes.map((n) => n.id + n.data.label).join('|')}
+                nodes={graphData.nodes}
+                edges={graphData.edges}
+              />
             </div>
           </div>
         )}
@@ -430,6 +406,11 @@ export default function Home() {
         {/* AI Analysis Section */}
         <div className="mb-8">
           <AIAnalysis code={code} language={language} aiModel={aiModel} onApplyCode={setCode} />
+        </div>
+
+        {/* SALAHKAR chat: refactors the code from the user's instructions */}
+        <div className="mb-8">
+          <Salahkar code={code} language={language} onApplyCode={setCode} />
         </div>
 
         {/* Info Cards */}
@@ -460,7 +441,7 @@ export default function Home() {
         <div className="glass-effect p-6 rounded-lg">
           <h2 className="text-lg font-bold mb-4">✨ Features</h2>
           <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-slate-300">
-            <li>✅ Support for 6 programming languages</li>
+            <li>✅ Support for all programming languages</li>
             <li>✅ Auto-detect language from code</li>
             <li>✅ Extract classes, functions, imports, variables</li>
             <li>✅ Interactive graph visualization with zoom & pan</li>

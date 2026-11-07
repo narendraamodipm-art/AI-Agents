@@ -2,19 +2,25 @@
 
 import { useCallback, useState, useEffect } from 'react'
 import ReactFlow, {
+  ReactFlowProvider,
   Controls,
   Background,
   useNodesState,
   useEdgesState,
   useReactFlow,
+  useViewport,
 } from 'reactflow'
 import { Maximize, Zap } from 'lucide-react'
 import 'reactflow/dist/style.css'
 
+const MAX_ZOOM = 5
+const ZOOM_PRESETS = [0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4, 5]
+
 function GraphContent({ nodes, edges }) {
   const [graphNodes, setNodes, onNodesChange] = useNodesState(nodes || [])
   const [graphEdges, setEdges, onEdgesChange] = useEdgesState(edges || [])
-  const { fitView } = useReactFlow()
+  const { fitView, zoomTo } = useReactFlow()
+  const { zoom } = useViewport()
   const [layoutApplied, setLayoutApplied] = useState(false)
 
   // Auto-fit graph when it loads
@@ -136,6 +142,21 @@ function GraphContent({ nodes, edges }) {
           <Zap className="w-4 h-4" />
           Auto Layout
         </button>
+        <select
+          value=""
+          onChange={(e) => zoomTo(Number(e.target.value), { duration: 400 })}
+          className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-medium border border-slate-600 shadow-lg cursor-pointer"
+          title="Zoom level"
+        >
+          <option value="" disabled>
+            🔍 {Math.round(zoom * 100)}%
+          </option>
+          {ZOOM_PRESETS.map((level) => (
+            <option key={level} value={level}>
+              {level * 100}%
+            </option>
+          ))}
+        </select>
       </div>
 
       {/* React Flow */}
@@ -147,7 +168,7 @@ function GraphContent({ nodes, edges }) {
         onConnect={onConnect}
         fitView
         minZoom={0.1}
-        maxZoom={4}
+        maxZoom={MAX_ZOOM}
         defaultViewport={{ x: 0, y: 0, zoom: 1 }}
       >
         <Background color="#334155" gap={16} variant="dots" />
@@ -172,9 +193,9 @@ function GraphContent({ nodes, edges }) {
 export default function GraphVisualization({ nodes, edges }) {
   return (
     <div className="w-full h-full bg-gradient-to-br from-slate-900 to-slate-950 rounded-xl overflow-hidden border border-slate-700">
-      <ReactFlow nodes={nodes || []} edges={edges || []}>
+      <ReactFlowProvider>
         <GraphContent nodes={nodes} edges={edges} />
-      </ReactFlow>
+      </ReactFlowProvider>
     </div>
   )
 }
