@@ -3,12 +3,13 @@
 
   const REPO = 'https://github.com/narendraamodipm-art/AI-Agents';
 
-  // Live Streamlit Cloud demos: paste each app's URL here (leave '' to hide the button)
+  // Live demos (Streamlit Cloud, Vercel): paste each app's URL here (leave '' to hide the button)
   const DEMOS = {
     'resume-matcher': 'https://ai-resume-validator.streamlit.app/',
     'yt-notes': 'https://ai-smart-notes-maker.streamlit.app/',
     'hahabot': 'https://haha-funny-bot-h.streamlit.app/',
     'docchat': 'https://rag-for-study-and-reser.streamlit.app/',
+    'graphify': 'https://ai-agents-sage-ten.vercel.app/',
   };
   const tree = (p) => REPO + '/tree/main/' + encodeURI(p);
 
@@ -142,20 +143,20 @@
     {
       id: 'graphify', icon: '🕸️', type: 'web', label: 'Web app',
       title: 'GRAPHIFY: Code → Knowledge Graph',
-      short: 'Paste code in Python, JS/TS, Java, HTML or Rust and get an interactive knowledge graph of its classes, functions and imports, plus AI analysis.',
-      tags: ['Next.js 14', 'React', 'React Flow', 'Tailwind', 'Claude API'],
+      short: 'Paste code in any language and get an interactive knowledge graph built by an LLM, plus one-click refactoring and SALAHKAR, an AI chat that rewrites your code on request.',
+      tags: ['Next.js 14', 'React', 'React Flow', 'Tailwind', 'Mistral', 'Vercel'],
       steps: [
-        'Paste code or upload a file',
-        'Detect the language automatically (or pick it)',
-        'A language-specific parser extracts classes, functions, methods and imports',
-        'Generate graph nodes and edges',
-        'Render with React Flow: zoom, pan and drag',
-        'Show statistics and export the graph as JSON',
+        'Paste code or upload a file; the language is detected automatically',
+        'Mistral reads the code and returns a graph of its classes, functions, tables and how they connect',
+        'The graph is cleaned and laid out with React Flow: zoom up to 500%, pan and drag',
+        'Stats and issues (unused code, duplicates) fit the language, e.g. tables and joins for SQL',
+        'Refactor Code removes unused and duplicate code, fixes naming and adds comments',
+        'Ask SALAHKAR in plain English to change the code, then apply it to the editor',
       ],
       highlights: [
-        'Supports six languages, each with its own parser',
-        'Nodes are colour-coded by entity type',
-        'Has an API route for AI-powered code analysis',
+        'Works with any programming language, not a fixed list',
+        'A static scan backs up the LLM so unused functions and imports are not missed',
+        'Deployed on Vercel; the Mistral key stays on the server',
       ],
       link: tree('GRAPHIFY'),
     },

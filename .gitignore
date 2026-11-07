@@ -7,3 +7,5 @@ JOB Agent/data/
 JOB Agent/*.pdf
 JOB Agent/*.docx
 JOB Agent/applicant.json
+.vercel
+.env*
