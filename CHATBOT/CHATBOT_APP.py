@@ -232,6 +232,10 @@ MODES = {
 
 DEFAULT_MODE = "funny"
 
+# Chat replies use one font and size in every mode, so only the page around them is themed.
+CHAT_FONT = "'Inter', sans-serif"
+CHAT_FONT_SIZE = "1rem"
+
 # ══════════════════════════════════════════════════════════════
 #  CSS — shared base driven by CSS variables + per-mode extras
 # ══════════════════════════════════════════════════════════════
@@ -279,6 +283,29 @@ html, body, [class*="css"], .stMarkdown, p, li, textarea, input {
     backdrop-filter: blur(10px);
 }
 [data-testid="stChatMessage"] * { color: var(--text); }
+
+/* Same font + size for chat replies in every mode (only the page chrome is themed). */
+[data-testid="stChatMessage"],
+[data-testid="stChatMessage"] p,
+[data-testid="stChatMessage"] li,
+[data-testid="stChatMessage"] td,
+[data-testid="stChatMessage"] th,
+[data-testid="stChatMessage"] blockquote,
+[data-testid="stChatMessage"] h1, [data-testid="stChatMessage"] h2, [data-testid="stChatMessage"] h3,
+[data-testid="stChatMessage"] h4, [data-testid="stChatMessage"] h5, [data-testid="stChatMessage"] h6 {
+    font-family: var(--chat-font) !important;
+    font-size: var(--chat-size) !important;
+    line-height: 1.6 !important;
+    letter-spacing: normal !important;
+    text-transform: none !important;
+}
+[data-testid="stChatMessage"] h1, [data-testid="stChatMessage"] h2, [data-testid="stChatMessage"] h3,
+[data-testid="stChatMessage"] h4, [data-testid="stChatMessage"] h5, [data-testid="stChatMessage"] h6 {
+    font-weight: 700 !important; margin: 0.4rem 0 0.2rem !important; padding: 0 !important;
+}
+[data-testid="stChatMessage"] code, [data-testid="stChatMessage"] pre {
+    font-family: 'JetBrains Mono', monospace !important; font-size: 0.9rem !important;
+}
 
 /* ── Chat input ── */
 [data-testid="stBottom"] > div, [data-testid="stBottomBlockContainer"] { background: transparent !important; }
@@ -395,8 +422,7 @@ MODE_CSS = {
 @keyframes drift { 0%,100% { transform: translateY(0); opacity: 0.7; } 50% { transform: translateY(-6px); opacity: 1; } }
 .stats-bar { justify-content: flex-start; }
 .stat-chip { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; }
-[data-testid="stChatMessage"] { border-style: dashed !important; font-size: 1.12rem; }
-[data-testid="stChatMessage"] p, [data-testid="stChatMessage"] li { font-size: 1.12rem; line-height: 1.6; }
+[data-testid="stChatMessage"] { border-style: dashed !important; }
 .panel-title { font-family: var(--head-font); font-size: 1.3rem; color: var(--accent); margin: 0.2rem 0 0.6rem; }
 .panel-note { font-size: 0.95rem; color: var(--muted); margin-bottom: 0.8rem; }
 .stButton > button { text-align: left; justify-content: flex-start; font-family: var(--body-font); font-size: 1rem; }
@@ -414,9 +440,14 @@ def build_css(mode_key: str) -> str:
         f"--text:{t['text']}; --muted:{t['muted']}; --accent:{t['accent']};"
         f"--accent-strong:{t['accent_strong']}; --accent-soft:{t['accent_soft']};"
         f"--grad:{t['grad']}; --radius:{t['radius']};"
+        f"--chat-font:{CHAT_FONT}; --chat-size:{CHAT_FONT_SIZE};"
         "}"
     )
-    font_import = f"@import url('https://fonts.googleapis.com/css2?{t['fonts']}&display=swap');"
+    font_import = (
+        f"@import url('https://fonts.googleapis.com/css2?{t['fonts']}&display=swap');"
+        "@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700"
+        "&family=JetBrains+Mono:wght@400;600&display=swap');"
+    )
     return f"<style>{font_import}{root}{BASE_CSS}{MODE_CSS[mode_key]}</style>"
 
 
