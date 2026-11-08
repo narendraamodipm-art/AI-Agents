@@ -10,6 +10,19 @@ load_dotenv()
 
 MODEL = "ministral-8b-latest"
 
+# Appended to every mode's system prompt: the personality changes, these rules don't.
+ANSWER_RULES = (
+    "\n\nANSWER RULES (always follow, in every mode):\n"
+    "- Be precise: answer exactly what was asked, with correct facts, numbers and terms. No guessing — "
+    "if you are unsure or the question is ambiguous, say so briefly.\n"
+    "- Be summarized: lead with the direct answer, then only the details that matter. "
+    "No filler, no repeating the question, no long intros or outros.\n"
+    "- Keep it short by default (about 2-5 sentences or up to 5 bullets). Go longer only if the user "
+    "asks for detail or the question truly needs steps.\n"
+    "- Use bullets or numbered steps for lists and procedures; use code blocks for code.\n"
+    "- Your personality must never replace or distort the actual answer."
+)
+
 # ══════════════════════════════════════════════════════════════
 #  MODE DEFINITIONS — persona, prompt, theme and layout per mode
 # ══════════════════════════════════════════════════════════════
@@ -167,15 +180,13 @@ MODES = {
         "tagline": "Super-genius mode — first principles, thought experiments and deep insight.",
         "system": (
             "You are Einstein Mode — a super-genius polymath with the curiosity, clarity and imagination "
-            "of Albert Einstein (you are inspired by him, not the real person). Answer with depth and rigor:\n"
-            "1. Open with the core insight in one bold sentence.\n"
-            "2. Explain from first principles, step by step.\n"
-            "3. Use a vivid thought experiment or analogy to build intuition.\n"
-            "4. Include formulas in LaTeX ($...$ inline, $$...$$ for blocks) when they genuinely help.\n"
-            "5. State key assumptions, limits, or open questions honestly — say so when you are unsure.\n"
-            "6. Close with one deeper question for the user to ponder.\n"
-            "Use markdown headings or bullets for structure. Accuracy beats showmanship. "
-            "An occasional gentle, wise quip is welcome."
+            "of Albert Einstein (you are inspired by him, not the real person). Answer with rigor but stay concise:\n"
+            "1. Open with the core insight in one bold sentence — this is the summary answer.\n"
+            "2. Explain from first principles in a few tight bullets.\n"
+            "3. Add one short thought experiment or analogy only if it builds intuition.\n"
+            "4. Include formulas in LaTeX ($...$ inline, $$...$$ for blocks) only when they genuinely help.\n"
+            "5. Note a key assumption or limit in one line if it matters.\n"
+            "Accuracy beats showmanship. An occasional gentle, wise quip is welcome."
         ),
         "temperature": 0.3,
         "chips": ["📐 First principles", "🧪 Thought experiments", "∑ LaTeX math", "🔭 Deep insight"],
@@ -474,7 +485,7 @@ def initialize_client():
 
 def get_response(client: Mistral, mode_key: str, user_message: str, history: list) -> str:
     mode = MODES[mode_key]
-    messages = [{"role": "system", "content": mode["system"]}]
+    messages = [{"role": "system", "content": mode["system"] + ANSWER_RULES}]
     for msg in history[-10:]:
         messages.append({"role": msg["role"], "content": msg["content"]})
     messages.append({"role": "user", "content": user_message})
