@@ -9,7 +9,8 @@ import requests
 
 import config
 
-JOB_COLUMNS = ["url", "title", "company", "location", "work_mode", "fields", "min_years", "source", "posted_at"]
+JOB_COLUMNS = ["url", "title", "company", "location", "work_mode", "fields", "min_years", "experience", "source",
+               "posted_at"]
 
 
 def get_store():
@@ -59,7 +60,7 @@ class SupabaseStore:
         self._req("POST", "daily_posts", {"on_conflict": "day"}, row, "resolution=merge-duplicates,return=minimal")
 
     def email_subscribers(self):
-        return self._req("GET", "users", {"select": "name,email,fields,work_modes,token",
+        return self._req("GET", "users", {"select": "name,email,fields,work_modes,experience,token",
                                           "status": "eq.active", "email_alerts": "is.true"})
 
 
@@ -112,7 +113,8 @@ class LocalStore:
 
 def public_job(j):
     """What the website's 'Today' page shows for a job."""
-    return {k: j.get(k) for k in ("id", "title", "company", "location", "work_mode", "fields", "url", "posted_at")}
+    return {k: j.get(k) for k in ("id", "title", "company", "location", "work_mode", "fields", "experience", "url",
+                                  "posted_at")}
 
 
 def today_ist() -> str:

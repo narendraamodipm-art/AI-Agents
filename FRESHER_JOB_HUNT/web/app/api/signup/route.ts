@@ -1,14 +1,40 @@
 import { randomBytes } from "node:crypto";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { FIELD_KEYS } from "@/lib/fields";
+import { EXPERIENCE_KEYS, FIELD_KEYS } from "@/lib/fields";
 import { db } from "@/lib/supabase";
+
+/** Normalise to E.164. Plain 10-digit Indian mobiles (or 0- / 91-prefixed) get +91. Returns null if invalid. */
+function normalizePhone(raw: string): string | null {
+  let v = raw.replace(/[\s\-().]/g, "");
+  if (/^0[6-9]\d{9}$/.test(v)) v = v.slice(1);
+  if (/^91[6-9]\d{9}$/.test(v)) v = `+${v}`;
+  if (/^[6-9]\d{9}$/.test(v)) v = `+91${v}`;
+  return /^\+[1-9]\d{7,14}$/.test(v) ? v : null;
+}
+
+const Phone = z
+  .string()
+  .trim()
+  .max(24)
+  .optional()
+  .transform((v, ctx) => {
+    if (!v) return undefined;
+    const phone = normalizePhone(v);
+    if (!phone) {
+      ctx.addIssue({ code: "custom", message: "Please enter a valid phone number, e.g. +91 98765 43210" });
+      return z.NEVER;
+    }
+    return phone;
+  });
 
 const Signup = z.object({
   name: z.string().trim().min(2, "Please enter your name").max(80),
   email: z.string().trim().toLowerCase().email("Please enter a valid email").max(254),
+  phone: Phone,
   fields: z.array(z.enum(FIELD_KEYS)).min(1, "Pick at least one field"),
   workModes: z.array(z.enum(["remote", "onsite"])).min(1, "Pick remote, office or both"),
+  experience: z.array(z.enum(EXPERIENCE_KEYS)).min(1, "Pick at least one experience level"),
   emailAlerts: z.boolean(),
   consent: z.literal(true, { message: "Please agree to receive job alerts" }),
   website: z.string().max(0, "Invalid request").optional(), // honeypot: real people leave it empty
@@ -52,8 +78,10 @@ export async function POST(req: Request) {
   const { error } = await supabase.from("users").insert({
     name: data.name,
     email: data.email,
+    phone: data.phone ?? null,
     fields: data.fields,
     work_modes: data.workModes,
+    experience: data.experience,
     email_alerts: data.emailAlerts,
     consent_at: new Date().toISOString(),
     token: randomBytes(24).toString("hex"),
@@ -66,5 +94,5 @@ export async function POST(req: Request) {
     console.error("signup insert failed", error);
     return NextResponse.json({ error: "Something went wrong. Please try again." }, { status: 500 });
   }
-  return NextResponse.json({ ok: true, message: "You're in! Jobs for your fields start tomorrow at 10 AM. 🎉" });
+  return NextResponse.json({ ok: true, message: "You're in! Jobs for your fields and level start tomorrow at 10 AM. 🎉" });
 }

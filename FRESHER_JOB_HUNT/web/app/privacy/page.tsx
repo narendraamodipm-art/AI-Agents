@@ -10,8 +10,9 @@ export default function Privacy() {
 
       <h2>What we collect</h2>
       <p>
-        When you sign up we store your <strong>name</strong>, <strong>email address</strong>, the{" "}
-        <strong>job fields</strong> and <strong>work type</strong> you picked, whether you want email alerts, and the time
+        When you sign up we store your <strong>name</strong>, <strong>email address</strong>, your{" "}
+        <strong>phone number</strong> if you choose to give it, the{" "}
+        <strong>job fields</strong>, <strong>experience level</strong> and <strong>work type</strong> you picked, whether you want email alerts, and the time
         you gave consent.
       </p>
 

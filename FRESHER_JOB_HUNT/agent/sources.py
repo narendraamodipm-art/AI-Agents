@@ -17,7 +17,7 @@ import requests
 import config
 
 SESSION = requests.Session()
-SESSION.headers.update({"User-Agent": "FresherJobHunt/1.0 (+job alerts for freshers)", "Accept": "application/json"})
+SESSION.headers.update({"User-Agent": "FresherJobHunt/1.0 (+daily tech job alerts)", "Accept": "application/json"})
 
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
@@ -52,10 +52,10 @@ def company_name(slug: str) -> str:
 
 
 def title_prefilter(title: str) -> bool:
-    """Tech role in one of our fields, not senior, not a non-tech job."""
+    """Tech role in one of our fields, not an executive role, not a non-tech job (any experience level)."""
     title = clean_title(title)
     return (any(p.search(title) for p in config.FIELD_PATTERNS.values())
-            and not config.SENIOR_TITLE.search(title) and not config.NON_TECH.search(title))
+            and not config.EXEC_TITLE.search(title) and not config.NON_TECH.search(title))
 
 
 def work_mode_of(location: str, remote_flag: bool = False, workplace: str = "") -> str:
@@ -198,7 +198,7 @@ def workday(entry, max_age):
             if (title_prefilter(p.get("title", "")) and workday_age(p.get("postedOn", "")) <= max_age
                     and (config.INDIA.search(loc) or "locations" in loc.lower())):
                 paths[p["externalPath"]] = True
-    jobs = [_safe_one(workday_detail, company, base, path, f"https://{host}/{site}") for path in list(paths)[:15]]
+    jobs = [_safe_one(workday_detail, company, base, path, f"https://{host}/{site}") for path in list(paths)[:config.WORKDAY_MAX_DETAILS]]
     return [j for j in jobs if j]
 
 
@@ -302,11 +302,11 @@ def jsearch_jobs(max_age):
     if not key:
         return []
     out = {}
-    for q in config.JSEARCH_QUERIES:
+    for q, requirements in config.JSEARCH_QUERIES:
         try:
             data = get_json("https://jsearch.p.rapidapi.com/search", params={
                 "query": q, "country": "in", "date_posted": "3days" if max_age <= 3 else "week", "num_pages": 1,
-                "job_requirements": "under_3_years_experience,no_experience"},
+                "job_requirements": requirements},
                 headers={"X-RapidAPI-Key": key, "X-RapidAPI-Host": "jsearch.p.rapidapi.com"})
         except Exception:
             continue

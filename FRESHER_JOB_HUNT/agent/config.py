@@ -8,14 +8,24 @@ ROOT = HERE.parent
 LOCAL_STATE = HERE / "state"                 # used only when Supabase isn't configured (local testing)
 
 # ── Daily post ───────────────────────────────────────────────────────────────
-JOBS_PER_POST = 12                           # 10–12 jobs in the daily Telegram / WhatsApp post
+JOBS_PER_POST = 12                           # 10–12 jobs per experience section in the daily post
 MIN_JOBS_PER_POST = 10
 MAX_PER_COMPANY = 2                          # variety: at most 2 jobs from one company per post
 MAX_AGE_DAYS = 3                             # only jobs posted in the last N days count as new
 FIRST_RUN_AGE_DAYS = 7                       # look further back the very first time
 SEND_TIME_IST = "10:00"                      # the scheduled run waits until this time before sending
-MODEL = "ministral-8b-latest"                # Mistral model for unclear "is this a fresher job?" cases
-MAX_LLM_CHECKS = 40                          # LLM checks per run (keeps it inside the free tier)
+MODEL = "ministral-8b-latest"                # Mistral model for jobs whose experience level the rules can't tell
+MAX_LLM_CHECKS = 60                          # LLM checks per run (one batched call; keeps it inside the free tier)
+
+# ── Experience sections ──────────────────────────────────────────────────────
+# key: (label, emoji, heading, min years, max years). A job goes in the section that contains the
+# MINIMUM years it asks for, e.g. "2+ years" → 2–4, "5-8 years" → 4–6. 10–12 jobs are posted per section.
+EXPERIENCE = {
+    "0-2": ("0–2 yrs", "🎓", "Freshers & interns", 0, 1),
+    "2-4": ("2–4 yrs", "🚀", "Early career", 2, 3),
+    "4-6": ("4–6 yrs", "⭐", "Mid-level", 4, 5),
+    "6+":  ("6+ yrs", "🏆", "Senior & lead", 6, 99),
+}
 SITE_URL_DEFAULT = "https://fresher-job-hunt.vercel.app"
 
 # ── Fields (what users pick at signup) ──────────────────────────────────────
@@ -35,9 +45,13 @@ FRESHER_TITLE = re.compile(
     r"\b(intern|internship|trainee|graduate|grad|fresher|freshers|junior|jr\.?|entry[- ]level|new grad|campus|"
     r"early career|early careers|early talent|apprentice|associate software|associate data|associate engineer|"
     r"associate developer|associate analyst|engineer i|analyst i|sde ?1|sde-1|sde i|engineer 1)\b", re.I)
-SENIOR_TITLE = re.compile(
-    r"\b(senior|sr\.?|staff|principal|lead|manager|mgr|director|head|architect|vp|vice president|ii|iii|iv|"
-    r"expert|technical leader|distinguished|fellow|phd)\b", re.I)
+# Title hints for the other sections (used only when the description doesn't state the years).
+# Checked in this order: 6+, 4–6, 2–4, then FRESHER_TITLE for 0–2.
+TITLE_6_PLUS = re.compile(r"\b(staff|principal|lead|manager|mgr|architect|technical leader|expert|iv)\b", re.I)
+TITLE_4_6 = re.compile(r"\b(senior|sr|iii|engineer 3|sde ?3|sde-3|sde iii)\b", re.I)
+TITLE_2_4 = re.compile(r"\b(ii|engineer 2|sde ?2|sde-2|mid[- ]level|intermediate)\b", re.I)
+# Executive roles are skipped in every section.
+EXEC_TITLE = re.compile(r"\b(director|vp|vice president|head|chief|cto|cio|president|distinguished|fellow)\b", re.I)
 NON_TECH = re.compile(
     r"sales|account executive|account manager|recruit|talent acquisition|\bhr\b|human resources|payroll|finance|"
     r"\btax\b|legal|marketing|content|compliance|audit|fraud|customer success|customer experience|customer support|"
@@ -91,7 +105,11 @@ WORKDAY = [
     ("Workday", "workday.wd5.myworkdayjobs.com", "workday", "Workday"),
 ]
 WORKDAY_TERMS = ["intern", "graduate", "trainee", "fresher", "early career", "associate software engineer",
-                 "junior developer", "data analyst"]
+                 "junior developer", "data analyst",
+                 # experienced sections
+                 "software engineer", "data engineer", "machine learning engineer", "senior software engineer",
+                 "lead engineer"]
+WORKDAY_MAX_DETAILS = 30                     # job pages fetched per Workday company per run
 
 # Tavily web search, limited to job-board sites (≈ 6 searches a day = well inside the free tier)
 TAVILY_QUERIES = [
@@ -101,11 +119,21 @@ TAVILY_QUERIES = [
     "data analyst fresher OR intern OR entry level India",
     "full stack developer fresher OR intern India",
     "software engineer graduate OR fresher OR SDE 1 India",
+    # experienced sections
+    "software engineer 2-4 years experience India",
+    "senior data engineer OR senior ML engineer India",
+    "lead OR staff software engineer India",
 ]
 TAVILY_DOMAINS = ["boards.greenhouse.io", "job-boards.greenhouse.io", "jobs.lever.co", "jobs.ashbyhq.com",
                   "myworkdayjobs.com", "smartrecruiters.com", "wellfound.com", "instahyre.com", "cutshort.io"]
 
 # Optional aggregators: used only if their keys are in .env
-ADZUNA_QUERIES = ["fresher", "intern", "graduate trainee", "junior developer", "entry level data"]
-JSEARCH_QUERIES = ["fresher software engineer in India", "data analyst fresher in India",
-                   "machine learning intern in India", "data engineer fresher in India"]
+ADZUNA_QUERIES = ["fresher", "intern", "graduate trainee", "junior developer", "entry level data",
+                  "software engineer", "senior engineer", "lead engineer"]
+# (query, JSearch experience filter)
+JSEARCH_QUERIES = [("fresher software engineer in India", "under_3_years_experience,no_experience"),
+                   ("data analyst fresher in India", "under_3_years_experience,no_experience"),
+                   ("machine learning intern in India", "under_3_years_experience,no_experience"),
+                   ("data engineer fresher in India", "under_3_years_experience,no_experience"),
+                   ("software engineer in India", "more_than_3_years_experience"),
+                   ("data engineer in India", "more_than_3_years_experience")]

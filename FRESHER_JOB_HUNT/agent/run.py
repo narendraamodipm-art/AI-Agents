@@ -7,6 +7,7 @@
 """
 
 import argparse
+import json
 import os
 import sys
 import time
@@ -20,7 +21,7 @@ import filters  # noqa: E402
 import notify  # noqa: E402
 import post  # noqa: E402
 import sources  # noqa: E402
-from store import get_store, today_ist  # noqa: E402
+from store import get_store, public_job, today_ist  # noqa: E402
 
 try:
     from dotenv import load_dotenv
@@ -68,31 +69,40 @@ def main():
     known = store.known_urls()
     candidates = [j for j in sources.collect(max_age, log) if j["url"] not in known]
     log(f"{len(candidates)} new candidates (not seen before)")
-    fresh = filters.fresher_jobs(candidates, log)
-    log(f"{len(fresh)} fresher jobs")
+    found = filters.classify_jobs(candidates, log)
+    log(f"{len(found)} jobs placed in experience sections")
 
     if args.dry_run:
-        chosen = post.pick(fresh)
-        print("\n" + "=" * 70 + "\nWHATSAPP / TELEGRAM POST (dry run)\n" + "=" * 70)
-        print(post.whatsapp_text(chosen, day, site))
-        print(f"\nAll {len(fresh)} fresher jobs found:")
-        for j in sorted(fresh, key=lambda j: j["posted_at"], reverse=True):
-            print(f" - [{','.join(j['fields'])}] {j['title']} | {j['company']} | {j['location']} | "
-                  f"{j['work_mode']} | {j['posted_at']} | min_yrs={j.get('min_years')} | {j['source']}")
+        sections = post.pick_sections(found)
+        print("\n" + "=" * 70 + "\nWHATSAPP POST (dry run; Telegram gets one message per section)\n" + "=" * 70)
+        print(post.whatsapp_text(sections, day, site))
+        # Preview for the local website (web dev server reads it when Supabase isn't configured)
+        config.LOCAL_STATE.mkdir(exist_ok=True)
+        preview = [dict(public_job(j), id=i) for i, j in enumerate(j for jobs in sections.values() for j in jobs)]
+        (config.LOCAL_STATE / "preview_post.json").write_text(
+            json.dumps({"day": day, "jobs": preview}, ensure_ascii=False, indent=1), "utf-8")
+        print(f"\nAll {len(found)} jobs found:")
+        order = list(config.EXPERIENCE)
+        newest_first = sorted(found, key=lambda j: j["posted_at"] or "", reverse=True)
+        for j in sorted(newest_first, key=lambda j: order.index(j["experience"])):
+            print(f" - {config.EXPERIENCE[j['experience']][0]:8} [{','.join(j['fields'])}] {j['title']} | {j['company']} | "
+                  f"{j['location']} | {j['work_mode']} | {j['posted_at']} | min_yrs={j.get('min_years')} | {j['source']}")
         return
 
-    # 2. Save, then pick today's post from everything not yet posted
-    store.save_jobs(fresh)
+    # 2. Save, then pick today's post (per section) from everything not yet posted
+    store.save_jobs(found)
     pool = store.unposted_pool(days=config.MAX_AGE_DAYS + 4)
-    chosen = post.pick(pool)
-    log(f"Pool of unposted jobs: {len(pool)} → today's post: {len(chosen)}")
+    sections = post.pick_sections(pool)
+    chosen = [j for jobs in sections.values() for j in jobs]
+    log(f"Pool of unposted jobs: {len(pool)} → today's post: "
+        + ", ".join(f"{config.EXPERIENCE[k][0]}: {len(v)}" for k, v in sections.items()))
     if not chosen:
-        admin(f"Fresher Job Hunt {day}: no new fresher jobs today, nothing posted.")
+        admin(f"Fresher Job Hunt {day}: no new jobs today, nothing posted.")
         return
 
-    tg_text = post.telegram_text(chosen, day, site)
-    wa_text = post.whatsapp_text(chosen, day, site)
-    store.save_daily_post(day, chosen, tg_text, wa_text)
+    tg_posts = post.telegram_posts(sections, day, site)
+    wa_text = post.whatsapp_text(sections, day, site)
+    store.save_daily_post(day, chosen, "\n\n".join(tg_posts), wa_text)
 
     if args.wait:
         wait_until_send_time()
@@ -101,11 +111,12 @@ def main():
     errors = []
     channel = os.environ.get("TELEGRAM_CHANNEL_ID")
     if channel:
-        try:
-            notify.telegram(channel, tg_text, html=True)
-            log(f"Posted {len(chosen)} jobs to Telegram channel {channel}")
-        except Exception as e:
-            errors.append(str(e))
+        for tg_text in tg_posts:
+            try:
+                notify.telegram(channel, tg_text, html=True)
+            except Exception as e:
+                errors.append(str(e))
+        log(f"Posted {len(chosen)} jobs in {len(tg_posts)} sections to Telegram channel {channel}")
     store.mark_posted([j["id"] for j in chosen], day)
 
     try:
@@ -117,11 +128,12 @@ def main():
     sent = 0
     if os.environ.get("RESEND_API_KEY") and os.environ.get("EMAIL_FROM"):
         for user in store.email_subscribers():
-            jobs = post.pick(pool, n=config.JOBS_PER_POST, fields=user["fields"], work_modes=user.get("work_modes"))
+            jobs = post.pick(pool, n=config.JOBS_PER_POST, fields=user["fields"], work_modes=user.get("work_modes"),
+                             experience=user.get("experience") or ["0-2"])
             if not jobs:
                 continue
             try:
-                notify.email(user["email"], f"🎯 {len(jobs)} new fresher jobs for you · {post.nice_day(day)}",
+                notify.email(user["email"], f"🎯 {len(jobs)} new jobs for you · {post.nice_day(day)}",
                              post.email_html(user, jobs, day, site), f"{site}/unsubscribe/{user['token']}")
                 sent += 1
             except Exception as e:

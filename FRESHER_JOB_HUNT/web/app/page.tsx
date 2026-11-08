@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { FIELDS } from "@/lib/fields";
+import { EXPERIENCE, FIELDS } from "@/lib/fields";
 import { latestPost, niceDay } from "@/lib/jobs";
-import JobList from "./components/JobList";
+import ExperienceSections from "./components/ExperienceSections";
 import JoinButtons from "./components/JoinButtons";
 import SignupForm from "./components/SignupForm";
 
@@ -18,12 +18,19 @@ export default async function Home() {
             <span className="dot" /> New jobs every day at 10:00 AM IST
           </p>
           <h1>
-            Fresher jobs &amp; internships, <span className="grad">delivered daily.</span>
+            Tech jobs for every stage, <span className="grad">delivered daily.</span>
           </h1>
           <p className="lead">
-            10–12 hand-filtered openings for <strong>0–2 years</strong> experience, remote and office roles in India.
-            Every link goes straight to the company&apos;s apply page. Free, no spam.
+            10–12 filtered openings per experience level, from <strong>freshers to 6+ years</strong>, remote and
+            office roles in India. Every link goes straight to the company&apos;s apply page. Free, no spam.
           </p>
+          <div className="fields">
+            {EXPERIENCE.map((e) => (
+              <span key={e.key} className="tag exp">
+                {e.emoji} {e.label}
+              </span>
+            ))}
+          </div>
           <div className="fields">
             {FIELDS.map((f) => (
               <span key={f.key} className="tag">
@@ -34,13 +41,13 @@ export default async function Home() {
           <JoinButtons />
           <ul className="how">
             <li>
-              <b>1.</b> Sign up and pick your fields
+              <b>1.</b> Sign up and pick your fields and experience level
             </li>
             <li>
               <b>2.</b> Our agent scans company career pages every morning
             </li>
             <li>
-              <b>3.</b> You get 10–12 fresh jobs on Telegram, WhatsApp and email
+              <b>3.</b> You get 10–12 fresh jobs per level on Telegram, WhatsApp and email
             </li>
           </ul>
         </div>
@@ -52,14 +59,14 @@ export default async function Home() {
       <section className="section">
         <div className="section-head">
           <h2>{post ? `Today's jobs · ${niceDay(post.day)}` : "Today's jobs"}</h2>
-          {post && post.jobs.length > 6 && (
+          {post && post.jobs.length > 0 && (
             <Link href="/today" className="link">
               See all {post.jobs.length} →
             </Link>
           )}
         </div>
         {post?.jobs.length ? (
-          <JobList jobs={post.jobs} limit={6} />
+          <ExperienceSections jobs={post.jobs} limitPerSection={3} />
         ) : (
           <p className="muted card">The first daily list appears here after the agent&apos;s next 10 AM run.</p>
         )}

@@ -1,17 +1,16 @@
-const TELEGRAM = process.env.NEXT_PUBLIC_TELEGRAM_URL;
-const WHATSAPP = process.env.NEXT_PUBLIC_WHATSAPP_GROUP_URL;
+import { TELEGRAM_URL, WHATSAPP_URL } from "@/lib/links";
 
 export default function JoinButtons() {
-  if (!TELEGRAM && !WHATSAPP) return null;
+  if (!TELEGRAM_URL && !WHATSAPP_URL) return null;
   return (
     <div className="join">
-      {TELEGRAM && (
-        <a className="btn telegram" href={TELEGRAM} target="_blank" rel="noopener noreferrer">
+      {TELEGRAM_URL && (
+        <a className="btn telegram" href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer">
           ✈️ Join on Telegram
         </a>
       )}
-      {WHATSAPP && (
-        <a className="btn whatsapp" href={WHATSAPP} target="_blank" rel="noopener noreferrer">
+      {WHATSAPP_URL && (
+        <a className="btn whatsapp" href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
           💬 Join WhatsApp group
         </a>
       )}

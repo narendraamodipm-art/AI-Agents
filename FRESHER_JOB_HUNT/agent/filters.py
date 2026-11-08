@@ -1,6 +1,6 @@
-"""Decide which jobs are really for freshers (0–2 years) and tag their fields.
+"""Put each job in an experience section (0–2, 2–4, 4–6, 6+ years) and tag its fields.
 
-Cheap rules first; Mistral is asked only about jobs the rules can't decide.
+Cheap rules first; Mistral is asked only about jobs the rules can't place.
 """
 
 import json
@@ -29,26 +29,59 @@ def min_years(description: str):
     return min(found) if found else None
 
 
+def band_for_years(years: int) -> str:
+    for key, (_, _, _, lo, hi) in config.EXPERIENCE.items():
+        if lo <= years <= hi:
+            return key
+    return "6+"
+
+
+def band_from_title(title: str):
+    """Experience section implied by the title alone, or None."""
+    if config.TITLE_6_PLUS.search(title):
+        return "6+"
+    if config.TITLE_4_6.search(title):
+        return "4-6"
+    if config.TITLE_2_4.search(title):
+        return "2-4"
+    if config.FRESHER_TITLE.search(title):
+        return "0-2"
+    return None
+
+
 def rule_check(job) -> str:
-    """'yes', 'no' or 'unsure'. Also sets job['fields'] and job['min_years']."""
+    """'yes', 'no' or 'unsure'. Sets job['fields'], job['min_years'] and job['experience']."""
     job["fields"] = tag_fields(job["title"])
     if not job["fields"]:
         return "no"
     desc = job.get("description") or ""
     years = min_years(desc)
+    if years is None and config.FRESHER_TEXT.search(desc):
+        years = 0
     job["min_years"] = years
-    fresher_text = bool(config.FRESHER_TEXT.search(desc))
-    if years is not None and years >= 3 and not fresher_text:
-        return "no"
-    if config.FRESHER_TITLE.search(job["title"]) or fresher_text or (years is not None and years <= 2):
-        if job["min_years"] is None:
-            job["min_years"] = 0
+    title_band = band_from_title(job["title"])
+    if years is not None:
+        job["experience"] = at_least_title(band_for_years(years), title_band)
+        return "yes"
+    if title_band:
+        job["experience"] = title_band
         return "yes"
     return "unsure"
 
 
+ORDER = list(config.EXPERIENCE)
+
+
+def at_least_title(band, title_band):
+    """Descriptions often mention a small number ('2+ years of Python') on senior roles, so a Senior / Lead /
+    Principal / Manager title sets the lowest section the job can go in. Fresher titles never pull a job down."""
+    if title_band and title_band != "0-2" and ORDER.index(title_band) > ORDER.index(band):
+        return title_band
+    return band
+
+
 def llm_check(jobs, log=print):
-    """Ask Mistral about unclear jobs in one batch. Returns the jobs it says are for freshers."""
+    """Ask Mistral for the minimum years of unclear jobs in one batch. Returns the jobs it could place."""
     key = os.environ.get("MISTRAL_API_KEY")
     if not key or not jobs:
         return []
@@ -56,9 +89,9 @@ def llm_check(jobs, log=print):
     items = [{"i": i, "title": j["title"], "company": j["company"],
               "description": re.sub(r"\s+", " ", j.get("description") or "")[:1200]} for i, j in enumerate(jobs)]
     prompt = (
-        "For each job below, decide if a fresher (0–2 years of experience, including interns and recent "
-        "graduates) is a realistic candidate. Use only the title and description. Answer JSON: "
-        '{"results": [{"i": <index>, "fresher": true|false, "min_years": <int or null>}]}\n\n'
+        "For each job below, estimate the MINIMUM years of professional experience a realistic candidate needs "
+        "(0 for interns, trainees and new graduates). Use only the title and description. If you really can't "
+        'tell, use null. Answer JSON: {"results": [{"i": <index>, "min_years": <int or null>}]}\n\n'
         + json.dumps(items, ensure_ascii=False))
     try:
         r = requests.post("https://api.mistral.ai/v1/chat/completions", timeout=120,
@@ -75,18 +108,23 @@ def llm_check(jobs, log=print):
     for res in results:
         if not isinstance(res, dict):
             continue
-        i = res.get("i")
-        if isinstance(i, int) and 0 <= i < len(jobs) and res.get("fresher") is True:
-            jobs[i]["min_years"] = res.get("min_years") if isinstance(res.get("min_years"), int) else 0
+        i, years = res.get("i"), res.get("min_years")
+        if isinstance(i, int) and 0 <= i < len(jobs) and isinstance(years, int) and 0 <= years <= 30:
+            jobs[i]["min_years"] = years
+            jobs[i]["experience"] = at_least_title(band_for_years(years), band_from_title(jobs[i]["title"]))
             keep.append(jobs[i])
     return keep
 
 
-def fresher_jobs(candidates, log=print):
-    yes, unsure = [], []
+def classify_jobs(candidates, log=print):
+    """All candidates that fit one of our fields, each with job['experience'] set."""
+    placed, unsure = [], []
     for j in candidates:
         verdict = rule_check(j)
-        (yes if verdict == "yes" else unsure if verdict == "unsure" else []).append(j)
+        (placed if verdict == "yes" else unsure if verdict == "unsure" else []).append(j)
     from_llm = llm_check(unsure, log)
-    log(f"Fresher filter: {len(yes)} by rules, {len(from_llm)}/{min(len(unsure), config.MAX_LLM_CHECKS)} unclear ones confirmed by Mistral")
-    return yes + from_llm
+    jobs = placed + from_llm
+    counts = {k: sum(1 for j in jobs if j["experience"] == k) for k in config.EXPERIENCE}
+    log(f"Experience filter: {len(placed)} by rules, {len(from_llm)}/{min(len(unsure), config.MAX_LLM_CHECKS)} "
+        f"unclear ones placed by Mistral · " + ", ".join(f"{config.EXPERIENCE[k][0]}: {n}" for k, n in counts.items()))
+    return jobs

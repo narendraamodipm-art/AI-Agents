@@ -2,13 +2,15 @@
 
 import Script from "next/script";
 import { useState } from "react";
-import { FIELDS } from "@/lib/fields";
+import { EXPERIENCE, FIELDS } from "@/lib/fields";
+import { TELEGRAM_URL } from "@/lib/links";
 
 const SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
 export default function SignupForm() {
   const [fields, setFields] = useState<string[]>([]);
   const [modes, setModes] = useState<string[]>(["remote", "onsite"]);
+  const [experience, setExperience] = useState<string[]>(["0-2"]);
   const [status, setStatus] = useState<{ kind: "idle" | "busy" | "ok" | "err"; msg?: string }>({ kind: "idle" });
 
   const toggle = (list: string[], set: (v: string[]) => void, key: string) =>
@@ -25,8 +27,10 @@ export default function SignupForm() {
         body: JSON.stringify({
           name: form.get("name"),
           email: form.get("email"),
+          phone: form.get("phone") || undefined,
           fields,
           workModes: modes,
+          experience,
           emailAlerts: form.get("emailAlerts") === "on",
           consent: form.get("consent") === "on",
           website: form.get("website") || undefined,
@@ -45,7 +49,16 @@ export default function SignupForm() {
     return (
       <div className="card success" role="status">
         <h3>{status.msg}</h3>
-        <p>Also join the daily post on Telegram or WhatsApp so you never miss a day.</p>
+        {TELEGRAM_URL ? (
+          <>
+            <p>Join our Telegram channel: every morning at 10 AM we post new job links there for each experience level.</p>
+            <a className="btn telegram block" href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer">
+              ✈️ Join Telegram for daily job links
+            </a>
+          </>
+        ) : (
+          <p>Also join the daily post on Telegram or WhatsApp so you never miss a day.</p>
+        )}
       </div>
     );
   }
@@ -63,6 +76,31 @@ export default function SignupForm() {
         Email
         <input name="email" type="email" required autoComplete="email" placeholder="you@example.com" />
       </label>
+      <label className="lbl">
+        <span>
+          Phone number <span className="optional">(optional)</span>
+        </span>
+        <input
+          name="phone"
+          type="tel"
+          inputMode="tel"
+          autoComplete="tel"
+          maxLength={20}
+          placeholder="+91 98765 43210"
+        />
+      </label>
+
+      {TELEGRAM_URL && (
+        <a className="tg-callout" href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer">
+          <span className="tg-icon" aria-hidden="true">✈️</span>
+          <span>
+            <strong>Get job links on Telegram</strong>
+            <br />
+            Join our channel: 10–12 job links per experience level, every day at 10 AM.
+          </span>
+          <span className="tg-go" aria-hidden="true">Join →</span>
+        </a>
+      )}
 
       <fieldset>
         <legend>Fields you want</legend>
@@ -76,6 +114,23 @@ export default function SignupForm() {
               onClick={() => toggle(fields, setFields, f.key)}
             >
               {f.emoji} {f.label}
+            </button>
+          ))}
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Your experience</legend>
+        <div className="chips">
+          {EXPERIENCE.map((x) => (
+            <button
+              type="button"
+              key={x.key}
+              className={`chip ${experience.includes(x.key) ? "on" : ""}`}
+              aria-pressed={experience.includes(x.key)}
+              onClick={() => toggle(experience, setExperience, x.key)}
+            >
+              {x.emoji} {x.label}
             </button>
           ))}
         </div>
@@ -106,7 +161,7 @@ export default function SignupForm() {
 
       <label className="check">
         <input type="checkbox" name="emailAlerts" defaultChecked />
-        <span>Email me my matching jobs daily (10–12 jobs)</span>
+        <span>Email me jobs matching my fields and experience daily (10–12 jobs)</span>
       </label>
       <label className="check">
         <input type="checkbox" name="consent" required />
