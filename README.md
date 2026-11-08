@@ -19,14 +19,14 @@ All of these run on free hosting. A GitHub Actions workflow keeps the Streamlit 
 | **DocChat AI (RAG)** | Answers questions about any PDF or web page, grounded in the top-4 chunks retrieved from Pinecone. | Python, LangChain, Mistral, Pinecone, Streamlit | [Open app](https://rag-for-study-and-reser.streamlit.app/) | [`RAG`](RAG) |
 | **Travel Planner AI Agent** | A ReAct agent that chooses between web search, weather forecasts and a budget calculator to build day-by-day trip plans. | Python, Mistral, Tavily, OpenWeather, Streamlit | [Open app](https://ai-agents-plan-my-trip.streamlit.app/) | [`travel_planner`](travel_planner) |
 | **GRAPHIFY** | Turns source code (Python, JS/TS, Java, HTML, Rust) into an interactive knowledge graph, with AI explanations. | Next.js, React Flow, Tailwind, Claude / Mistral | [Open app](https://ai-agents-sage-ten.vercel.app/) | [`GRAPHIFY`](GRAPHIFY) |
-| **HahaBot** | A friendly chatbot built on Mistral. | Python, Mistral, Streamlit | [Open app](https://haha-funny-bot-h.streamlit.app/) | [`CHATBOT`](CHATBOT) |
+| **HahaBot** | A Mistral chatbot with four modes (Funny, Roast, Angry, Einstein). Each mode has its own system prompt and its own UI theme and layout. | Python, Mistral, Streamlit | [Open app](https://haha-funny-bot-h.streamlit.app/) | [`CHATBOT`](CHATBOT) |
 
 ## Repository layout
 
 ```
 AI-Agents/
 ├── AI WORKFLOW/          Resume Matcher and YouTube Notes (fixed-step LLM workflows); see readme.txt
-├── CHATBOT/              HahaBot chatbot
+├── CHATBOT/              HahaBot 4-mode chatbot (Funny / Roast / Angry / Einstein)
 ├── RAG/                  DocChat AI RAG app
 ├── travel_planner/       Travel Planner ReAct agent
 ├── GRAPHIFY/             Code → knowledge graph web app (Next.js); see its README
