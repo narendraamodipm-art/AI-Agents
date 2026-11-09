@@ -2,299 +2,182 @@
  "day": "2026-11-09",
  "jobs": [
   {
-   "id": 115,
-   "title": "AI Backend engineering Intern",
-   "company": "PGAGI",
-   "location": "Bengaluru (Bangalore) (Remote friendly)",
+   "id": 119,
+   "title": "AI/ML Engineer Intern",
+   "company": "Lupira",
+   "location": "Noida, Remote (Work from Home)",
+   "work_mode": "remote",
+   "fields": [
+    "ai_engineer",
+    "ml_engineer"
+   ],
+   "experience": "0-2",
+   "url": "https://wellfound.com/jobs/4284712-ai-ml-engineer-intern",
+   "posted_at": "2026-11-09"
+  },
+  {
+   "id": 150,
+   "title": "Machine Learning Intern",
+   "company": "Enterpret",
+   "location": "Bangalore, Karnataka",
+   "work_mode": "onsite",
+   "fields": [
+    "ml_engineer"
+   ],
+   "experience": "0-2",
+   "url": "https://www.adzuna.in/details/5953165011?utm_medium=api&utm_source=857c57db",
+   "posted_at": "2026-11-04"
+  },
+  {
+   "id": 106,
+   "title": "Analytics Engineer I , Commercialization",
+   "company": "Bristol Myers Squibb",
+   "location": "Hyderabad - TS - IN",
+   "work_mode": "onsite",
+   "fields": [
+    "data_engineer",
+    "data_analyst"
+   ],
+   "experience": "0-2",
+   "url": "https://bristolmyerssquibb.wd5.myworkdayjobs.com/BMS/job/Hyderabad---TS---IN/Analytics-Engineer-I---Commercialization_R1607391",
+   "posted_at": "2026-11-04"
+  },
+  {
+   "id": 77,
+   "title": "Business Analyst Inventory Reconciliation",
+   "company": "HP",
+   "location": "Bengaluru, Karnataka, India",
+   "work_mode": "onsite",
+   "fields": [
+    "data_analyst"
+   ],
+   "experience": "0-2",
+   "url": "https://hp.wd5.myworkdayjobs.com/ExternalCareerSite/job/Bengaluru-Karnataka-India/Business-Analyst-Inventory-Reconciliation-_3168963-1",
+   "posted_at": "2026-11-06"
+  },
+  {
+   "id": 161,
+   "title": "Backend Development Internship Remote",
+   "company": "Springer Capital",
+   "location": "India",
+   "work_mode": "remote",
+   "fields": [
+    "full_stack"
+   ],
+   "experience": "0-2",
+   "url": "https://www.adzuna.in/details/5952939469?utm_medium=api&utm_source=857c57db",
+   "posted_at": "2026-11-04"
+  },
+  {
+   "id": 153,
+   "title": ".Net Developer Apprentice",
+   "company": "Crowe",
+   "location": "Hyderabad, Telangana",
+   "work_mode": "onsite",
+   "fields": [
+    "software_engineer"
+   ],
+   "experience": "0-2",
+   "url": "https://www.adzuna.in/details/5958336018?utm_medium=api&utm_source=857c57db",
+   "posted_at": "2026-11-08"
+  },
+  {
+   "id": 120,
+   "title": "Product Engineer Intern (Full Stack and AI Native)",
+   "company": "Sequoia Technologies",
+   "location": "Bengaluru, Delhi, Pune, Remote (Work from Home)",
    "work_mode": "remote",
    "fields": [
     "ai_engineer",
     "full_stack"
    ],
    "experience": "0-2",
-   "url": "https://cutshort.io/job/AI-Backend-engineering-Intern-Bengaluru-Bangalore-PGAGI-38hWlzmY",
+   "url": "https://wellfound.com/jobs/4622513-product-engineer-intern-full-stack-and-ai-native",
    "posted_at": "2026-11-09"
   },
   {
-   "id": 54,
-   "title": "Data Science Analyst",
-   "company": "Citi",
-   "location": "Gurugram Haryana India",
-   "work_mode": "hybrid",
-   "fields": [
-    "ml_engineer"
-   ],
-   "experience": "0-2",
-   "url": "https://citi.wd5.myworkdayjobs.com/2/job/Gurugram-Haryana-India/Data-Science-Analyst_261001995-4",
-   "posted_at": "2026-11-05"
-  },
-  {
-   "id": 154,
-   "title": "Data Engineer Apprentice",
-   "company": "Crowe",
-   "location": "Hyderabad, Telangana",
-   "work_mode": "onsite",
-   "fields": [
-    "data_engineer"
-   ],
-   "experience": "0-2",
-   "url": "https://www.adzuna.in/details/5958329958?utm_medium=api&utm_source=857c57db",
-   "posted_at": "2026-11-08"
-  },
-  {
-   "id": 145,
-   "title": "Data Analyst Intern",
-   "company": "MTAB Technology Center P Ltd",
-   "location": "Jafferkhanpet, Chennai",
-   "work_mode": "remote",
-   "fields": [
-    "data_analyst"
-   ],
-   "experience": "0-2",
-   "url": "https://www.adzuna.in/details/5956098997?utm_medium=api&utm_source=857c57db",
-   "posted_at": "2026-11-07"
-  },
-  {
-   "id": 224,
-   "title": "Full stack developer Java and android",
-   "company": "Keyfalcon Solutions",
-   "location": "Bangalore Urban",
-   "work_mode": "onsite",
-   "fields": [
-    "full_stack",
-    "software_engineer"
-   ],
-   "experience": "0-2",
-   "url": "https://wellfound.com/jobs/4995151-full-stack-developer-java-and-android",
-   "posted_at": "2026-11-09"
-  },
-  {
-   "id": 47,
-   "title": "Software Engineer Intern",
-   "company": "PayPal",
-   "location": "Bangalore, Karnataka, India",
-   "work_mode": "onsite",
-   "fields": [
-    "software_engineer"
-   ],
-   "experience": "0-2",
-   "url": "https://wd1.myworkdaysite.com/recruiting/paypal/jobs/job/Bangalore-Karnataka-India/Software-Engineer-Intern_R0138921",
-   "posted_at": "2026-11-09"
-  },
-  {
-   "id": 116,
-   "title": "AI Engineer Intern",
-   "company": "LucentraCode",
-   "location": "San Francisco, New York, India Gate, Remote (Work from Home)",
-   "work_mode": "remote",
-   "fields": [
-    "ai_engineer"
-   ],
-   "experience": "0-2",
-   "url": "https://wellfound.com/jobs/4995200-ai-engineer-intern",
-   "posted_at": "2026-11-09"
-  },
-  {
-   "id": 143,
+   "id": 125,
    "title": "IN Associate Data Science & Engineering Data & Analytics Advisory Kolkata",
-   "company": "PricewaterhouseCoopers",
-   "location": "India",
+   "company": "PWC",
+   "location": "Kolkata DN 57",
    "work_mode": "onsite",
    "fields": [
     "ml_engineer",
     "data_analyst"
    ],
    "experience": "0-2",
-   "url": "https://www.adzuna.in/details/5954460830?utm_medium=api&utm_source=857c57db",
-   "posted_at": "2026-11-05"
+   "url": "https://pwc.wd3.myworkdayjobs.com/Global_Experienced_Careers/job/Kolkata-DN-57/IN-Associate-Data-Science---Engineering-Data---Analytics-Advisory-Kolkata_DB_005563-1",
+   "posted_at": "2026-11-03"
   },
   {
-   "id": 152,
-   "title": "Data Engineering Intern",
-   "company": "AtkinsRealis",
-   "location": "Bangalore, Karnataka",
-   "work_mode": "onsite",
-   "fields": [
-    "data_engineer"
-   ],
-   "experience": "0-2",
-   "url": "https://www.adzuna.in/details/5955047430?utm_medium=api&utm_source=857c57db",
-   "posted_at": "2026-11-06"
-  },
-  {
-   "id": 148,
-   "title": "Business Analyst Intern",
-   "company": "Hancod Digital",
+   "id": 159,
+   "title": "Intern - Data Analytics",
+   "company": "United Airlines",
    "location": "India",
    "work_mode": "onsite",
    "fields": [
     "data_analyst"
    ],
    "experience": "0-2",
-   "url": "https://www.adzuna.in/details/5956296802?utm_medium=api&utm_source=857c57db",
-   "posted_at": "2026-11-07"
+   "url": "https://www.adzuna.in/details/5955407272?utm_medium=api&utm_source=857c57db",
+   "posted_at": "2026-11-06"
   },
   {
-   "id": 146,
-   "title": "Backend Developer Intern",
-   "company": "SOLO NETWORK",
-   "location": "Mapusa, North Goa, India",
+   "id": 140,
+   "title": "Frontend Developer Intern",
+   "company": "Developer Bazaar Technologies",
+   "location": "Indore, Madhya Pradesh",
    "work_mode": "remote",
    "fields": [
     "full_stack",
     "software_engineer"
    ],
    "experience": "0-2",
-   "url": "https://www.adzuna.in/details/5956606420?utm_medium=api&utm_source=857c57db",
-   "posted_at": "2026-11-07"
+   "url": "https://www.adzuna.in/details/5950499470?utm_medium=api&utm_source=857c57db",
+   "posted_at": "2026-11-02"
   },
   {
-   "id": 129,
-   "title": "MEANSTACK Intern (Software Developer – Intern)",
-   "company": "aiqod",
-   "location": "Pune, Remote (Work from Home)",
-   "work_mode": "remote",
+   "id": 155,
+   "title": "ServiceNow Developer Apprentice",
+   "company": "Crowe",
+   "location": "Hyderabad, Telangana",
+   "work_mode": "onsite",
    "fields": [
     "software_engineer"
    ],
    "experience": "0-2",
-   "url": "https://wellfound.com/jobs/4965673-meanstack-intern-software-developer-intern",
+   "url": "https://www.adzuna.in/details/5958327096?utm_medium=api&utm_source=857c57db",
+   "posted_at": "2026-11-08"
+  },
+  {
+   "id": 126,
+   "title": "Product Engineer Intern (Full-Stack & AI Generalist)",
+   "company": "Sequoia Technologies",
+   "location": "Bengaluru, Delhi, Pune, Remote (Work from Home)",
+   "work_mode": "remote",
+   "fields": [
+    "ai_engineer"
+   ],
+   "experience": "0-2",
+   "url": "https://wellfound.com/jobs/4622513-product-engineer-intern-full-stack-ai-generalist",
    "posted_at": "2026-11-09"
   },
   {
-   "id": 219,
-   "title": "Full-Stack Developer — AI-Native Engineering",
-   "company": "Salesforce",
-   "location": "India - Bangalore",
+   "id": 305,
+   "title": "Software Dev Engineer II, Alexa AI - Personalization and Delivery Experiences",
+   "company": "Amazon",
+   "location": "India",
    "work_mode": "onsite",
    "fields": [
     "ai_engineer",
     "software_engineer"
    ],
    "experience": "2-4",
-   "url": "https://salesforce.wd12.myworkdayjobs.com/External_Career_Site/job/India---Bangalore/Full-Stack-Developer---AI-Native-Engineering_JR359537",
-   "posted_at": "2026-11-05"
+   "url": "https://www.adzuna.in/details/5957240235?utm_medium=api&utm_source=857c57db",
+   "posted_at": "2026-11-07"
   },
   {
-   "id": 20,
-   "title": "Intermediate Data Engineer",
-   "company": "GitLab",
-   "location": "Bangalore, India",
-   "work_mode": "onsite",
-   "fields": [
-    "data_engineer"
-   ],
-   "experience": "2-4",
-   "url": "https://job-boards.greenhouse.io/gitlab/jobs/8924923002",
-   "posted_at": "2026-11-02"
-  },
-  {
-   "id": 100,
-   "title": "Analytics Platforms Analyst",
-   "company": "Sanofi",
-   "location": "Hyderabad",
-   "work_mode": "onsite",
-   "fields": [
-    "data_analyst"
-   ],
-   "experience": "2-4",
-   "url": "https://sanofi.wd3.myworkdayjobs.com/SanofiCareers/job/Hyderabad/Analytics-Platforms-Analyst_R2871874",
-   "posted_at": "2026-11-05"
-  },
-  {
-   "id": 128,
-   "title": "Full Stack Developer — MERN Stack",
-   "company": "ValarDigital",
-   "location": "Pune",
-   "work_mode": "onsite",
-   "fields": [
-    "full_stack",
-    "software_engineer"
-   ],
-   "experience": "2-4",
-   "url": "https://wellfound.com/jobs/4995189-full-stack-developer-mern-stack",
-   "posted_at": "2026-11-09"
-  },
-  {
-   "id": 130,
-   "title": "Software Engineer",
-   "company": "Vested Finance",
-   "location": "Bangalore Urban, Remote (Work from Home)",
-   "work_mode": "remote",
-   "fields": [
-    "software_engineer"
-   ],
-   "experience": "2-4",
-   "url": "https://wellfound.com/jobs/4981464-software-engineer",
-   "posted_at": "2026-11-09"
-  },
-  {
-   "id": 108,
-   "title": "Analytical AI Engineer - II",
-   "company": "Bristol Myers Squibb",
-   "location": "Hyderabad - TS - IN",
-   "work_mode": "onsite",
-   "fields": [
-    "ai_engineer"
-   ],
-   "experience": "2-4",
-   "url": "https://bristolmyerssquibb.wd5.myworkdayjobs.com/BMS/job/Hyderabad---TS---IN/Analytical-AI-Engineer---II_R1607489-1",
-   "posted_at": "2026-11-04"
-  },
-  {
-   "id": 56,
-   "title": "Data Analyst with SAS",
-   "company": "Citi",
-   "location": "Bangaluru Karnataka India",
-   "work_mode": "hybrid",
-   "fields": [
-    "data_analyst"
-   ],
-   "experience": "2-4",
-   "url": "https://citi.wd5.myworkdayjobs.com/2/job/Bangaluru-Karnataka-India/Data-Analyst-with-SAS_261003323",
-   "posted_at": "2026-11-03"
-  },
-  {
-   "id": 131,
-   "title": "Frontend Engineer - OctavoLab",
-   "company": "OCTAVOLAB",
-   "location": "Hyderabad, Remote (Work from Home)",
-   "work_mode": "remote",
-   "fields": [
-    "full_stack"
-   ],
-   "experience": "2-4",
-   "url": "https://wellfound.com/jobs/5008587-frontend-engineer-octavolab",
-   "posted_at": "2026-11-09"
-  },
-  {
-   "id": 233,
-   "title": "Software Engineer-Android Developer",
-   "company": "Avaloq",
-   "location": "Pune, Maharashtra",
-   "work_mode": "onsite",
-   "fields": [
-    "software_engineer"
-   ],
-   "experience": "2-4",
-   "url": "https://www.adzuna.in/land/ad/5957978618?se=jv-_NAjc8RG_tdIDkb4ZbQ&utm_medium=api&utm_source=857c57db&v=A0E30080DF0B647A48B4699C78389366803A42DA",
-   "posted_at": "2026-11-08"
-  },
-  {
-   "id": 113,
-   "title": "Data & AI Platform Engineer II, Commercialization",
-   "company": "Bristol Myers Squibb",
-   "location": "Hyderabad - TS - IN",
-   "work_mode": "onsite",
-   "fields": [
-    "ai_engineer"
-   ],
-   "experience": "2-4",
-   "url": "https://bristolmyerssquibb.wd5.myworkdayjobs.com/BMS/job/Hyderabad---TS---IN/Data---AI-Platform-Engineer-II--Commercialization_R1607743",
-   "posted_at": "2026-11-04"
-  },
-  {
-   "id": 67,
+   "id": 68,
    "title": "Technical Business Analyst, Product & Pricing Operations",
    "company": "Salesforce",
    "location": "India - Hyderabad",
@@ -303,39 +186,239 @@
     "data_analyst"
    ],
    "experience": "2-4",
-   "url": "https://salesforce.wd12.myworkdayjobs.com/External_Career_Site/job/India---Hyderabad/Technical-Business-Analyst--Product---Pricing-Operations_JR366422",
+   "url": "https://salesforce.wd12.myworkdayjobs.com/External_Career_Site/job/India---Hyderabad/Technical-Business-Analyst--Product---Pricing-Operations_JR366093",
    "posted_at": "2026-11-03"
   },
   {
-   "id": 19,
-   "title": "Intermediate Backend Engineer , Security Factory",
-   "company": "GitLab",
-   "location": "Bangalore, India",
+   "id": 278,
+   "title": "Software Engineer - Java full stack with React",
+   "company": "Wells Fargo",
+   "location": "Bengaluru, India",
    "work_mode": "onsite",
    "fields": [
-    "full_stack"
+    "full_stack",
+    "software_engineer"
    ],
    "experience": "2-4",
-   "url": "https://job-boards.greenhouse.io/gitlab/jobs/8890971002",
+   "url": "https://wd1.myworkdaysite.com/recruiting/wf/WellsFargoJobs/job/Bengaluru-India/Software-Engineer---Java-full-stack-with-React_R-580200-1",
+   "posted_at": "2026-11-09"
+  },
+  {
+   "id": 277,
+   "title": "Software Engineer - C#, .NET, and ASP.NET Core",
+   "company": "Wells Fargo",
+   "location": "Bengaluru, India",
+   "work_mode": "onsite",
+   "fields": [
+    "software_engineer"
+   ],
+   "experience": "2-4",
+   "url": "https://wd1.myworkdaysite.com/recruiting/wf/WellsFargoJobs/job/Bengaluru-India/Software-Engineer---C---NET--and-ASPNET-Core_R-579867",
+   "posted_at": "2026-11-09"
+  },
+  {
+   "id": 114,
+   "title": "Data & AI Platform Engineer II, Commercialization",
+   "company": "Bristol Myers Squibb",
+   "location": "Hyderabad - TS - IN",
+   "work_mode": "onsite",
+   "fields": [
+    "ai_engineer"
+   ],
+   "experience": "2-4",
+   "url": "https://bristolmyerssquibb.wd5.myworkdayjobs.com/BMS/job/Hyderabad---TS---IN/Data---AI-Platform-Engineer-II--Commercialization_R1607809",
    "posted_at": "2026-11-04"
   },
   {
-   "id": 32,
-   "title": "Senior Specialty Software Engineer - Gen AI",
-   "company": "Wells Fargo",
-   "location": "Hyderabad, India",
+   "id": 124,
+   "title": "Technical Data Analyst",
+   "company": "AG",
+   "location": "Bangalore Area",
+   "work_mode": "onsite",
+   "fields": [
+    "data_analyst"
+   ],
+   "experience": "2-4",
+   "url": "https://ag.wd3.myworkdayjobs.com/Airbus/job/Bangalore-Area/Technical-Data-Analyst_JR10454808",
+   "posted_at": "2026-11-03"
+  },
+  {
+   "id": 282,
+   "title": "Software Development Engineer- Frontend",
+   "company": "HP",
+   "location": "Bengaluru, Karnataka, India",
+   "work_mode": "onsite",
+   "fields": [
+    "full_stack",
+    "software_engineer"
+   ],
+   "experience": "2-4",
+   "url": "https://hp.wd5.myworkdayjobs.com/ExternalCareerSite/job/Bengaluru-Karnataka-India/Software-Development-Engineer--Frontend_3170250-1",
+   "posted_at": "2026-11-09"
+  },
+  {
+   "id": 281,
+   "title": "Software Engineering MTS (Full-Stack)",
+   "company": "Salesforce",
+   "location": "India - Hyderabad",
+   "work_mode": "onsite",
+   "fields": [
+    "software_engineer"
+   ],
+   "experience": "2-4",
+   "url": "https://salesforce.wd12.myworkdayjobs.com/External_Career_Site/job/India---Hyderabad/Software-Engineering-MTS--Full-Stack-_JR362247",
+   "posted_at": "2026-11-09"
+  },
+  {
+   "id": 80,
+   "title": "AI and Automation Developer",
+   "company": "HP",
+   "location": "Bengaluru, Karnataka, India",
+   "work_mode": "onsite",
+   "fields": [
+    "ai_engineer",
+    "software_engineer"
+   ],
+   "experience": "2-4",
+   "url": "https://hp.wd5.myworkdayjobs.com/ExternalCareerSite/job/Bengaluru-Karnataka-India/AI-and-Automation-Developer_3170446-1",
+   "posted_at": "2026-11-03"
+  },
+  {
+   "id": 227,
+   "title": "MEAN Stack Developer",
+   "company": "Infosys",
+   "location": "Hyderabad, Telangana",
+   "work_mode": "onsite",
+   "fields": [
+    "full_stack",
+    "software_engineer"
+   ],
+   "experience": "2-4",
+   "url": "https://www.adzuna.in/details/5953001837?utm_medium=api&utm_source=857c57db",
+   "posted_at": "2026-11-04"
+  },
+  {
+   "id": 234,
+   "title": "Software Engineer-ACP/Avaloq/PLSQL Developer",
+   "company": "Avaloq",
+   "location": "Pune, Maharashtra",
+   "work_mode": "onsite",
+   "fields": [
+    "software_engineer"
+   ],
+   "experience": "2-4",
+   "url": "https://www.adzuna.in/land/ad/5957978623?se=jv-_NAjc8RG_tdIDkb4ZbQ&utm_medium=api&utm_source=857c57db&v=2ECDCCC671DA678BFFAB99727930A4AAAFFD265A",
+   "posted_at": "2026-11-08"
+  },
+  {
+   "id": 73,
+   "title": "AI Model Optimization Engineer",
+   "company": "Intel",
+   "location": "India, Bangalore",
+   "work_mode": "onsite",
+   "fields": [
+    "ai_engineer"
+   ],
+   "experience": "2-4",
+   "url": "https://intel.wd1.myworkdayjobs.com/External/job/India-Bangalore/AI-Model-Optimization-Engineer_JR0288104-1",
+   "posted_at": "2026-11-02"
+  },
+  {
+   "id": 336,
+   "title": "Senior Engineer, AI Platform Engineering",
+   "company": "Ares Operations",
+   "location": "Mumbai, Maharashtra",
+   "work_mode": "onsite",
+   "fields": [
+    "ai_engineer"
+   ],
+   "experience": "4-6",
+   "url": "https://www.adzuna.in/details/5958322731?utm_medium=api&utm_source=857c57db",
+   "posted_at": "2026-11-08"
+  },
+  {
+   "id": 88,
+   "title": "Sr Data Scientist-Pricing & Clearance",
+   "company": "Target",
+   "location": "Bangalore,India",
+   "work_mode": "onsite",
+   "fields": [
+    "ml_engineer"
+   ],
+   "experience": "4-6",
+   "url": "https://target.wd5.myworkdayjobs.com/targetcareers/job/BangaloreIndia/Sr-Data-Scientist--Space-Presentation_R0000451877",
+   "posted_at": "2026-11-03"
+  },
+  {
+   "id": 335,
+   "title": "Senior Engineer, Data Engineering",
+   "company": "Ares Operations",
+   "location": "Mumbai, Maharashtra",
+   "work_mode": "onsite",
+   "fields": [
+    "data_engineer"
+   ],
+   "experience": "4-6",
+   "url": "https://www.adzuna.in/details/5957244593?utm_medium=api&utm_source=857c57db",
+   "posted_at": "2026-11-07"
+  },
+  {
+   "id": 283,
+   "title": "Sr Data Analyst",
+   "company": "Target",
+   "location": "L4, Manyata Embassy Business Park, Racenahali & Nagawara Villages. Outer Ring Rd, Bangalore 540065",
+   "work_mode": "onsite",
+   "fields": [
+    "data_analyst"
+   ],
+   "experience": "4-6",
+   "url": "https://target.wd5.myworkdayjobs.com/targetcareers/job/L4-Manyata-Embassy-Business-Park-Racenahali--Nagawara-Villages-Outer-Ring-Rd-Bangalore-540065/Sr-Data-Analyst_R0000444688-1",
+   "posted_at": "2026-11-09"
+  },
+  {
+   "id": 49,
+   "title": "Sr Software Engineer, Back End",
+   "company": "PayPal",
+   "location": "Bangalore, Karnataka, India",
+   "work_mode": "onsite",
+   "fields": [
+    "full_stack",
+    "software_engineer"
+   ],
+   "experience": "4-6",
+   "url": "https://wd1.myworkdaysite.com/recruiting/paypal/jobs/job/Bangalore-Karnataka-India/Sr-Software-Engineer--Back-End_R0138416-1",
+   "posted_at": "2026-11-06"
+  },
+  {
+   "id": 345,
+   "title": "Senior Software Engineer",
+   "company": "symplr",
+   "location": "Bangalore, Karnataka",
+   "work_mode": "onsite",
+   "fields": [
+    "software_engineer"
+   ],
+   "experience": "4-6",
+   "url": "https://www.adzuna.in/details/5958413832?utm_medium=api&utm_source=857c57db",
+   "posted_at": "2026-11-09"
+  },
+  {
+   "id": 312,
+   "title": "Software Engineer (.NET AI)",
+   "company": "Artic Consulting",
+   "location": "Bodakdev, Ahmedabad",
    "work_mode": "onsite",
    "fields": [
     "ai_engineer",
     "software_engineer"
    ],
    "experience": "4-6",
-   "url": "https://wd1.myworkdaysite.com/recruiting/wf/WellsFargoJobs/job/Hyderabad-India/Senior-Specialty-Software-Engineer---Gen-AI_R-586124",
-   "posted_at": "2026-11-06"
+   "url": "https://www.adzuna.in/details/5955876260?utm_medium=api&utm_source=857c57db",
+   "posted_at": "2026-11-07"
   },
   {
-   "id": 112,
-   "title": "Senior Platform Reliability Engineer, Infrastructure and MLOps",
+   "id": 105,
+   "title": "Data Scientist III",
    "company": "Bristol Myers Squibb",
    "location": "Hyderabad - TS - IN",
    "work_mode": "onsite",
@@ -343,24 +426,24 @@
     "ml_engineer"
    ],
    "experience": "4-6",
-   "url": "https://bristolmyerssquibb.wd5.myworkdayjobs.com/BMS/job/Hyderabad---TS---IN/Senior-Platform-Reliability-Engineer--Infrastructure-and-MLOps_R1607742",
-   "posted_at": "2026-11-06"
+   "url": "https://bristolmyerssquibb.wd5.myworkdayjobs.com/BMS/job/Hyderabad---TS---IN/Data-Scientist-III_R1607244",
+   "posted_at": "2026-11-03"
   },
   {
-   "id": 195,
-   "title": "SENIOR DATA ENGINEER",
-   "company": "TE Connectivity",
-   "location": "Bangalore, Karnataka",
+   "id": 341,
+   "title": "Senior Data Engineer",
+   "company": "Disa Consulting Services",
+   "location": "Chauth Ka Barwara, Sawai Madhopur, India",
    "work_mode": "onsite",
    "fields": [
     "data_engineer"
    ],
    "experience": "4-6",
-   "url": "https://www.adzuna.in/land/ad/5956258951?se=UGSnNQjc8RG7iqVETYabow&utm_medium=api&utm_source=857c57db&v=AA63141F15E613FFDC40B35CB7C20B40132CCC24",
-   "posted_at": "2026-11-07"
+   "url": "https://www.adzuna.in/details/5954643880?utm_medium=api&utm_source=857c57db",
+   "posted_at": "2026-11-06"
   },
   {
-   "id": 196,
+   "id": 333,
    "title": "Senior Specialist, Analytics Platform Engineer",
    "company": "MSD",
    "location": "Hyderabad, Telangana",
@@ -369,266 +452,106 @@
     "data_analyst"
    ],
    "experience": "4-6",
-   "url": "https://www.adzuna.in/land/ad/5957531860?se=UGSnNQjc8RG7iqVETYabow&utm_medium=api&utm_source=857c57db&v=E5183CC6DCEE94CCE5C846A107E74F363040FE81",
+   "url": "https://www.adzuna.in/land/ad/5957531860?se=5hBx2zfc8RGvsP5vhEQIsA&utm_medium=api&utm_source=857c57db&v=E5183CC6DCEE94CCE5C846A107E74F363040FE81",
    "posted_at": "2026-11-08"
   },
   {
-   "id": 12,
-   "title": "Senior Software Engineer - Backend Infrastructure",
-   "company": "Databricks",
-   "location": "Bengaluru, India",
+   "id": 174,
+   "title": "Software Engineer, Senior (Java React)",
+   "company": "MicroStrategy India",
+   "location": "Chennai, Tamil Nadu",
    "work_mode": "onsite",
    "fields": [
     "full_stack",
     "software_engineer"
    ],
    "experience": "4-6",
-   "url": "https://databricks.com/company/careers/open-positions/job?gh_jid=7647294002",
-   "posted_at": "2026-11-07"
-  },
-  {
-   "id": 23,
-   "title": "Senior Software Engineer",
-   "company": "New Relic",
-   "location": "Hyderabad, India",
-   "work_mode": "onsite",
-   "fields": [
-    "software_engineer"
-   ],
-   "experience": "4-6",
-   "url": "https://job-boards.greenhouse.io/newrelic/jobs/5459407008",
-   "posted_at": "2026-11-08"
-  },
-  {
-   "id": 170,
-   "title": "Senior Hyper Automation (RPA, AI, ML) Developer/Engineer",
-   "company": "Bosch Group",
-   "location": "Bangalore, Karnataka",
-   "work_mode": "onsite",
-   "fields": [
-    "ai_engineer",
-    "ml_engineer",
-    "software_engineer"
-   ],
-   "experience": "4-6",
-   "url": "https://www.adzuna.in/details/5953377449?utm_medium=api&utm_source=857c57db",
-   "posted_at": "2026-11-05"
-  },
-  {
-   "id": 38,
-   "title": "Senior Data Scientist",
-   "company": "Mastercard",
-   "location": "Gurgaon, India",
-   "work_mode": "onsite",
-   "fields": [
-    "ml_engineer"
-   ],
-   "experience": "4-6",
-   "url": "https://mastercard.wd1.myworkdayjobs.com/CorporateCareers/job/Gurgaon-India/Senior-Data-Scientist_R-293061",
-   "posted_at": "2026-11-03"
-  },
-  {
-   "id": 61,
-   "title": "Data and Analytics Engineer",
-   "company": "Citi",
-   "location": "Chennai Tamil Nadu India",
-   "work_mode": "hybrid",
-   "fields": [
-    "data_engineer",
-    "data_analyst"
-   ],
-   "experience": "4-6",
-   "url": "https://citi.wd5.myworkdayjobs.com/2/job/Chennai-Tamil-Nadu-India/Data-and-Analytics-Engineer_26997033",
+   "url": "https://www.adzuna.in/details/5954660874?utm_medium=api&utm_source=857c57db",
    "posted_at": "2026-11-06"
   },
   {
-   "id": 96,
-   "title": "Reference Data Management -Data Analyst",
-   "company": "Sanofi",
-   "location": "Hyderabad",
-   "work_mode": "onsite",
-   "fields": [
-    "data_analyst"
-   ],
-   "experience": "4-6",
-   "url": "https://sanofi.wd3.myworkdayjobs.com/SanofiCareers/job/Hyderabad/Reference-Data-Management--Data-Analyst_R2876970",
-   "posted_at": "2026-11-06"
-  },
-  {
-   "id": 26,
-   "title": "Senior Software Engineer (.Net Full Stack)",
-   "company": "Wells Fargo",
-   "location": "Bengaluru, India",
-   "work_mode": "onsite",
-   "fields": [
-    "full_stack",
-    "software_engineer"
-   ],
-   "experience": "4-6",
-   "url": "https://wd1.myworkdaysite.com/recruiting/wf/WellsFargoJobs/job/Bengaluru-India/Senior-Software-Engineer--Net-Full-Stack-_R-582152",
-   "posted_at": "2026-11-06"
-  },
-  {
-   "id": 198,
-   "title": "Software Senior Engineer",
-   "company": "Dell",
+   "id": 199,
+   "title": "Senior Engineer - Software",
+   "company": "Aptiv",
    "location": "India",
    "work_mode": "onsite",
    "fields": [
     "software_engineer"
    ],
    "experience": "4-6",
-   "url": "https://www.adzuna.in/details/5958311401?utm_medium=api&utm_source=857c57db",
+   "url": "https://www.adzuna.in/details/5958337004?utm_medium=api&utm_source=857c57db",
    "posted_at": "2026-11-08"
   },
   {
-   "id": 118,
-   "title": "Principal AI Engineer — Agentic Systems & AI Infrastructure",
-   "company": "Hashmark Labs",
-   "location": "New Delhi, Remote (Work from Home)",
-   "work_mode": "remote",
+   "id": 279,
+   "title": "Senior AI Engineer - Wholesale Credit Risk Analytics",
+   "company": "Citi",
+   "location": "Pune Maharashtra India",
+   "work_mode": "hybrid",
    "fields": [
-    "ai_engineer"
+    "ai_engineer",
+    "data_analyst"
    ],
    "experience": "6+",
-   "url": "https://wellfound.com/jobs/4980173-principal-ai-engineer-agentic-systems-ai-infrastructure",
+   "url": "https://citi.wd5.myworkdayjobs.com/2/job/Pune-Maharashtra-India/Senior-AI-Engineer---Wholesale-Credit-Risk-Analytics_261006394",
    "posted_at": "2026-11-09"
   },
   {
-   "id": 53,
-   "title": "Staff Data Scientist",
-   "company": "PayPal",
-   "location": "Chennai, Tamil Nadu, India",
+   "id": 107,
+   "title": "Senior Manager, Data Science",
+   "company": "Bristol Myers Squibb",
+   "location": "Hyderabad - TS - IN",
    "work_mode": "onsite",
    "fields": [
     "ml_engineer"
    ],
    "experience": "6+",
-   "url": "https://wd1.myworkdaysite.com/recruiting/paypal/jobs/job/Chennai-Tamil-Nadu-India/Staff-Data-Scientist_R0138614",
-   "posted_at": "2026-11-06"
+   "url": "https://bristolmyerssquibb.wd5.myworkdayjobs.com/BMS/job/Hyderabad---TS---IN/Senior-Manager--Data-Science_R1601747-1",
+   "posted_at": "2026-11-05"
   },
   {
-   "id": 40,
-   "title": "Senior Data Engineer",
-   "company": "Mastercard",
-   "location": "Hyderabad, India",
+   "id": 360,
+   "title": "Lead Data Engineer",
+   "company": "Elanco",
+   "location": "Bangalore, Karnataka",
    "work_mode": "onsite",
    "fields": [
     "data_engineer"
    ],
    "experience": "6+",
-   "url": "https://mastercard.wd1.myworkdayjobs.com/CorporateCareers/job/Hyderabad-India/Senior-Data-Engineer_R-291969",
-   "posted_at": "2026-11-06"
+   "url": "https://www.adzuna.in/details/5957701201?utm_medium=api&utm_source=857c57db",
+   "posted_at": "2026-11-08"
   },
   {
-   "id": 78,
-   "title": "Business Analyst Inventory Reconciliation",
-   "company": "HP",
-   "location": "Bengaluru, Karnataka, India",
+   "id": 284,
+   "title": "Lead Data Analyst",
+   "company": "Target",
+   "location": "Bangalore,India",
    "work_mode": "onsite",
    "fields": [
     "data_analyst"
    ],
    "experience": "6+",
-   "url": "https://hp.wd5.myworkdayjobs.com/ExternalCareerSite/job/Bengaluru-Karnataka-India/Business-Analyst-Inventory-Reconciliation_3168960-1",
-   "posted_at": "2026-11-06"
+   "url": "https://target.wd5.myworkdayjobs.com/targetcareers/job/BangaloreIndia/Lead-Data-Analyst_R0000452886",
+   "posted_at": "2026-11-09"
   },
   {
-   "id": 66,
-   "title": "Software Engineering LMTS - Backend Distributed Systems",
-   "company": "Salesforce",
-   "location": "India - Bangalore",
+   "id": 285,
+   "title": "Lead Software Engineer - Full stack Lead - PA26ITOFFQ3067",
+   "company": "EngRadar",
+   "location": "Hyderabad, Telangana",
    "work_mode": "onsite",
    "fields": [
     "full_stack",
     "software_engineer"
    ],
    "experience": "6+",
-   "url": "https://salesforce.wd12.myworkdayjobs.com/External_Career_Site/job/India---Bangalore/Software-Engineering-LMTS_JR338174",
-   "posted_at": "2026-11-07"
+   "url": "https://www.adzuna.in/details/5959068273?utm_medium=api&utm_source=857c57db",
+   "posted_at": "2026-11-09"
   },
   {
-   "id": 188,
-   "title": "Principal Software Engineer",
-   "company": "ABB",
-   "location": "Bangalore, Karnataka",
-   "work_mode": "onsite",
-   "fields": [
-    "software_engineer"
-   ],
-   "experience": "6+",
-   "url": "https://www.adzuna.in/land/ad/5957978648?se=jv-_NAjc8RG_tdIDkb4ZbQ&utm_medium=api&utm_source=857c57db&v=B653365D249AEDE4B0C173EA24BD8660387F15D7",
-   "posted_at": "2026-11-08"
-  },
-  {
-   "id": 210,
-   "title": "Fullstack AI Lead Engineer",
-   "company": "Gilead Sciences, Inc.",
-   "location": "Bangalore, Karnataka",
-   "work_mode": "hybrid",
-   "fields": [
-    "ai_engineer",
-    "full_stack"
-   ],
-   "experience": "6+",
-   "url": "https://www.adzuna.in/details/5956583282?utm_medium=api&utm_source=857c57db",
-   "posted_at": "2026-11-07"
-  },
-  {
-   "id": 85,
-   "title": "Principal Data Scientist",
-   "company": "HP",
-   "location": "Bengaluru, Karnataka, India",
-   "work_mode": "onsite",
-   "fields": [
-    "ml_engineer"
-   ],
-   "experience": "6+",
-   "url": "https://hp.wd5.myworkdayjobs.com/ExternalCareerSite/job/Bengaluru-Karnataka-India/Principal---Data-and-AI_3169349-1",
-   "posted_at": "2026-11-06"
-  },
-  {
-   "id": 109,
-   "title": "Manager II, Data Engineering - Advanced Capabilities COE",
-   "company": "Bristol Myers Squibb",
-   "location": "Hyderabad - TS - IN",
-   "work_mode": "onsite",
-   "fields": [
-    "data_engineer"
-   ],
-   "experience": "6+",
-   "url": "https://bristolmyerssquibb.wd5.myworkdayjobs.com/BMS/job/Hyderabad---TS---IN/Manager-II--Data-Engineering---Advanced-Capabilities-COE_R1606028",
-   "posted_at": "2026-11-06"
-  },
-  {
-   "id": 4,
-   "title": "Senior Manager, Business Intelligence",
-   "company": "Zscaler",
-   "location": "Bangalore, IND; Pune, IND",
-   "work_mode": "onsite",
-   "fields": [
-    "data_analyst"
-   ],
-   "experience": "6+",
-   "url": "https://job-boards.greenhouse.io/zscaler/jobs/5278561007",
-   "posted_at": "2026-11-02"
-  },
-  {
-   "id": 207,
-   "title": "Lead Engineer - FullStack",
-   "company": "Esyasoft Technologies Private Limited",
-   "location": "Agara, Bangalore",
-   "work_mode": "onsite",
-   "fields": [
-    "full_stack"
-   ],
-   "experience": "6+",
-   "url": "https://www.adzuna.in/details/5956099081?utm_medium=api&utm_source=857c57db",
-   "posted_at": "2026-11-07"
-  },
-  {
-   "id": 2,
-   "title": "Manager, Software Development Engineering",
+   "id": 276,
+   "title": "Staff Software Development Engineer",
    "company": "Zscaler",
    "location": "Bangalore, IND",
    "work_mode": "onsite",
@@ -636,8 +559,87 @@
     "software_engineer"
    ],
    "experience": "6+",
-   "url": "https://job-boards.greenhouse.io/zscaler/jobs/5279071007",
-   "posted_at": "2026-11-06"
+   "url": "https://job-boards.greenhouse.io/zscaler/jobs/5279066007",
+   "posted_at": "2026-11-09"
+  },
+  {
+   "id": 280,
+   "title": "Lead GenAI Engineer",
+   "company": "Citi",
+   "location": "Pune Maharashtra India",
+   "work_mode": "hybrid",
+   "fields": [
+    "ai_engineer"
+   ],
+   "experience": "6+",
+   "url": "https://citi.wd5.myworkdayjobs.com/2/job/Pune-Maharashtra-India/Apps-Dev-Tech-Lead-Analyst---C13---PUNE_261005459",
+   "posted_at": "2026-11-09"
+  },
+  {
+   "id": 39,
+   "title": "Lead Data Scientist",
+   "company": "Mastercard",
+   "location": "Gurgaon, India",
+   "work_mode": "onsite",
+   "fields": [
+    "ml_engineer"
+   ],
+   "experience": "6+",
+   "url": "https://mastercard.wd1.myworkdayjobs.com/CorporateCareers/job/Gurgaon-India/Lead-Data-Scientist_R-293062",
+   "posted_at": "2026-11-03"
+  },
+  {
+   "id": 356,
+   "title": "Lead Data Engineer",
+   "company": "Genl Mills India Priv",
+   "location": "India",
+   "work_mode": "onsite",
+   "fields": [
+    "data_engineer"
+   ],
+   "experience": "6+",
+   "url": "https://www.adzuna.in/details/5957220124?utm_medium=api&utm_source=857c57db",
+   "posted_at": "2026-11-07"
+  },
+  {
+   "id": 323,
+   "title": "AVP (Manager) - .Net Full Stack",
+   "company": "Mitsubishi UFJ Financial Group",
+   "location": "India",
+   "work_mode": "onsite",
+   "fields": [
+    "full_stack"
+   ],
+   "experience": "6+",
+   "url": "https://www.adzuna.in/details/5957245596?utm_medium=api&utm_source=857c57db",
+   "posted_at": "2026-11-07"
+  },
+  {
+   "id": 350,
+   "title": "Lead Software Engineer",
+   "company": "Nike Inc.",
+   "location": "Karnataka, India",
+   "work_mode": "onsite",
+   "fields": [
+    "software_engineer"
+   ],
+   "experience": "6+",
+   "url": "https://www.adzuna.in/details/5958791467?utm_medium=api&utm_source=857c57db",
+   "posted_at": "2026-11-09"
+  },
+  {
+   "id": 211,
+   "title": "Fullstack AI Lead Engineer",
+   "company": "Gilead Sciences",
+   "location": "Bangalore, Karnataka",
+   "work_mode": "onsite",
+   "fields": [
+    "ai_engineer",
+    "full_stack"
+   ],
+   "experience": "6+",
+   "url": "https://www.adzuna.in/details/5957216771?utm_medium=api&utm_source=857c57db",
+   "posted_at": "2026-11-07"
   }
  ]
 }
