@@ -1,11 +1,9 @@
-import { TELEGRAM_URL } from "@/lib/links";
+import TelegramLink from "./TelegramLink";
 
 export default function JoinButtons() {
   return (
     <div className="join">
-      <a className="btn telegram" href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer">
-        ✈️ Join on Telegram
-      </a>
+      <TelegramLink className="btn telegram">✈️ Join on Telegram</TelegramLink>
     </div>
   );
 }

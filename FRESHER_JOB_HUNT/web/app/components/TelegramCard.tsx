@@ -1,4 +1,5 @@
 import { TELEGRAM_URL } from "@/lib/links";
+import TelegramLink from "./TelegramLink";
 
 export default function TelegramCard() {
   return (
@@ -13,9 +14,7 @@ export default function TelegramCard() {
         <li>Direct links to company apply pages</li>
         <li>Leave any time with one tap</li>
       </ul>
-      <a className="btn telegram block" href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer">
-        Join the Telegram channel
-      </a>
+      <TelegramLink className="btn telegram block">Join the Telegram channel</TelegramLink>
       <p className="tg-link">{TELEGRAM_URL.replace("https://", "")}</p>
     </div>
   );

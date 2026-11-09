@@ -1,4 +1,5 @@
 import { FIELDS, type Job } from "@/lib/fields";
+import ApplyButton from "./ApplyButton";
 
 const MODE: Record<string, string> = { remote: "Remote", hybrid: "Hybrid", onsite: "On-site" };
 
@@ -26,9 +27,7 @@ export default function JobList({ jobs, limit }: { jobs: Job[]; limit?: number }
                     <span className={`mode ${j.work_mode ?? "onsite"}`}>{MODE[j.work_mode ?? "onsite"]}</span>
                   </div>
                 </div>
-                <a className="btn small" href={j.url} target="_blank" rel="noopener noreferrer nofollow">
-                  Apply →
-                </a>
+                <ApplyButton id={j.id} title={j.title} />
               </li>
             ))}
           </ul>
