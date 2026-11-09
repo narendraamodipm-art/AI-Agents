@@ -29,6 +29,10 @@ try:
 except ImportError:
     pass
 
+# Secrets pasted into GitHub often keep a trailing line break, which breaks URLs and headers.
+for name, value in list(os.environ.items()):
+    os.environ[name] = value.strip()
+
 
 def log(msg):
     print(f"[{datetime.now().strftime('%H:%M:%S')}] {msg}", flush=True)
