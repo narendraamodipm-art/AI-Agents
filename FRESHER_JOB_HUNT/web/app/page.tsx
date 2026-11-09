@@ -2,8 +2,7 @@ import Link from "next/link";
 import { EXPERIENCE, FIELDS } from "@/lib/fields";
 import { latestPost, niceDay } from "@/lib/jobs";
 import ExperienceSections from "./components/ExperienceSections";
-import JoinButtons from "./components/JoinButtons";
-import SignupForm from "./components/SignupForm";
+import TelegramCard from "./components/TelegramCard";
 
 export const revalidate = 300; // refresh the jobs preview every 5 minutes
 
@@ -38,22 +37,19 @@ export default async function Home() {
               </span>
             ))}
           </div>
-          <JoinButtons />
           <ul className="how">
             <li>
-              <b>1.</b> Sign up and pick your fields and experience level
+              <b>1.</b> Join the Telegram channel
             </li>
             <li>
               <b>2.</b> Our agent scans company career pages every morning
             </li>
             <li>
-              <b>3.</b> You get 10–12 fresh jobs per level on Telegram, WhatsApp and email
+              <b>3.</b> You get 10–12 fresh jobs per level, every day at 10 AM
             </li>
           </ul>
         </div>
-        <div id="signup">
-          <SignupForm />
-        </div>
+        <TelegramCard />
       </section>
 
       <section className="section">

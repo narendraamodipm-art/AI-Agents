@@ -85,47 +85,19 @@ h1, h2, h3 { line-height: 1.15; margin: 0; }
 }
 .btn.small { padding: 8px 12px; font-size: 14px; white-space: nowrap; }
 .btn.telegram { background: #229ed9; color: #fff; border: 0; }
-.btn.whatsapp { background: #25d366; color: #fff; border: 0; }
 .join { display: flex; flex-wrap: wrap; gap: 10px; margin: 8px 0; }
 
-/* Cards & form */
+/* Cards */
 .card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 24px; box-shadow: var(--shadow); }
-.form { display: grid; gap: 14px; }
-.form h3 { font-size: 20px; }
-.lbl { display: grid; gap: 6px; font-size: 14px; font-weight: 600; }
-input[type="text"], input[type="email"], input[type="tel"], input:not([type]) {
-  font: inherit; padding: 11px 14px; border-radius: 10px; border: 1px solid var(--border);
-  background: var(--bg); color: var(--text); width: 100%;
-}
-input:focus { outline: 2px solid var(--accent); border-color: transparent; }
-fieldset { border: 0; padding: 0; margin: 0; }
-legend { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
-.chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.chip {
-  font: inherit; font-size: 14px; padding: 8px 12px; border-radius: 999px; cursor: pointer;
-  border: 1px solid var(--border); background: var(--bg); color: var(--text-2);
-}
-.chip.on { background: var(--accent); border-color: var(--accent); color: #fff; }
-.check { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; color: var(--text-2); }
-.check input { margin-top: 4px; accent-color: var(--accent); }
-.hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
-.error { color: var(--danger); font-size: 14px; margin: 0; }
-.success h3 { font-size: 20px; margin-bottom: 8px; }
-.success p { color: var(--text-2); margin: 0; }
-.success .btn { margin-top: 14px; }
 .btn.block { display: flex; width: 100%; }
-.optional { font-weight: 400; color: var(--muted); }
 
-/* Telegram callout inside the signup form */
-.tg-callout {
-  display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 12px;
-  background: rgba(34, 158, 217, 0.1); border: 1px solid rgba(34, 158, 217, 0.35);
-  color: var(--text-2); font-size: 14px; line-height: 1.45; text-decoration: none;
-}
-.tg-callout strong { color: var(--text); }
-.tg-callout:hover { border-color: #229ed9; }
-.tg-icon { font-size: 22px; }
-.tg-go { margin-left: auto; font-weight: 700; color: #229ed9; white-space: nowrap; }
+/* Telegram join card */
+.tg-card { display: grid; gap: 12px; }
+.tg-card h3 { font-size: 22px; }
+.tg-card p { color: var(--text-2); margin: 0; }
+.tg-card ul { margin: 0; padding-left: 20px; color: var(--text-2); display: grid; gap: 4px; }
+.tg-icon { font-size: 36px; line-height: 1; }
+.tg-link { font-size: 14px; text-align: center; }
 
 /* Sections & jobs */
 .section { padding: 40px 0; }

@@ -1,4 +1,4 @@
-"""Pick the day's jobs (10–12 per experience section) and write the Telegram, WhatsApp and email versions."""
+"""Pick the day's jobs (10–12 per experience section) and write the Telegram and WhatsApp versions."""
 
 import html
 from collections import defaultdict
@@ -15,14 +15,10 @@ def experience_of(job):
     return job.get("experience") or "0-2"          # jobs saved before sections existed were all 0–2
 
 
-def pick(pool, n=config.JOBS_PER_POST, fields=None, work_modes=None, experience=None, seen=None):
+def pick(pool, n=config.JOBS_PER_POST, experience=None, seen=None):
     """Newest first, spread across fields (round-robin), at most MAX_PER_COMPANY per company.
     `seen` (title, company) pairs are skipped; pass one set across calls to avoid repeats between sections."""
-    pool = [j for j in pool
-            if (not fields or set(j.get("fields") or []) & set(fields))
-            and (not experience or experience_of(j) in experience)
-            and (not work_modes or (j.get("work_mode") or "onsite") in work_modes
-                 or ("onsite" in work_modes and j.get("work_mode") == "hybrid"))]
+    pool = [j for j in pool if not experience or experience_of(j) in experience]
     pool = sorted(pool, key=lambda j: j.get("posted_at") or "", reverse=True)
     seen = set() if seen is None else seen
     role = lambda j: (j["title"].lower().strip(), j["company"].lower().strip())   # same role re-posted under a new ID
@@ -90,7 +86,7 @@ def telegram_posts(sections, day, site_url):
                 lines.append(f"{n}. <b>{e(j['title'])}</b>: {e(j['company'])} · {e(short_loc(j))} · {mode_label(j)}")
                 lines.append(f'   👉 <a href="{e(j["url"], quote=True)}">Apply</a>')
             lines.append("")
-        lines.append(f'🔔 All jobs + email alerts: <a href="{e(site_url)}">{e(site_url.replace("https://", ""))}</a>')
+        lines.append(f'🔔 All of today\'s jobs: <a href="{e(site_url)}">{e(site_url.replace("https://", ""))}</a>')
         posts.append("\n".join(lines))
     return posts
 
@@ -110,26 +106,8 @@ def whatsapp_text(sections, day, site_url):
                 lines.append(f"{n}. {j['title']}: {j['company']} · {short_loc(j)} · {mode_label(j)}")
                 lines.append(f"   👉 {j['url']}")
             lines.append("")
-    lines.append(f"🔔 Email alerts for your field: {site_url}")
+    lines.append(f"🔔 All of today's jobs: {site_url}")
     return "\n".join(lines)
-
-
-def email_html(user, jobs, day, site_url):
-    e = html.escape
-    rows = "".join(
-        f'<tr><td style="padding:10px 0;border-bottom:1px solid #eee">'
-        f'<div style="font-weight:600;color:#111">{e(j["title"])}</div>'
-        f'<div style="color:#555;font-size:14px">{e(j["company"])} · {e(short_loc(j))} · {mode_label(j)} · '
-        f'{e(config.EXPERIENCE[experience_of(j)][0])}</div>'
-        f'<a href="{e(j["url"], quote=True)}" style="color:#7c3aed;font-size:14px">Apply →</a></td></tr>'
-        for j in jobs)
-    unsub = f"{site_url}/unsubscribe/{user['token']}"
-    return (f'<div style="font-family:Arial,sans-serif;max-width:560px;margin:auto">'
-            f'<h2 style="color:#111">🎯 {len(jobs)} new jobs for you</h2>'
-            f'<p style="color:#555">Hi {e(user["name"])}, here are today\'s openings ({nice_day(day)}).</p>'
-            f'<table style="width:100%;border-collapse:collapse">{rows}</table>'
-            f'<p style="color:#888;font-size:12px;margin-top:24px">You get this because you signed up at '
-            f'<a href="{e(site_url)}">{e(site_url)}</a>. <a href="{e(unsub)}">Unsubscribe</a></p></div>')
 
 
 def short_loc(j):

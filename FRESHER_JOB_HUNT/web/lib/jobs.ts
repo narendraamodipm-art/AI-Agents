@@ -2,11 +2,14 @@ import "server-only";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import type { Job } from "./fields";
-import { db } from "./supabase";
 
 export type DailyPost = { day: string; jobs: Job[] };
 
-/** Local development without Supabase: show the agent's last `run.py --dry-run` result. */
+// Written by the daily agent and committed by the GitHub Action, so the site updates without a redeploy.
+const POST_URL =
+  "https://raw.githubusercontent.com/narendraamodipm-art/AI-Agents/main/FRESHER_JOB_HUNT/data/latest_post.json";
+
+/** Local development: show the agent's last `run.py --dry-run` result if there is one. */
 async function localPreview(): Promise<DailyPost | null> {
   if (process.env.NODE_ENV === "production") return null;
   try {
@@ -17,21 +20,17 @@ async function localPreview(): Promise<DailyPost | null> {
   }
 }
 
-/** The most recent daily post (what went out to Telegram / WhatsApp). */
+/** The most recent daily post (what went out to Telegram). Null until the agent's first run. */
 export async function latestPost(): Promise<DailyPost | null> {
-  const supabase = db();
-  if (!supabase) return localPreview();
-  const { data, error } = await supabase
-    .from("daily_posts")
-    .select("day, jobs")
-    .order("day", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  if (error) {
-    console.error("latestPost failed", error);
+  const preview = await localPreview();
+  if (preview) return preview;
+  try {
+    const r = await fetch(POST_URL, { next: { revalidate: 300 } });
+    return r.ok ? ((await r.json()) as DailyPost) : null;
+  } catch (e) {
+    console.error("latestPost failed", e);
     return null;
   }
-  return (data as DailyPost | null) ?? null;
 }
 
 export function niceDay(day: string) {

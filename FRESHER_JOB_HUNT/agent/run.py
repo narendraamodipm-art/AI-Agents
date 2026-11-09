@@ -1,7 +1,7 @@
 """Daily Fresher Job Hunt run.
 
     python agent/run.py --dry-run        find jobs and print today's posts; sends and saves nothing
-    python agent/run.py                  find jobs, save them, post to Telegram, send emails
+    python agent/run.py                  find jobs, save them, post to Telegram
     python agent/run.py --wait           same, but wait until SEND_TIME_IST (10:00) before sending
                                          (used by the GitHub Actions schedule, which starts a bit early)
 """
@@ -57,9 +57,6 @@ def main():
     args = ap.parse_args()
 
     store = get_store()
-    if not args.dry_run and store.name != "Supabase" and os.environ.get("GITHUB_ACTIONS"):
-        sys.exit("SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY secrets are missing: without them every run would "
-                 "forget what was already posted. Add them in Settings → Secrets and variables → Actions.")
     day = today_ist()
     site = os.environ.get("SITE_URL", config.SITE_URL_DEFAULT).rstrip("/")
     max_age = config.FIRST_RUN_AGE_DAYS if store.is_empty() else config.MAX_AGE_DAYS
@@ -76,7 +73,7 @@ def main():
         sections = post.pick_sections(found)
         print("\n" + "=" * 70 + "\nWHATSAPP POST (dry run; Telegram gets one message per section)\n" + "=" * 70)
         print(post.whatsapp_text(sections, day, site))
-        # Preview for the local website (web dev server reads it when Supabase isn't configured)
+        # Preview for the local website (the dev server shows this instead of the published post)
         config.LOCAL_STATE.mkdir(exist_ok=True)
         preview = [dict(public_job(j), id=i) for i, j in enumerate(j for jobs in sections.values() for j in jobs)]
         (config.LOCAL_STATE / "preview_post.json").write_text(
@@ -91,7 +88,7 @@ def main():
 
     # 2. Save, then pick today's post (per section) from everything not yet posted
     store.save_jobs(found)
-    pool = store.unposted_pool(days=config.MAX_AGE_DAYS + 4)
+    pool = store.unposted_pool()
     sections = post.pick_sections(pool)
     chosen = [j for jobs in sections.values() for j in jobs]
     log(f"Pool of unposted jobs: {len(pool)} → today's post: "
@@ -102,7 +99,7 @@ def main():
 
     tg_posts = post.telegram_posts(sections, day, site)
     wa_text = post.whatsapp_text(sections, day, site)
-    store.save_daily_post(day, chosen, "\n\n".join(tg_posts), wa_text)
+    store.save_daily_post(day, chosen)
 
     if args.wait:
         wait_until_send_time()
@@ -125,22 +122,7 @@ def main():
     except Exception as e:
         errors.append(str(e))
 
-    sent = 0
-    if os.environ.get("RESEND_API_KEY") and os.environ.get("EMAIL_FROM"):
-        for user in store.email_subscribers():
-            jobs = post.pick(pool, n=config.JOBS_PER_POST, fields=user["fields"], work_modes=user.get("work_modes"),
-                             experience=user.get("experience") or ["0-2"])
-            if not jobs:
-                continue
-            try:
-                notify.email(user["email"], f"🎯 {len(jobs)} new jobs for you · {post.nice_day(day)}",
-                             post.email_html(user, jobs, day, site), f"{site}/unsubscribe/{user['token']}")
-                sent += 1
-            except Exception as e:
-                errors.append(str(e))
-        log(f"Emails sent: {sent}")
-
-    summary = f"✅ Fresher Job Hunt {day}: {len(chosen)} jobs posted" + (f", {sent} emails" if sent else "")
+    summary = f"✅ Fresher Job Hunt {day}: {len(chosen)} jobs posted"
     if errors:
         summary += f"\n⚠️ {len(errors)} errors:\n" + "\n".join(errors[:5])
     log(summary)

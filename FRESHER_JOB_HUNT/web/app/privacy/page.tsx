@@ -6,33 +6,18 @@ export default function Privacy() {
   return (
     <section className="section narrow prose">
       <h1 className="page-title">Privacy policy</h1>
-      <p className="muted">Last updated: 8 November 2026</p>
+      <p className="muted">Last updated: 9 November 2026</p>
 
       <h2>What we collect</h2>
       <p>
-        When you sign up we store your <strong>name</strong>, <strong>email address</strong>, your{" "}
-        <strong>phone number</strong> if you choose to give it, the{" "}
-        <strong>job fields</strong>, <strong>experience level</strong> and <strong>work type</strong> you picked, whether you want email alerts, and the time
-        you gave consent.
+        Nothing. This site has no accounts or signup forms and doesn&apos;t ask for your name, email or phone number.
       </p>
 
-      <h2>Why</h2>
-      <p>Only to send you daily job alerts that match your choices. We don&apos;t sell, rent or share your data.</p>
-
-      <h2>Where it&apos;s stored</h2>
+      <h2>Hosting and Telegram</h2>
       <p>
-        In a private database (Supabase) that only our server can access. Emails are sent through an email delivery
-        provider. If you join our Telegram channel or WhatsApp group, those apps&apos; own privacy policies apply there.
+        Like most websites, our hosting provider may keep standard technical logs. If you join our Telegram channel,
+        Telegram&apos;s own privacy policy applies there.
       </p>
-
-      <h2>Your choices</h2>
-      <ul>
-        <li>Every email has an unsubscribe link that stops emails immediately.</li>
-        <li>
-          To delete your data completely, email us from the address you signed up with and we&apos;ll remove it within 7
-          days.
-        </li>
-      </ul>
 
       <h2>Job listings</h2>
       <p>

@@ -1,4 +1,4 @@
-"""Sending: Telegram (channel + admin) and optional email via Resend."""
+"""Sending: Telegram (channel + admin)."""
 
 import os
 
@@ -28,12 +28,3 @@ def telegram(chat_id, text, html=True):
             **({"parse_mode": "HTML"} if html else {})})
         if not r.ok:
             raise RuntimeError(f"Telegram {chat_id}: {r.status_code} {r.text[:200]}")
-
-
-def email(to, subject, html_body, unsubscribe_url):
-    r = requests.post("https://api.resend.com/emails", timeout=30,
-                      headers={"Authorization": f"Bearer {os.environ['RESEND_API_KEY']}"},
-                      json={"from": os.environ["EMAIL_FROM"], "to": [to], "subject": subject, "html": html_body,
-                            "headers": {"List-Unsubscribe": f"<{unsubscribe_url}>"}})
-    if not r.ok:
-        raise RuntimeError(f"Resend {to}: {r.status_code} {r.text[:200]}")

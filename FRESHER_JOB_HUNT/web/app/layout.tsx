@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import Link from "next/link";
+import { TELEGRAM_URL } from "@/lib/links";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -20,9 +21,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </Link>
           <nav>
             <Link href="/today">Today&apos;s jobs</Link>
-            <Link href="/#signup" className="nav-cta">
-              Sign up
-            </Link>
+            <a href={TELEGRAM_URL} className="nav-cta" target="_blank" rel="noopener noreferrer">
+              Join Telegram
+            </a>
           </nav>
         </header>
         <main>{children}</main>

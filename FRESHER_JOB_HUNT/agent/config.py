@@ -5,7 +5,8 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
-LOCAL_STATE = HERE / "state"                 # used only when Supabase isn't configured (local testing)
+DATA_DIR = ROOT / "data"                     # jobs.json + latest_post.json, committed by the daily GitHub Action
+LOCAL_STATE = HERE / "state"                 # dry-run preview for the local website (gitignored)
 
 # ── Daily post ───────────────────────────────────────────────────────────────
 JOBS_PER_POST = 12                           # 10–12 jobs per experience section in the daily post
@@ -13,6 +14,8 @@ MIN_JOBS_PER_POST = 10
 MAX_PER_COMPANY = 2                          # variety: at most 2 jobs from one company per post
 MAX_AGE_DAYS = 3                             # only jobs posted in the last N days count as new
 FIRST_RUN_AGE_DAYS = 7                       # look further back the very first time
+POOL_DAYS = MAX_AGE_DAYS + 4                 # jobs found but not posted stay eligible for this many days
+SEEN_DAYS = 30                               # remember a job's URL this long so it's never posted twice
 SEND_TIME_IST = "10:00"                      # the scheduled run waits until this time before sending
 MODEL = "ministral-8b-latest"                # Mistral model for jobs whose experience level the rules can't tell
 MAX_LLM_CHECKS = 60                          # LLM checks per run (one batched call; keeps it inside the free tier)
@@ -28,7 +31,7 @@ EXPERIENCE = {
 }
 SITE_URL_DEFAULT = "https://fresher-job-hunt.vercel.app"
 
-# ── Fields (what users pick at signup) ──────────────────────────────────────
+# ── Fields ───────────────────────────────────────────────────────────────────
 # key: (label, emoji, title pattern). Order matters: the first match is the job's main field.
 FIELDS = {
     "ai_engineer":       ("AI Engineer",        "🤖", r"\b(ai|artificial intelligence|gen ?ai|llm|nlp|computer vision|agentic|prompt engineer)\b"),

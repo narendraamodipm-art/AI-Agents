@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { latestPost, niceDay } from "@/lib/jobs";
 import ExperienceSections from "../components/ExperienceSections";
 import JoinButtons from "../components/JoinButtons";
@@ -19,9 +18,6 @@ export default async function Today() {
       </p>
       <JoinButtons />
       {post?.jobs.length ? <ExperienceSections jobs={post.jobs} /> : null}
-      <p className="muted center">
-        Want only your fields and level by email? <Link href="/#signup">Sign up free</Link>
-      </p>
     </section>
   );
 }
