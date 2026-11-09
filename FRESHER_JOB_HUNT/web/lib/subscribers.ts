@@ -22,6 +22,13 @@ export const findByToken = (token: string) => findBy("token", token);
 export const findBySubscription = (id: string) => findBy("razorpay_subscription_id", id);
 export const findByTelegram = (userId: number) => findBy("telegram_user_id", userId);
 
+/** True when too many checkouts were started recently, which stops one script creating subscriptions in a loop. */
+export async function tooManyRecentCheckouts(limit: number, minutes: number) {
+  const since = new Date(Date.now() - minutes * 60_000).toISOString();
+  const rows = await rest<unknown[]>(`subscribers?select=id&status=eq.created&created_at=gte.${since}&limit=${limit}`);
+  return rows.length >= limit;
+}
+
 export function createSubscriber(token: string, subscriptionId: string) {
   return rest("subscribers", {
     method: "POST",

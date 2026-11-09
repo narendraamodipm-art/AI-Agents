@@ -58,7 +58,7 @@ def main():
 
     store = get_store()
     day = today_ist()
-    site = os.environ.get("SITE_URL", config.SITE_URL_DEFAULT).rstrip("/")
+    site = (os.environ.get("SITE_URL") or config.SITE_URL_DEFAULT).rstrip("/")
     max_age = config.FIRST_RUN_AGE_DAYS if store.is_empty() else config.MAX_AGE_DAYS
     log(f"Storage: {store.name} · day {day} · looking back {max_age} days")
 
@@ -75,7 +75,7 @@ def main():
         print(post.whatsapp_text(sections, day, site))
         # Preview for the local website (the dev server shows this instead of the published post)
         config.LOCAL_STATE.mkdir(exist_ok=True)
-        preview = [dict(public_job(j), id=i) for i, j in enumerate(j for jobs in sections.values() for j in jobs)]
+        preview = [dict(public_job(j), id=i) for i, j in enumerate(post.teaser_jobs(sections))]
         (config.LOCAL_STATE / "preview_post.json").write_text(
             json.dumps({"day": day, "jobs": preview}, ensure_ascii=False, indent=1), "utf-8")
         print(f"\nAll {len(found)} jobs found:")
@@ -86,17 +86,19 @@ def main():
                   f"{j['location']} | {j['work_mode']} | {j['posted_at']} | min_yrs={j.get('min_years')} | {j['source']}")
         return
 
-    # Paid mode: remove members whose subscription has run out
     paid_channel = os.environ.get("TELEGRAM_PAID_CHANNEL_ID")
-    removal_errors = []
-    if paid_channel:
-        for member in store.expired_members():
-            try:
-                notify.remove_member(paid_channel, member["telegram_user_id"])
-                store.mark_removed(member["id"])
-                log(f"Removed expired subscriber {member['id']}")
-            except Exception as e:
-                removal_errors.append(str(e))
+    if not paid_channel:
+        sys.exit("TELEGRAM_PAID_CHANNEL_ID is required: it's the private channel the jobs are posted to.")
+
+    # Remove members whose subscription has run out
+    errors = []
+    for member in store.expired_members():
+        try:
+            notify.remove_member(paid_channel, member["telegram_user_id"])
+            store.mark_removed(member["id"])
+            log(f"Removed expired subscriber {member['id']}")
+        except Exception as e:
+            errors.append(str(e))
 
     # 2. Save, then pick today's post (per section) from everything not yet posted
     store.save_jobs(found)
@@ -111,29 +113,20 @@ def main():
 
     tg_posts = post.telegram_posts(sections, day, site)
     wa_text = post.whatsapp_text(sections, day, site)
-    store.save_daily_post(day, chosen, post.teaser_jobs(sections) if paid_channel else None)
+    store.save_daily_post(day, chosen, post.teaser_jobs(sections))
 
     if args.wait:
         wait_until_send_time()
 
     # 3. Send
-    errors = removal_errors
-    channel = os.environ.get("TELEGRAM_CHANNEL_ID")
-    full_list_to = paid_channel or channel
-    posted = chosen if not full_list_to else []          # only jobs that really went out count as posted
-    if full_list_to:
-        for key, tg_text in zip(sections, tg_posts):
-            try:
-                notify.telegram(full_list_to, tg_text, html=True)
-                posted += sections[key]
-            except Exception as e:
-                errors.append(str(e))
-        log(f"Posted {len(posted)} of {len(chosen)} jobs to Telegram channel {full_list_to}")
-    if paid_channel and channel:
+    posted = []                                          # only jobs that really went out count as posted
+    for key, tg_text in zip(sections, tg_posts):
         try:
-            notify.telegram(channel, post.teaser_post(sections, day, site), html=True)
+            notify.telegram(paid_channel, tg_text, html=True)
+            posted += sections[key]
         except Exception as e:
             errors.append(str(e))
+    log(f"Posted {len(posted)} of {len(chosen)} jobs to the private channel")
     store.mark_posted([j["id"] for j in posted], day)
 
     try:

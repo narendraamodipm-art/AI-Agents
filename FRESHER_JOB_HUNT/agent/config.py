@@ -5,7 +5,6 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
-DATA_DIR = ROOT / "data"                     # jobs.json + latest_post.json, committed by the daily GitHub Action
 LOCAL_STATE = HERE / "state"                 # dry-run preview for the local website (gitignored)
 
 # ── Daily post ───────────────────────────────────────────────────────────────
@@ -16,7 +15,7 @@ MAX_AGE_DAYS = 3                             # only jobs posted in the last N da
 FIRST_RUN_AGE_DAYS = 7                       # look further back the very first time
 POOL_DAYS = MAX_AGE_DAYS + 4                 # jobs found but not posted stay eligible for this many days
 SEEN_DAYS = 30                               # remember a job's URL this long so it's never posted twice
-TEASER_PER_SECTION = 1                       # jobs per section in the free channel (paid mode only)
+TEASER_PER_SECTION = 1                       # jobs per section shown free on the website
 GRACE_DAYS = 2                               # days after paid_until before a non-renewing member is removed
 SEND_TIME_IST = "10:00"                      # the scheduled run waits until this time before sending
 MODEL = "ministral-8b-latest"                # Mistral model for jobs whose experience level the rules can't tell

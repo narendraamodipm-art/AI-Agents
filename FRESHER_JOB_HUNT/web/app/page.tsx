@@ -1,9 +1,7 @@
-import Link from "next/link";
 import { EXPERIENCE, FIELDS } from "@/lib/fields";
 import { latestPost, niceDay } from "@/lib/jobs";
 import ExperienceSections from "./components/ExperienceSections";
 import SubscribeCard from "./components/SubscribeCard";
-import TelegramCard from "./components/TelegramCard";
 
 export const revalidate = 300; // refresh the jobs preview every 5 minutes
 
@@ -40,7 +38,7 @@ export default async function Home() {
           </div>
           <ul className="how">
             <li>
-              <b>1.</b> Join the Telegram channel
+              <b>1.</b> Subscribe and join our private Telegram channel
             </li>
             <li>
               <b>2.</b> Our agent scans company career pages every morning
@@ -50,20 +48,14 @@ export default async function Home() {
             </li>
           </ul>
         </div>
-        <div className="hero-side">
+        <div id="subscribe">
           <SubscribeCard />
-          <TelegramCard />
         </div>
       </section>
 
       <section className="section">
         <div className="section-head">
-          <h2>{post ? `Today's jobs · ${niceDay(post.day)}` : "Today's jobs"}</h2>
-          {post && post.jobs.length > 0 && (
-            <Link href="/today" className="link">
-              See all {post.jobs.length} →
-            </Link>
-          )}
+          <h2>{post ? `Sample jobs · ${niceDay(post.day)}` : "Sample jobs"}</h2>
         </div>
         {post?.jobs.length ? (
           <ExperienceSections jobs={post.jobs} limitPerSection={3} />

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-export const metadata: Metadata = { title: "Privacy | Fresher Job Hunt" };
+export const metadata: Metadata = { title: "Privacy | JOB HUNTER" };
 
 export default function Privacy() {
   return (
@@ -10,8 +10,7 @@ export default function Privacy() {
 
       <h2>What we collect</h2>
       <p>
-        Browsing the site and joining the free Telegram channel needs no account, and we don&apos;t ask for your
-        details. If you buy a Premium subscription, we store your <strong>email</strong>, <strong>phone number</strong>,
+        Browsing the site needs no account, and we don&apos;t ask for your details. If you buy a Premium subscription, we store your <strong>email</strong>, <strong>phone number</strong>,
         <strong> Telegram ID and username</strong>, and your <strong>payment records</strong> (payment ID, amount,
         method, status and date).
       </p>

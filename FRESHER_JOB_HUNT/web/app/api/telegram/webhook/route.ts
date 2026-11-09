@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { razorpay } from "@/lib/razorpay";
 import {
   findByTelegram,
   findByToken,
@@ -53,6 +54,30 @@ async function handleStart(chatId: number, from: From, token: string | undefined
   });
 }
 
+/** /cancel asks first; /confirmcancel stops renewals. Access continues until the end of the paid month. */
+async function handleCancel(chatId: number, from: From, confirmed: boolean) {
+  const subscriber = await findByTelegram(from.id);
+  if (!subscriber || !hasAccess(subscriber)) {
+    return say(chatId, "I couldn't find an active subscription for this Telegram account.");
+  }
+  if (!confirmed) {
+    return say(chatId, "Stop your ₹99/month subscription? You keep access until the paid period ends. Send /confirmcancel to confirm.");
+  }
+  try {
+    await razorpay(`subscriptions/${subscriber.razorpay_subscription_id}/cancel`, { cancel_at_cycle_end: 1 });
+  } catch (e) {
+    console.error("cancel failed", e);
+    return say(chatId, "I couldn't cancel that just now. It may already be cancelled. Please try again later.");
+  }
+  const until = new Date(subscriber.paid_until!).toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    timeZone: "Asia/Kolkata",
+  });
+  return say(chatId, `✅ Cancelled. You won't be charged again, and you keep access until ${until}.`);
+}
+
 /** Only paid accounts are let in, whichever invite link they used. */
 async function handleJoinRequest(chatId: number, from: From) {
   if (String(chatId) !== process.env.TELEGRAM_PAID_CHANNEL_ID) return;
@@ -75,8 +100,11 @@ export async function POST(request: Request) {
 
   if (join) {
     await handleJoinRequest(join.chat.id, join.from);
-  } else if (message?.from && message.chat.type === "private" && message.text?.startsWith("/start")) {
-    await handleStart(message.chat.id, message.from, message.text.split(/\s+/)[1]);
+  } else if (message?.from && message.chat.type === "private" && message.text) {
+    const [command, argument] = message.text.trim().split(/\s+/);
+    if (command === "/start") await handleStart(message.chat.id, message.from, argument);
+    else if (command === "/cancel") await handleCancel(message.chat.id, message.from, false);
+    else if (command === "/confirmcancel") await handleCancel(message.chat.id, message.from, true);
   }
   return NextResponse.json({ ok: true });
 }

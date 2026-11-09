@@ -8,7 +8,7 @@ on:
   workflow_dispatch: # manual run from the Actions tab (posts immediately)
 
 permissions:
-  contents: write # commits FRESHER_JOB_HUNT/data/ so posted jobs are remembered between runs
+  contents: read
 
 concurrency:
   group: fresher-job-alerts
@@ -35,7 +35,6 @@ jobs:
           TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          TELEGRAM_CHANNEL_ID: ${{ secrets.TELEGRAM_CHANNEL_ID }}
           TELEGRAM_PAID_CHANNEL_ID: ${{ secrets.TELEGRAM_PAID_CHANNEL_ID }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
@@ -49,18 +48,3 @@ jobs:
           else
             python FRESHER_JOB_HUNT/agent/run.py
           fi
-
-      # Runs even if posting failed part-way, so jobs already posted aren't posted again tomorrow.
-      - name: Save posted jobs to the repo
-        if: success() || failure()
-        run: |
-          git add FRESHER_JOB_HUNT/data
-          if git diff --cached --quiet; then
-            echo "Nothing new to save"
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Fresher Job Hunt: daily post data"
-          git pull --rebase origin main
-          git push origin HEAD:main

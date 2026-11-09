@@ -14,5 +14,3 @@ export async function rest<T = unknown>(path: string, init: RequestInit = {}): P
   const text = await r.text();
   return (text ? JSON.parse(text) : null) as T;
 }
-
-export const supabaseConfigured = () => Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY);

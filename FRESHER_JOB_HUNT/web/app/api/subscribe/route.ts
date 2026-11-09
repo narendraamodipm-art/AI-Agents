@@ -1,11 +1,14 @@
 import { randomBytes } from "node:crypto";
 import { NextResponse } from "next/server";
 import { razorpay, type RazorpaySubscription } from "@/lib/razorpay";
-import { createSubscriber } from "@/lib/subscribers";
+import { createSubscriber, tooManyRecentCheckouts } from "@/lib/subscribers";
 
 /** Starts a ₹99/month subscription. Razorpay's checkout collects the buyer's email and phone. */
 export async function POST() {
   try {
+    if (await tooManyRecentCheckouts(30, 10)) {
+      return NextResponse.json({ error: "Too many people are checking out. Please try again shortly." }, { status: 429 });
+    }
     const token = randomBytes(24).toString("hex");
     const subscription = await razorpay<RazorpaySubscription>("subscriptions", {
       plan_id: process.env.RAZORPAY_PLAN_ID,

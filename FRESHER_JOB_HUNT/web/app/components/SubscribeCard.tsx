@@ -2,6 +2,7 @@
 
 import Script from "next/script";
 import { useEffect, useState } from "react";
+import { markSubscribed } from "@/lib/subscribed";
 
 type Checkout = new (options: Record<string, unknown>) => { open(): void };
 type Handled = { razorpay_payment_id: string; razorpay_subscription_id: string; razorpay_signature: string };
@@ -35,6 +36,7 @@ export default function SubscribeCard() {
     });
     const data = (await r.json()) as { botUrl?: string; error?: string };
     if (!r.ok || !data.botUrl) throw new Error(data.error ?? "Verification failed");
+    markSubscribed();
     try {
       localStorage.setItem(SAVED, data.botUrl);
     } catch {
@@ -53,7 +55,7 @@ export default function SubscribeCard() {
       new window.Razorpay({
         key: data.keyId,
         subscription_id: data.subscriptionId,
-        name: "Tech Jobs India: Premium",
+        name: "JOB HUNTER",
         description: "₹99 per month",
         theme: { color: "#7c3aed" },
         modal: { ondismiss: () => setBusy(false) },
@@ -101,7 +103,10 @@ export default function SubscribeCard() {
           {error}
         </p>
       )}
-      <p className="fine">Renews automatically every month. Payments appear as NIKHIL KUMAR on your statement.</p>
+      <p className="fine">
+        Renews automatically every month. Cancel any time by sending /cancel to our Telegram bot. Payments are processed
+        by Razorpay, and your statement shows the merchant&apos;s registered name.
+      </p>
     </div>
   );
 }
