@@ -64,6 +64,26 @@ class SupabaseStore:
                "teaser": [public_job(j) for j in teaser]}
         self._req("POST", "daily_posts", {"on_conflict": "day"}, row, "resolution=merge-duplicates,return=minimal")
 
+    def database_bytes(self):
+        return self._req("POST", "rpc/database_size_bytes", body={})
+
+    def trim_history(self, limit):
+        """Delete up to `limit` of the oldest jobs and two old daily posts. Returns how many jobs went.
+
+        Only job data is touched, never subscribers or payments. Jobs younger than SEEN_DAYS stay,
+        because they're what stops a job being posted twice.
+        """
+        cutoff = datetime.now(timezone.utc) - timedelta(days=config.SEEN_DAYS)
+        rows = self._req("GET", "jobs", {"select": "id", "found_at": f"lt.{cutoff.isoformat()}", "order": "id",
+                                         "limit": min(limit, 1000)})
+        if rows:
+            self._req("DELETE", "jobs", {"id": f"in.({','.join(str(r['id']) for r in rows)})"}, prefer="return=minimal")
+        days = self._req("GET", "daily_posts", {"select": "day", "day": f"lt.{cutoff.date().isoformat()}", "order": "day",
+                                                "limit": 2})
+        if days:
+            self._req("DELETE", "daily_posts", {"day": f"in.({','.join(d['day'] for d in days)})"}, prefer="return=minimal")
+        return len(rows)
+
     def expired_members(self):
         cutoff = (datetime.now(timezone.utc) - timedelta(days=config.GRACE_DAYS)).isoformat()
         return self._req("GET", "subscribers", {"select": "id,telegram_user_id", "paid_until": f"lt.{cutoff}",

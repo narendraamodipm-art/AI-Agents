@@ -106,6 +106,14 @@ def main():
 
     # 2. Save, then pick today's post (per section) from everything not yet posted
     store.save_jobs(found)
+    # Deleting doesn't shrink the reported size, so delete about what was added rather than "until it's small".
+    try:
+        size = store.database_bytes()
+        if size >= config.DB_CLEANUP_BYTES:
+            trimmed = store.trim_history(max(len(found) * 2, 200))
+            log(f"Database is {size // 1024 ** 2} MB: deleted {trimmed} old job records")
+    except Exception as e:
+        errors.append(f"Database cleanup skipped: {e}")
     pool = store.unposted_pool()
     sections = post.pick_sections(pool)
     chosen = [j for jobs in sections.values() for j in jobs]

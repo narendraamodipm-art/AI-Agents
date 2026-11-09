@@ -74,3 +74,9 @@ alter table public.daily_posts  enable row level security;
 grant usage on schema public to service_role;
 grant select, insert, update, delete on public.subscribers, public.payments, public.jobs, public.daily_posts to service_role;
 grant usage, select on sequence public.jobs_id_seq to service_role;
+
+-- Lets the daily job read the database size, so it can trim old job records at 450 MB.
+create or replace function public.database_size_bytes() returns bigint
+  language sql security definer set search_path = '' as $$ select pg_database_size(current_database()) $$;
+revoke all on function public.database_size_bytes() from public, anon, authenticated;
+grant execute on function public.database_size_bytes() to service_role;
