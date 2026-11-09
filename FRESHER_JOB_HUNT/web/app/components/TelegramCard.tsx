@@ -7,14 +7,9 @@ export default function TelegramCard() {
       <span className="tg-icon" aria-hidden="true">
         ✈️
       </span>
-      <h3>Get job links on Telegram</h3>
-      <p>Join the channel and new jobs reach you every day at 10 AM IST. No signup, no forms, completely free.</p>
-      <ul>
-        <li>10–12 jobs per experience level</li>
-        <li>Direct links to company apply pages</li>
-        <li>Leave any time with one tap</li>
-      </ul>
-      <TelegramLink className="btn telegram block">Join the Telegram channel</TelegramLink>
+      <h3>Free channel</h3>
+      <p>Join free on Telegram for a sample of each day&apos;s jobs. No signup needed.</p>
+      <TelegramLink className="btn telegram block">Join the free channel</TelegramLink>
       <p className="tg-link">{TELEGRAM_URL.replace("https://", "")}</p>
     </div>
   );

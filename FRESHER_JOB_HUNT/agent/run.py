@@ -86,6 +86,18 @@ def main():
                   f"{j['location']} | {j['work_mode']} | {j['posted_at']} | min_yrs={j.get('min_years')} | {j['source']}")
         return
 
+    # Paid mode: remove members whose subscription has run out
+    paid_channel = os.environ.get("TELEGRAM_PAID_CHANNEL_ID")
+    removal_errors = []
+    if paid_channel:
+        for member in store.expired_members():
+            try:
+                notify.remove_member(paid_channel, member["telegram_user_id"])
+                store.mark_removed(member["id"])
+                log(f"Removed expired subscriber {member['id']}")
+            except Exception as e:
+                removal_errors.append(str(e))
+
     # 2. Save, then pick today's post (per section) from everything not yet posted
     store.save_jobs(found)
     pool = store.unposted_pool()
@@ -99,22 +111,30 @@ def main():
 
     tg_posts = post.telegram_posts(sections, day, site)
     wa_text = post.whatsapp_text(sections, day, site)
-    store.save_daily_post(day, chosen)
+    store.save_daily_post(day, chosen, post.teaser_jobs(sections) if paid_channel else None)
 
     if args.wait:
         wait_until_send_time()
 
     # 3. Send
-    errors = []
+    errors = removal_errors
     channel = os.environ.get("TELEGRAM_CHANNEL_ID")
-    if channel:
-        for tg_text in tg_posts:
+    full_list_to = paid_channel or channel
+    posted = chosen if not full_list_to else []          # only jobs that really went out count as posted
+    if full_list_to:
+        for key, tg_text in zip(sections, tg_posts):
             try:
-                notify.telegram(channel, tg_text, html=True)
+                notify.telegram(full_list_to, tg_text, html=True)
+                posted += sections[key]
             except Exception as e:
                 errors.append(str(e))
-        log(f"Posted {len(chosen)} jobs in {len(tg_posts)} sections to Telegram channel {channel}")
-    store.mark_posted([j["id"] for j in chosen], day)
+        log(f"Posted {len(posted)} of {len(chosen)} jobs to Telegram channel {full_list_to}")
+    if paid_channel and channel:
+        try:
+            notify.telegram(channel, post.teaser_post(sections, day, site), html=True)
+        except Exception as e:
+            errors.append(str(e))
+    store.mark_posted([j["id"] for j in posted], day)
 
     try:
         admin(f"📋 WhatsApp post for {day}. Copy everything below this line and paste it in your group:")
@@ -122,12 +142,12 @@ def main():
     except Exception as e:
         errors.append(str(e))
 
-    summary = f"✅ Fresher Job Hunt {day}: {len(chosen)} jobs posted"
+    summary = f"{'✅' if posted else '❌'} Fresher Job Hunt {day}: {len(posted)} jobs posted"
     if errors:
         summary += f"\n⚠️ {len(errors)} errors:\n" + "\n".join(errors[:5])
     log(summary)
     admin(summary)
-    if errors and not channel:
+    if errors and not posted:
         sys.exit(1)
 
 

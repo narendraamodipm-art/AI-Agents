@@ -2,6 +2,7 @@ import "server-only";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import type { Job } from "./fields";
+import { rest, supabaseConfigured } from "./supabase";
 
 export type DailyPost = { day: string; jobs: Job[] };
 
@@ -25,6 +26,13 @@ export async function latestPost(): Promise<DailyPost | null> {
   const preview = await localPreview();
   if (preview) return preview;
   try {
+    if (supabaseConfigured()) {
+      // Paid mode: the website only ever gets the free teaser, never the full list.
+      const rows = await rest<{ day: string; teaser: Job[] }[]>("daily_posts?select=day,teaser&order=day.desc&limit=1", {
+        next: { revalidate: 300 },
+      });
+      if (rows[0]?.teaser.length) return { day: rows[0].day, jobs: rows[0].teaser };
+    }
     const r = await fetch(POST_URL, { next: { revalidate: 300 } });
     return r.ok ? ((await r.json()) as DailyPost) : null;
   } catch (e) {

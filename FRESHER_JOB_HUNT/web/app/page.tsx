@@ -2,6 +2,7 @@ import Link from "next/link";
 import { EXPERIENCE, FIELDS } from "@/lib/fields";
 import { latestPost, niceDay } from "@/lib/jobs";
 import ExperienceSections from "./components/ExperienceSections";
+import SubscribeCard from "./components/SubscribeCard";
 import TelegramCard from "./components/TelegramCard";
 
 export const revalidate = 300; // refresh the jobs preview every 5 minutes
@@ -21,7 +22,7 @@ export default async function Home() {
           </h1>
           <p className="lead">
             10–12 filtered openings per experience level, from <strong>freshers to 6+ years</strong>, remote and
-            office roles in India. Every link goes straight to the company&apos;s apply page. Free, no spam.
+            office roles in India. Every link goes straight to the company&apos;s apply page. No spam.
           </p>
           <div className="fields">
             {EXPERIENCE.map((e) => (
@@ -49,7 +50,10 @@ export default async function Home() {
             </li>
           </ul>
         </div>
-        <TelegramCard />
+        <div className="hero-side">
+          <SubscribeCard />
+          <TelegramCard />
+        </div>
       </section>
 
       <section className="section">

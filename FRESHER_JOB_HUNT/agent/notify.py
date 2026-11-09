@@ -20,6 +20,16 @@ def split_message(text, limit=TG_LIMIT):
     return parts
 
 
+def remove_member(chat_id, user_id):
+    """Remove someone from a channel. Unbanning straight away lets them rejoin if they subscribe again."""
+    token = os.environ["TELEGRAM_BOT_TOKEN"]
+    for method, extra in (("banChatMember", {}), ("unbanChatMember", {"only_if_banned": True})):
+        r = requests.post(f"https://api.telegram.org/bot{token}/{method}", timeout=30,
+                          json={"chat_id": chat_id, "user_id": user_id, **extra})
+        if not r.ok:
+            raise RuntimeError(f"Telegram {method} {user_id}: {r.status_code} {r.text[:200]}")
+
+
 def telegram(chat_id, text, html=True):
     token = os.environ["TELEGRAM_BOT_TOKEN"]
     for part in split_message(text):
