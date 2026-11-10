@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SUPPORT_EMAIL } from "@/lib/contact";
 
 export const metadata: Metadata = { title: "Privacy | JOB HUNTER" };
 
@@ -33,6 +34,11 @@ export default function Privacy() {
         Jobs link to each company&apos;s own career page or job board. Our only charge is the optional Premium
         subscription to this job list. We never charge for a job or take money to get you hired. If anyone asks you to
         pay for a job offer, it&apos;s a scam.
+      </p>
+
+      <h2>Contact</h2>
+      <p>
+        To ask about or delete your data, email <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.
       </p>
     </section>
   );

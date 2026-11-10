@@ -28,7 +28,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main>{children}</main>
         <footer className="footer">
           <p>
-            Daily tech job alerts, freshers to 6+ years · <Link href="/privacy">Privacy</Link>
+            Daily tech job alerts, freshers to 6+ years
+          </p>
+          <p>
+            <Link href="/terms">Terms</Link> · <Link href="/refunds">Cancellation &amp; Refunds</Link> ·{" "}
+            <Link href="/privacy">Privacy</Link> · <Link href="/contact">Contact</Link>
           </p>
           <p className="muted">Jobs link to the company&apos;s own career page. Always check details before applying.</p>
         </footer>

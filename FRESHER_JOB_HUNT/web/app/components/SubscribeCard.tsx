@@ -104,7 +104,8 @@ export default function SubscribeCard() {
         </p>
       )}
       <p className="fine">
-        Renews automatically every month. Cancel any time by sending /cancel to our Telegram bot. Payments are processed
+        By subscribing you agree to our <a href="/terms">Terms</a> and{" "}
+        <a href="/refunds">Cancellation &amp; Refunds</a> policy. Renews automatically every month. Cancel any time by sending /cancel to our Telegram bot. Payments are processed
         by Razorpay, and your statement shows the merchant&apos;s registered name.
       </p>
     </div>
