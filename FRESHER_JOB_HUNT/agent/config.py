@@ -40,9 +40,14 @@ FIELDS = {
     "ai_engineer":       ("AI Engineer",        "🤖", r"\b(ai|artificial intelligence|gen ?ai|llm|nlp|computer vision|agentic|prompt engineer)\b"),
     "ml_engineer":       ("ML Engineer",        "🧠", r"machine learning|\bml\b|mlops|deep learning|data scien"),
     "data_engineer":     ("Data Engineer",      "🛠", r"data engineer|\betl\b|big data|data platform|analytics engineer|data pipeline|data warehouse"),
+    "cybersecurity":     ("Cybersecurity",      "🔐", r"cyber|security engineer|security analyst|information security|infosec|\bsoc\b|penetration|pen ?test|appsec|vulnerability|ethical hack|network security"),
     "data_analyst":      ("Data Analyst",       "📊", r"data analy|business analy|business intelligence|\bbi\b|analytics|insights analyst|product analyst|reporting analyst|mis analyst"),
-    "full_stack":        ("Full Stack",         "🌐", r"full ?stack|front ?end|back ?end|web developer|\breact\b|\bnode\b|\bmern\b|\bmean\b"),
-    "software_engineer": ("Software Engineer",  "💻", r"software|\bsde\b|developer|programmer|graduate engineer|engineer trainee|application engineer|cloud engineer|devops|\bqa\b|test engineer"),
+    "qa_testing":        ("QA / Testing",       "🧪", r"\bqa\b|quality assurance|quality engineer|test engineer|tester|testing|\bsdet\b|test automation|automation test|selenium"),
+    "frontend":          ("Frontend",           "🎨", r"front ?end|\breact\b|angular|\bvue\b|ui developer|ui engineer"),
+    "backend":           ("Backend",            "⚙️", r"back ?end|\bnode\b|java developer|python developer|golang|\.net developer|api developer|spring boot"),
+    "full_stack":        ("Full Stack",         "🌐", r"full ?stack|web developer|\bmern\b|\bmean\b"),
+    "software_engineer": ("Software Engineer",  "💻", r"software|\bsde\b|developer|programmer|graduate engineer|engineer trainee|application engineer|cloud engineer|devops"),
+    "hr":                ("HR",                 "👥", r"\bhr\b|human resources?|recruiter|recruitment|talent acquisition|people operations|people partner"),
 }
 FIELD_PATTERNS = {k: re.compile(v[2], re.I) for k, v in FIELDS.items()}
 
@@ -59,7 +64,7 @@ TITLE_2_4 = re.compile(r"\b(ii|engineer 2|sde ?2|sde-2|mid[- ]level|intermediate
 # Executive roles are skipped in every section.
 EXEC_TITLE = re.compile(r"\b(director|vp|vice president|head|chief|cto|cio|president|distinguished|fellow)\b", re.I)
 NON_TECH = re.compile(
-    r"sales|account executive|account manager|recruit|talent acquisition|\bhr\b|human resources|payroll|finance|"
+    r"sales|account executive|account manager|payroll|finance|"
     r"\btax\b|legal|marketing|content|compliance|audit|fraud|customer success|customer experience|customer support|"
     r"operations associate|accounting|procurement|supply chain|brand|design intern|graphic|wells engineer|welding|"
     r"mechanical|civil|chemical|electrical|hardware|microbiology|clinical|nurse|pharma", re.I)
@@ -135,7 +140,7 @@ def is_mass_recruiter(company) -> bool:
 
 OFFICIAL_JOB_URL = re.compile(r"/job/|/jobs/\d|JobDetail", re.I)     # a single job's page, not a search or blog page
 WORKDAY_TERMS = ["intern", "graduate", "trainee", "fresher", "early career", "associate software engineer",
-                 "junior developer", "data analyst",
+                 "junior developer", "data analyst", "qa engineer", "security analyst", "hr intern",
                  # experienced sections
                  "software engineer", "data engineer", "machine learning engineer", "senior software engineer",
                  "lead engineer"]
@@ -143,12 +148,15 @@ WORKDAY_MAX_DETAILS = 30                     # job pages fetched per Workday com
 
 # Tavily web search, limited to job-board sites (≈ 6 searches a day = well inside the free tier)
 TAVILY_QUERIES = [
-    "AI engineer fresher OR intern OR jgraduate job India",
+    "AI engineer fresher OR intern OR graduate job India",
     "machine learning engineer intern OR fresher India",
     "data engineer fresher OR graduate OR intern India",
     "data analyst fresher OR intern OR entry level India",
     "full stack developer fresher OR intern India",
     "software engineer graduate OR fresher OR SDE 1 India",
+    "frontend OR backend developer fresher OR intern India",
+    "cybersecurity OR QA tester OR automation tester fresher India",
+    "HR intern OR HR executive OR recruiter fresher India",
     # experienced sections
     "software engineer 2-4 years experience India",
     "senior data engineer OR senior ML engineer India",

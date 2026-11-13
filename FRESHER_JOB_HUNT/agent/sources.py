@@ -265,7 +265,7 @@ def parse_web_result(url, host, title_hint, content_hint):
 
 
 def tavily_jobs(max_age):
-    if not os.environ.get("TAVILY_API_KEY"):
+    if not os.environ.get("TAVILY_API_KEY") or not morning_run():
         return []
     results = {}
     for q in config.TAVILY_QUERIES:
@@ -294,8 +294,13 @@ def official_job(company, r):
             "description": r.get("content") or ""}
 
 
+def morning_run():
+    """Tavily web searches run in the morning run only, to stay inside the free 1,000 searches a month."""
+    return (datetime.now(timezone.utc) + timedelta(hours=5, minutes=30)).hour < 14
+
+
 def official_sites(max_age):
-    if not os.environ.get("TAVILY_API_KEY"):
+    if not os.environ.get("TAVILY_API_KEY") or not morning_run():
         return []
     out = {}
     for company, domains in config.OFFICIAL_SITES.items():

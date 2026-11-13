@@ -3,9 +3,14 @@ export const FIELDS = [
   { key: "ai_engineer", label: "AI Engineer", emoji: "🤖" },
   { key: "ml_engineer", label: "ML Engineer", emoji: "🧠" },
   { key: "data_engineer", label: "Data Engineer", emoji: "🛠" },
+  { key: "cybersecurity", label: "Cybersecurity", emoji: "🔐" },
   { key: "data_analyst", label: "Data Analyst", emoji: "📊" },
+  { key: "qa_testing", label: "QA / Testing", emoji: "🧪" },
+  { key: "frontend", label: "Frontend", emoji: "🎨" },
+  { key: "backend", label: "Backend", emoji: "⚙️" },
   { key: "full_stack", label: "Full Stack", emoji: "🌐" },
   { key: "software_engineer", label: "Software Engineer", emoji: "💻" },
+  { key: "hr", label: "HR", emoji: "👥" },
 ] as const;
 
 export function fieldInfo(key: string) {
