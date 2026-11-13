@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BOT_USERNAME, POLICY_DATE, SUPPORT_EMAIL } from "@/lib/contact";
+import { PAYMENTS_OPEN } from "@/lib/flags";
 
 export const metadata: Metadata = { title: "Terms | JOB HUNTER" };
 
@@ -9,6 +10,9 @@ export default function Terms() {
     <section className="section narrow prose">
       <h1 className="page-title">Terms of service</h1>
       <p className="muted">Last updated: {POLICY_DATE}</p>
+      {!PAYMENTS_OPEN && (
+        <p className="card slim">Premium subscriptions aren&apos;t open yet. These terms apply once they open.</p>
+      )}
 
       <h2>What you get</h2>
       <p>

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { BOT_USERNAME, POLICY_DATE, SUPPORT_EMAIL } from "@/lib/contact";
+import { PAYMENTS_OPEN } from "@/lib/flags";
 
 export const metadata: Metadata = { title: "Cancellation & Refunds | JOB HUNTER" };
 
@@ -8,6 +9,9 @@ export default function Refunds() {
     <section className="section narrow prose">
       <h1 className="page-title">Cancellation &amp; Refunds</h1>
       <p className="muted">Last updated: {POLICY_DATE}</p>
+      {!PAYMENTS_OPEN && (
+        <p className="card slim">Premium subscriptions aren&apos;t open yet. This policy applies once they open.</p>
+      )}
 
       <h2>Cancelling</h2>
       <ul>

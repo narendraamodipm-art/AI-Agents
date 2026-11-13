@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { PAYMENTS_OPEN } from "@/lib/flags";
 import { latestPost, niceDay } from "@/lib/jobs";
 import ExperienceSections from "../components/ExperienceSections";
 
@@ -17,9 +18,13 @@ export default async function Today() {
           : "No list yet: new jobs are added every day at 10:00 AM IST."}
       </p>
       <p>
-        <Link href="/#subscribe" className="btn primary">
-          Subscribe for ₹99/month
-        </Link>
+        {PAYMENTS_OPEN ? (
+          <Link href="/#subscribe" className="btn primary">
+            Subscribe for ₹99/month
+          </Link>
+        ) : (
+          <span className="muted">Premium subscriptions are coming soon.</span>
+        )}
       </p>
       {post?.jobs.length ? <ExperienceSections jobs={post.jobs} /> : null}
     </section>

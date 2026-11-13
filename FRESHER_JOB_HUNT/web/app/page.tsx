@@ -1,5 +1,7 @@
 import { EXPERIENCE, FIELDS } from "@/lib/fields";
 import { latestPost, niceDay } from "@/lib/jobs";
+import { PAYMENTS_OPEN } from "@/lib/flags";
+import ComingSoonCard from "./components/ComingSoonCard";
 import ExperienceSections from "./components/ExperienceSections";
 import SubscribeCard from "./components/SubscribeCard";
 
@@ -38,7 +40,7 @@ export default async function Home() {
           </div>
           <ul className="how">
             <li>
-              <b>1.</b> Subscribe and join our private Telegram channel
+              <b>1.</b> {PAYMENTS_OPEN ? "Subscribe and join" : "Premium members join"} our private Telegram channel
             </li>
             <li>
               <b>2.</b> Our agent scans company career pages every morning
@@ -48,9 +50,7 @@ export default async function Home() {
             </li>
           </ul>
         </div>
-        <div id="subscribe">
-          <SubscribeCard />
-        </div>
+        <div id="subscribe">{PAYMENTS_OPEN ? <SubscribeCard /> : <ComingSoonCard />}</div>
       </section>
 
       <section className="section">

@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import Link from "next/link";
+import { PAYMENTS_OPEN } from "@/lib/flags";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -20,9 +21,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </Link>
           <nav>
             <Link href="/today">Sample jobs</Link>
-            <Link href="/#subscribe" className="nav-cta">
-              Subscribe
-            </Link>
+            {PAYMENTS_OPEN && (
+              <Link href="/#subscribe" className="nav-cta">
+                Subscribe
+              </Link>
+            )}
           </nav>
         </header>
         <main>{children}</main>

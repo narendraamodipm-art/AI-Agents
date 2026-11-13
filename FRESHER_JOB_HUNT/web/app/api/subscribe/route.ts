@@ -1,10 +1,14 @@
 import { randomBytes } from "node:crypto";
 import { NextResponse } from "next/server";
+import { PAYMENTS_OPEN } from "@/lib/flags";
 import { razorpay, type RazorpaySubscription } from "@/lib/razorpay";
 import { createSubscriber, tooManyRecentCheckouts } from "@/lib/subscribers";
 
 /** Starts a ₹99/month subscription. Razorpay's checkout collects the buyer's email and phone. */
 export async function POST() {
+  if (!PAYMENTS_OPEN) {
+    return NextResponse.json({ error: "Subscriptions aren't open yet." }, { status: 503 });
+  }
   try {
     if (await tooManyRecentCheckouts(30, 10)) {
       return NextResponse.json({ error: "Too many people are checking out. Please try again shortly." }, { status: 429 });

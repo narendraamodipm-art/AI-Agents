@@ -1,4 +1,5 @@
 import { FIELDS, type Job } from "@/lib/fields";
+import { PAYMENTS_OPEN } from "@/lib/flags";
 import ApplyButton from "./ApplyButton";
 
 const MODE: Record<string, string> = { remote: "Remote", hybrid: "Hybrid", onsite: "On-site" };
@@ -27,7 +28,7 @@ export default function JobList({ jobs, limit }: { jobs: Job[]; limit?: number }
                     <span className={`mode ${j.work_mode ?? "onsite"}`}>{MODE[j.work_mode ?? "onsite"]}</span>
                   </div>
                 </div>
-                <ApplyButton id={j.id} title={j.title} />
+                <ApplyButton id={j.id} title={j.title} paymentsOpen={PAYMENTS_OPEN} />
               </li>
             ))}
           </ul>
