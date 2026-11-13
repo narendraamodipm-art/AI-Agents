@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import Link from "next/link";
-import { FREE_JOIN_URL } from "@/lib/contact";
+import { FREE_JOIN_URL, RESUME_TOOL_URL } from "@/lib/contact";
 import { PAYMENTS_OPEN } from "@/lib/flags";
 import "./globals.css";
 
@@ -22,6 +22,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </Link>
           <nav>
             <Link href="/today">Sample jobs</Link>
+            <a href={RESUME_TOOL_URL} className="nav-resume" target="_blank" rel="noopener noreferrer">
+              📄 Resume Match
+            </a>
             {PAYMENTS_OPEN ? (
               <Link href="/#subscribe" className="nav-cta">
                 Subscribe
@@ -45,7 +48,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <p className="muted">Jobs link to the company&apos;s own career page. Always check details before applying.</p>
           <p className="footer-tool">
             📄 Before you apply:{" "}
-            <a href="https://ai-resume-validator.streamlit.app/" target="_blank" rel="noopener noreferrer">
+            <a href={RESUME_TOOL_URL} target="_blank" rel="noopener noreferrer">
               Resume Match + Cover Letter
             </a>
           </p>

@@ -3,6 +3,7 @@ import { latestPost, niceDay } from "@/lib/jobs";
 import { PAYMENTS_OPEN } from "@/lib/flags";
 import ExperienceSections from "./components/ExperienceSections";
 import JoinFreeCard from "./components/JoinFreeCard";
+import ResumeToolCard from "./components/ResumeToolCard";
 import SubscribeCard from "./components/SubscribeCard";
 
 export const revalidate = 300; // refresh the jobs preview every 5 minutes
@@ -50,7 +51,10 @@ export default async function Home() {
             </li>
           </ul>
         </div>
-        <div id="subscribe">{PAYMENTS_OPEN ? <SubscribeCard /> : <JoinFreeCard />}</div>
+        <div className="hero-side">
+          <div id="subscribe">{PAYMENTS_OPEN ? <SubscribeCard /> : <JoinFreeCard />}</div>
+          <ResumeToolCard />
+        </div>
       </section>
 
       <section className="section">
