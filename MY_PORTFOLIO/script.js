@@ -11,6 +11,7 @@
     'docchat': 'https://rag-for-study-and-reser.streamlit.app/',
     'graphify': 'https://ai-agents-sage-ten.vercel.app/',
     'travel': 'https://ai-agents-plan-my-trip.streamlit.app/',
+    'jobhunter': 'https://job-hunter-kappa-mocha.vercel.app/',
   };
   const tree = (p) => REPO + '/tree/main/' + encodeURI(p);
 
@@ -39,6 +40,27 @@
   };
 
   const PROJECTS = [
+    {
+      id: 'jobhunter', icon: '🎯', type: 'agent', label: 'Agent',
+      title: 'JOB HUNTER: Daily Tech Job Alerts',
+      short: 'A daily agent that scans company career pages, sorts each job into 0–2, 2–4, 4–6 or 6+ years of experience, and posts 10–12 per level to a Telegram channel. It has a Next.js website and a Razorpay subscription flow.',
+      tags: ['Python', 'Mistral', 'Supabase', 'GitHub Actions', 'Telegram Bot API', 'Next.js', 'Vercel', 'Razorpay'],
+      steps: [
+        'GitHub Actions starts the agent every morning, with no server to run',
+        'Collect jobs from Greenhouse, Lever, Ashby and Workday APIs plus Tavily web search',
+        'Keep tech roles in India or remote, and tag each one with fields (AI, ML, Data, Full Stack, SDE)',
+        'Place each job in an experience band from the stated years and title rules; Mistral decides unclear cases',
+        'Skip anything already posted (job history in Supabase), then pick a varied 10–12 per band',
+        'Post one Telegram message per band, and show sample jobs on the website',
+      ],
+      highlights: [
+        'Senior / Lead / Principal titles set a minimum band, so "2+ years of Python" can\'t mislabel a principal role',
+        'A failed Telegram send never marks jobs as posted, so nothing is lost',
+        'Razorpay subscriptions with verified signatures, a Telegram join-request bot and automatic removal of lapsed members',
+        'Company apply links never reach the page HTML; a server route redirects to them',
+      ],
+      link: tree('FRESHER_JOB_HUNT'),
+    },
     {
       id: 'resume-matcher', icon: '📄', type: 'workflow', label: 'Workflow',
       title: 'Resume Matcher + Cover Letter Writer',

@@ -19,6 +19,7 @@ All of these run on free hosting. A GitHub Actions workflow keeps the Streamlit 
 | **DocChat AI (RAG)** | Answers questions about any PDF or web page, grounded in the top-4 chunks retrieved from Pinecone. | Python, LangChain, Mistral, Pinecone, Streamlit | [Open app](https://rag-for-study-and-reser.streamlit.app/) | [`RAG`](RAG) |
 | **Travel Planner AI Agent** | A ReAct agent that chooses between web search, weather forecasts and a budget calculator to build day-by-day trip plans. | Python, Mistral, Tavily, OpenWeather, Streamlit | [Open app](https://ai-agents-plan-my-trip.streamlit.app/) | [`travel_planner`](travel_planner) |
 | **GRAPHIFY** | Turns source code (Python, JS/TS, Java, HTML, Rust) into an interactive knowledge graph, with AI explanations. | Next.js, React Flow, Tailwind, Claude / Mistral | [Open app](https://ai-agents-sage-ten.vercel.app/) | [`GRAPHIFY`](GRAPHIFY) |
+| **JOB HUNTER** | A daily agent that finds tech jobs on company career pages, sorts them into 0–2, 2–4, 4–6 and 6+ years, and posts them to a Telegram channel. Includes a website and a Razorpay subscription flow (currently free to join). | Python, Mistral, Supabase, GitHub Actions, Telegram Bot API, Next.js, Vercel | [Open site](https://job-hunter-kappa-mocha.vercel.app/) | [`FRESHER_JOB_HUNT`](FRESHER_JOB_HUNT) |
 | **HahaBot** | A Mistral chatbot with four modes (Funny, Roast, Angry, Einstein). Each mode has its own system prompt and its own UI theme and layout. | Python, Mistral, Streamlit | [Open app](https://haha-funny-bot-h.streamlit.app/) | [`CHATBOT`](CHATBOT) |
 
 ## Repository layout
@@ -30,6 +31,7 @@ AI-Agents/
 ├── RAG/                  DocChat AI RAG app
 ├── travel_planner/       Travel Planner ReAct agent
 ├── GRAPHIFY/             Code → knowledge graph web app (Next.js); see its README
+├── FRESHER_JOB_HUNT/     JOB HUNTER: daily job agent + Telegram channel + website; see its README
 ├── JOB Agent/            Daily job-search agent with Telegram alerts; see its README
 ├── MY_PORTFOLIO/         Portfolio website (static HTML/CSS/JS, deployed to GitHub Pages)
 ├── .github/              Workflows: deploy the portfolio, keep the Streamlit apps awake
