@@ -3,7 +3,6 @@ import { latestPost, niceDay } from "@/lib/jobs";
 import { PAYMENTS_OPEN } from "@/lib/flags";
 import ExperienceSections from "./components/ExperienceSections";
 import JoinFreeCard from "./components/JoinFreeCard";
-import ResumeToolCard from "./components/ResumeToolCard";
 import SubscribeCard from "./components/SubscribeCard";
 
 export const revalidate = 300; // refresh the jobs preview every 5 minutes
@@ -16,7 +15,7 @@ export default async function Home() {
       <section className="hero">
         <div className="hero-copy">
           <p className="pill">
-            <span className="dot" /> New jobs every day at 10:00 AM IST
+            <span className="dot" /> New jobs twice a day: 10 AM &amp; 6 PM IST
           </p>
           <h1>
             Tech jobs for every stage, <span className="grad">delivered daily.</span>
@@ -47,14 +46,11 @@ export default async function Home() {
               <b>2.</b> Our agent scans company career pages every morning
             </li>
             <li>
-              <b>3.</b> You get 10–12 fresh jobs per level, every day at 10 AM
+              <b>3.</b> You get 10–12 fresh jobs per level, twice a day at 10 AM &amp; 6 PM
             </li>
           </ul>
         </div>
-        <div className="hero-side">
-          <div id="subscribe">{PAYMENTS_OPEN ? <SubscribeCard /> : <JoinFreeCard />}</div>
-          <ResumeToolCard />
-        </div>
+        <div id="subscribe">{PAYMENTS_OPEN ? <SubscribeCard /> : <JoinFreeCard />}</div>
       </section>
 
       <section className="section">
@@ -64,7 +60,7 @@ export default async function Home() {
         {post?.jobs.length ? (
           <ExperienceSections jobs={post.jobs} limitPerSection={3} />
         ) : (
-          <p className="muted card">The first daily list appears here after the agent&apos;s next 10 AM run.</p>
+          <p className="muted card">The first list appears here after the agent&apos;s next run (10 AM or 6 PM).</p>
         )}
       </section>
     </>

@@ -194,12 +194,14 @@ def workday(entry, max_age):
         except Exception:
             continue
         for p in data.get("jobPostings", []):
-            loc = p.get("locationsText", "")
-            if (title_prefilter(p.get("title", "")) and workday_age(p.get("postedOn", "")) <= max_age
-                    and (config.INDIA.search(loc) or "locations" in loc.lower())):
-                paths[p["externalPath"]] = True
+            loc = p.get("locationsText") or ""                # some sites (e.g. Accenture) leave these out
+            posted = p.get("postedOn")
+            if (title_prefilter(p.get("title", "")) and (not posted or workday_age(posted) <= max_age)
+                    and (not loc or config.INDIA.search(loc) or "locations" in loc.lower())):
+                paths[p["externalPath"]] = bool(posted)
     jobs = [_safe_one(workday_detail, company, base, path, f"https://{host}/{site}") for path in list(paths)[:config.WORKDAY_MAX_DETAILS]]
-    return [j for j in jobs if j]
+    # Listings without a date are checked against the detail page's date instead.
+    return [j for j, path in zip(jobs, paths) if j and (paths[path] or recent(j["posted_at"], max_age))]
 
 
 # ── Tavily web search (job-board sites only) ────────────────────────────────
@@ -274,6 +276,42 @@ def tavily_jobs(max_age):
             and recent(j["posted_at"], max_age + 4)]
 
 
+# ── Mass recruiters' own career sites (Tavily search limited to each official site) ──
+def official_job(company, r):
+    """A search result from a company's careers site → job, if it's an India job page."""
+    url, raw = r["url"], re.sub(r"\s+", " ", r.get("title", "")).strip()
+    if not config.OFFICIAL_JOB_URL.search(url):
+        return None
+    title = re.sub(r"\s*Job Details.*$", "", raw.split(" | ")[0]).strip()
+    title, _, place = title.partition(",")                    # "Data Analyst, CHENNAI, Tamil Nadu, India"
+    context = f"{place} {url} {(r.get('content') or '')[:300]}"
+    m = config.INDIA.search(context)
+    if not m:
+        return None
+    location = place.strip() or m.group().title()
+    return {"url": url, "title": clean_title(title), "company": company, "location": location,
+            "work_mode": work_mode_of(context), "posted_at": date.today().isoformat(), "source": "Official site",
+            "description": r.get("content") or ""}
+
+
+def official_sites(max_age):
+    if not os.environ.get("TAVILY_API_KEY"):
+        return []
+    out = {}
+    for company, domains in config.OFFICIAL_SITES.items():
+        r = SESSION.post("https://api.tavily.com/search", timeout=60,
+                         headers={"Authorization": f"Bearer {os.environ['TAVILY_API_KEY']}"},
+                         json={"query": f"{company} fresher OR graduate OR trainee OR entry level job India",
+                               "time_range": "week", "max_results": 10, "include_domains": domains})
+        if not r.ok:
+            continue
+        for res in r.json().get("results", []):
+            job = official_job(company, res)
+            if job and title_prefilter(job["title"]):
+                out[job["url"]] = job
+    return list(out.values())
+
+
 # ── Optional aggregators (only if keys are set) ─────────────────────────────
 def adzuna_jobs(max_age):
     app_id, app_key = os.environ.get("ADZUNA_APP_ID"), os.environ.get("ADZUNA_APP_KEY")
@@ -328,7 +366,8 @@ def collect(max_age, log=print):
              + [("Lever", lever, (s, c, max_age)) for s, c in config.LEVER.items()]
              + [("Ashby", ashby, (s, c, max_age)) for s, c in config.ASHBY.items()]
              + [("Workday", workday, (w, max_age)) for w in config.WORKDAY]
-             + [("Web (Tavily)", tavily_jobs, (max_age,)), ("Adzuna", adzuna_jobs, (max_age,)),
+             + [("Web (Tavily)", tavily_jobs, (max_age,)), ("Official sites", official_sites, (max_age,)),
+                ("Adzuna", adzuna_jobs, (max_age,)),
                 ("JSearch", jsearch_jobs, (max_age,))])
     with ThreadPoolExecutor(12) as pool:
         results = list(pool.map(lambda t: (t[0], _safe(t[1], *t[2])), tasks))

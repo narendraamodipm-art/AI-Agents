@@ -1,10 +1,10 @@
-name: Fresher job alerts (daily 10 AM IST)
+name: Fresher job alerts (10 AM and 6 PM IST)
 
 on:
   schedule:
-    # 04:00 UTC = 9:30 AM IST. Scheduled runs can start late, so the job starts early,
-    # finds jobs, then waits until 10:00 IST before posting (run.py --wait).
-    - cron: "0 4 * * *"
+    # Scheduled runs can start late, so each starts early, finds jobs, then waits for its slot (run.py --wait).
+    - cron: "0 4 * * *"    # 04:00 UTC = 9:30 AM IST → posts at 10:00 AM
+    - cron: "0 12 * * *"   # 12:00 UTC = 5:30 PM IST → posts at 6:00 PM
   workflow_dispatch: # manual run from the Actions tab (posts immediately)
 
 permissions:

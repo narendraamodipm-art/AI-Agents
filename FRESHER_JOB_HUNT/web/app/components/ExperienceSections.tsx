@@ -31,7 +31,7 @@ export default function ExperienceSections({ jobs, limitPerSection }: { jobs: Jo
           {s.jobs.length ? (
             <JobList jobs={s.jobs} limit={limitPerSection} />
           ) : (
-            <p className="muted card slim">No new jobs in this section today. Check back tomorrow at 10 AM.</p>
+            <p className="muted card slim">No new jobs in this section right now. New jobs arrive at 10 AM and 6 PM.</p>
           )}
         </section>
       ))}

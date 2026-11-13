@@ -1,13 +1,13 @@
 import type { Metadata, Viewport } from "next";
 import Link from "next/link";
-import { FREE_JOIN_URL, RESUME_TOOL_URL } from "@/lib/contact";
+import { FREE_JOIN_URL } from "@/lib/contact";
 import { PAYMENTS_OPEN } from "@/lib/flags";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: "JOB HUNTER | Daily tech jobs for 0–2, 2–4, 4–6 and 6+ years",
   description:
-    "Daily tech job alerts on Telegram for freshers to 6+ years of experience in AI, ML, Data Engineering, Data Analytics, Full Stack and Software Engineering. Remote and office roles in India, every day at 10 AM.",
+    "Daily tech job alerts on Telegram for freshers to 6+ years of experience in AI, ML, Data Engineering, Data Analytics, Full Stack and Software Engineering. Remote and office roles in India, twice a day at 10 AM and 6 PM.",
 };
 
 export const viewport: Viewport = { themeColor: "#0d0718", colorScheme: "dark" };
@@ -22,9 +22,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </Link>
           <nav>
             <Link href="/today">Sample jobs</Link>
-            <a href={RESUME_TOOL_URL} className="nav-resume" target="_blank" rel="noopener noreferrer">
-              📄 Resume Match
-            </a>
             {PAYMENTS_OPEN ? (
               <Link href="/#subscribe" className="nav-cta">
                 Subscribe
@@ -46,12 +43,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Link href="/privacy">Privacy</Link> · <Link href="/contact">Contact</Link>
           </p>
           <p className="muted">Jobs link to the company&apos;s own career page. Always check details before applying.</p>
-          <p className="footer-tool">
-            📄 Before you apply:{" "}
-            <a href={RESUME_TOOL_URL} target="_blank" rel="noopener noreferrer">
-              Resume Match + Cover Letter
-            </a>
-          </p>
         </footer>
       </body>
     </html>

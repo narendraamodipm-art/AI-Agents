@@ -16,9 +16,9 @@ export default async function Today() {
       <p className="lead">
         {post
           ? PAYMENTS_OPEN
-            ? "A sample of today's list. Premium members get every job in our private Telegram channel at 10 AM IST."
-            : "A sample of today's list. Join our Telegram channel free to get every job at 10 AM IST."
-          : "No list yet: new jobs are added every day at 10:00 AM IST."}
+            ? "A sample of today's list. Premium members get every job in our private Telegram channel at 10 AM & 6 PM IST."
+            : "A sample of today's list. Join our Telegram channel free to get every job at 10 AM & 6 PM IST."
+          : "No list yet: new jobs are added twice a day, at 10 AM & 6 PM IST."}
       </p>
       <p>
         {PAYMENTS_OPEN ? (

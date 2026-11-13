@@ -2,7 +2,7 @@
 
     python agent/run.py --dry-run        find jobs and print today's posts; sends and saves nothing
     python agent/run.py                  find jobs, save them, post to Telegram
-    python agent/run.py --wait           same, but wait until SEND_TIME_IST (10:00) before sending
+    python agent/run.py --wait           same, but wait for the next SEND_TIMES_IST slot (10:00 or 18:00) before sending
                                          (used by the GitHub Actions schedule, which starts a bit early)
 """
 
@@ -39,12 +39,17 @@ def log(msg):
 
 
 def wait_until_send_time():
-    hh, mm = map(int, config.SEND_TIME_IST.split(":"))
+    """Wait for the next posting slot if it's at most 90 minutes away; otherwise (a late start) post now."""
     now_ist = datetime.now(timezone.utc) + timedelta(hours=5, minutes=30)
-    target = now_ist.replace(hour=hh, minute=mm, second=0, microsecond=0)
-    wait = (target - now_ist).total_seconds()
-    if 0 < wait <= 90 * 60:
-        log(f"Waiting {int(wait // 60)} min until {config.SEND_TIME_IST} IST before sending")
+    waits = []
+    for slot in config.SEND_TIMES_IST:
+        hh, mm = map(int, slot.split(":"))
+        wait = (now_ist.replace(hour=hh, minute=mm, second=0, microsecond=0) - now_ist).total_seconds()
+        if 0 < wait <= 90 * 60:
+            waits.append((wait, slot))
+    if waits:
+        wait, slot = min(waits)
+        log(f"Waiting {int(wait // 60)} min until {slot} IST before sending")
         time.sleep(wait)
 
 
@@ -57,7 +62,7 @@ def admin(text, html=False):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dry-run", action="store_true", help="print the posts; don't save or send anything")
-    ap.add_argument("--wait", action="store_true", help=f"wait until {config.SEND_TIME_IST} IST before sending")
+    ap.add_argument("--wait", action="store_true", help=f"wait for the next of {config.SEND_TIMES_IST} IST before sending")
     args = ap.parse_args()
 
     store = get_store()

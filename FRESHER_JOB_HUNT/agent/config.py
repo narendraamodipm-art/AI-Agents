@@ -8,7 +8,8 @@ ROOT = HERE.parent
 LOCAL_STATE = HERE / "state"                 # dry-run preview for the local website (gitignored)
 
 # ── Daily post ───────────────────────────────────────────────────────────────
-JOBS_PER_POST = 12                           # 10–12 jobs per experience section in the daily post
+SHARE_URL = "https://t.me/+bfrJNyeNWFhkNjdl"  # free invite link, added at the end of the day's last post
+JOBS_PER_POST = 12                          # 10–12 jobs per experience section in the daily post
 MIN_JOBS_PER_POST = 10
 MAX_PER_COMPANY = 2                          # variety: at most 2 jobs from one company per post
 MAX_AGE_DAYS = 3                             # only jobs posted in the last N days count as new
@@ -18,7 +19,7 @@ SEEN_DAYS = 30                               # remember a job's URL this long so
 TEASER_PER_SECTION = 1                       # jobs per section shown free on the website
 DB_CLEANUP_BYTES = 450 * 1024 * 1024         # at this database size, each run starts deleting the oldest job records
 GRACE_DAYS = 2                              # days after paid_until before a non-renewing member is removed
-SEND_TIME_IST = "10:00"                      # the scheduled run waits until this time before sending
+SEND_TIMES_IST = ["10:00", "18:00"]          # two posts a day; a scheduled run waits for the next of these
 MODEL = "ministral-8b-latest"                # Mistral model for jobs whose experience level the rules can't tell
 MAX_LLM_CHECKS = 60                          # LLM checks per run (one batched call; keeps it inside the free tier)
 
@@ -108,7 +109,31 @@ WORKDAY = [
     ("Bristol Myers Squibb", "bristolmyerssquibb.wd5.myworkdayjobs.com", "bristolmyerssquibb", "BMS"),
     ("Autodesk", "autodesk.wd1.myworkdayjobs.com", "autodesk", "Ext"),
     ("Workday", "workday.wd5.myworkdayjobs.com", "workday", "Workday"),
+    # Mass recruiters for freshers (checked 13 Nov 2026)
+    ("Accenture", "accenture.wd103.myworkdayjobs.com", "accenture", "AccentureCareers"),
+    ("PwC", "pwc.wd3.myworkdayjobs.com", "pwc", "Global_Experienced_Careers"),
 ]
+
+# Mass recruiters without a public job API: Tavily search limited to each company's official careers site.
+# (TCS, Infosys, Tech Mahindra and LTIMindtree were tested on 13 Nov 2026 and returned no usable job pages.)
+OFFICIAL_SITES = {
+    "Wipro": ["careers.wipro.com"],
+    "Cognizant": ["careers.cognizant.com"],
+    "Capgemini": ["careers.capgemini.com"],
+    "HCLTech": ["careers.hcltech.com"],
+    "IBM": ["careers.ibm.com"],
+}
+# Companies that hire freshers in large numbers. Their jobs get a "🏭 Mass recruiter" badge.
+MASS_RECRUITER = re.compile(
+    r"\b(tcs|tata consultancy|infosys|wipro|cognizant|accenture|capgemini|hcl\s?tech|hcl technologies|tech mahindra|"
+    r"ltimindtree|lti mindtree|ibm|pwc|pricewaterhouse|deloitte|kpmg|ernst\s*&\s*young|genpact|mphasis|hexaware)\b", re.I)
+
+
+def is_mass_recruiter(company) -> bool:
+    return bool(MASS_RECRUITER.search(company or ""))
+
+
+OFFICIAL_JOB_URL = re.compile(r"/job/|/jobs/\d|JobDetail", re.I)     # a single job's page, not a search or blog page
 WORKDAY_TERMS = ["intern", "graduate", "trainee", "fresher", "early career", "associate software engineer",
                  "junior developer", "data analyst",
                  # experienced sections
@@ -118,7 +143,7 @@ WORKDAY_MAX_DETAILS = 30                     # job pages fetched per Workday com
 
 # Tavily web search, limited to job-board sites (≈ 6 searches a day = well inside the free tier)
 TAVILY_QUERIES = [
-    "AI engineer fresher OR intern OR graduate job India",
+    "AI engineer fresher OR intern OR jgraduate job India",
     "machine learning engineer intern OR fresher India",
     "data engineer fresher OR graduate OR intern India",
     "data analyst fresher OR intern OR entry level India",

@@ -92,7 +92,7 @@ export default function SubscribeCard() {
       </p>
       <ul>
         <li>The full list: up to 12 jobs per experience level</li>
-        <li>Private Telegram channel, posted at 10 AM IST</li>
+        <li>Private Telegram channel, posted at 10 AM &amp; 6 PM IST</li>
         <li>Pay by UPI or card</li>
       </ul>
       <button type="button" className="btn primary" onClick={subscribe} disabled={busy}>

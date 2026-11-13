@@ -1,8 +1,8 @@
-"""Pick the day's jobs (10–12 per experience section) and write the Telegram and WhatsApp versions."""
+"""Pick each run's jobs (10–12 per experience section) and write the Telegram and WhatsApp versions."""
 
 import html
 from collections import defaultdict
-from datetime import date
+from datetime import date, datetime, timedelta, timezone
 
 import config
 
@@ -70,22 +70,57 @@ def section_title(key):
     return emoji, label, heading
 
 
+def cut(text, width):
+    text = " ".join((text or "").split())
+    return text if len(text) <= width else text[:width - 1] + "…"
+
+
+def where(j):
+    if j.get("work_mode") == "remote":
+        return "Remote"
+    return short_loc(j).split(",")[0].split(" - ")[0].strip()
+
+
+MODE_ICON = {"remote": "🏠 Remote", "hybrid": "🔀 Hybrid"}
+
+
+def slot_label():
+    """'🌅 Morning' or '🌆 Evening' by the current time in India (posts go out at 10 AM and 6 PM)."""
+    hour = (datetime.now(timezone.utc) + timedelta(hours=5, minutes=30)).hour
+    return "🌅 Morning" if hour < 14 else "🌆 Evening"
+
+
 def telegram_posts(sections, day, site_url):
-    """One Telegram message per experience section."""
+    """One Telegram message per experience section: a clean card per job with Apply on the same line.
+
+    Telegram has no real tables, and links inside fixed-width blocks can't be clicked, so each job is
+    a short two-line card: the role in bold, then company · place · Apply.
+    """
     e = html.escape
     posts = []
+    keys = list(sections)
     for key, jobs in sections.items():
         emoji, label, heading = section_title(key)
-        lines = [f"{emoji} <b>{e(label)} · {e(heading)}</b>: {nice_day(day)}", ""]
+        ordered = grouped(jobs)
+        count = sum(len(items) for _, items in ordered)
+        lines = [f"{emoji} <b>{e(heading.upper())} · {e(label)}</b>",
+                 f"📅 {nice_day(day)} · {slot_label()}  ·  🆕 {count} new jobs",
+                 "━━━━━━━━━━━━━━━━━━", ""]
         n = 0
-        for f, items in grouped(jobs):
+        for f, items in ordered:
             flabel, femoji, _ = config.FIELDS[f]
             lines.append(f"{femoji} <b>{e(flabel)}</b>")
             for j in items:
                 n += 1
-                lines.append(f"{n}. <b>{e(j['title'])}</b>: {e(j['company'])} · {e(short_loc(j))} · {mode_label(j)}")
-                lines.append(f'   👉 <a href="{e(j["url"], quote=True)}">Apply</a>')
+                place = MODE_ICON.get(j.get("work_mode")) or f"📍 {where(j)}"
+                badge = "  🏭 <i>Mass recruiter</i>" if config.is_mass_recruiter(j.get("company")) else ""
+                lines.append(f"<b>{n}. {e(cut(j['title'], 70))}</b>{badge}")
+                lines.append(f"     🏢 {e(cut(j['company'], 30))}  ·  {e(place)}  ·  "
+                             f'<a href="{e(j["url"], quote=True)}">👉 Apply</a>')
             lines.append("")
+        if key == keys[-1]:
+            lines += ["━━━━━━━━━━━━━━━━━━",
+                      f'🤝 Know someone job hunting? <a href="{e(config.SHARE_URL, quote=True)}">Share this channel</a>']
         posts.append("\n".join(lines).rstrip())
     return posts
 

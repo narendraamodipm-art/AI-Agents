@@ -22,7 +22,10 @@ export default function JobList({ jobs, limit }: { jobs: Job[]; limit?: number }
             {g.jobs.map((j) => (
               <li key={j.id} className="job">
                 <div>
-                  <div className="job-title">{j.title}</div>
+                  <div className="job-title">
+                    {j.title}
+                    {j.mass_recruiter && <span className="mass-badge">🏭 Mass recruiter</span>}
+                  </div>
                   <div className="job-meta">
                     {j.company} · {(j.location ?? "India").split(" / ")[0]} ·{" "}
                     <span className={`mode ${j.work_mode ?? "onsite"}`}>{MODE[j.work_mode ?? "onsite"]}</span>

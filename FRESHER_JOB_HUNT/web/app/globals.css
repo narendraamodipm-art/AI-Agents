@@ -54,20 +54,6 @@ h1, h2, h3 { line-height: 1.15; margin: 0; }
 .nav nav a:hover { background: var(--surface-2); color: var(--text); }
 .nav nav .nav-cta { background: var(--accent); color: #fff; }
 .nav nav .nav-cta:hover { background: var(--accent); color: #fff; opacity: 0.9; }
-.nav nav .nav-resume { color: #5eead4; border: 1px solid rgba(45, 212, 191, 0.45); }
-.nav nav .nav-resume:hover { background: rgba(45, 212, 191, 0.12); color: #99f6e4; }
-
-/* Resume Match card under the join card */
-.hero-side { display: grid; gap: 16px; }
-.resume-card {
-  display: grid; gap: 12px; border-color: rgba(45, 212, 191, 0.45);
-  background: linear-gradient(135deg, rgba(45, 212, 191, 0.1), var(--surface) 60%);
-}
-.resume-card h3 { font-size: 19px; margin-bottom: 4px; }
-.resume-card p { color: var(--text-2); margin: 0; }
-.resume-icon { font-size: 30px; line-height: 1; }
-.btn.resume-btn { background: #14b8a6; color: #04201c; border: 0; font-weight: 700; }
-.btn.resume-btn:hover { background: #2dd4bf; }
 
 /* Hero */
 .hero { display: grid; grid-template-columns: 1.1fr 1fr; gap: 40px; align-items: start; padding: 56px 0 24px; }
@@ -144,6 +130,10 @@ h1, h2, h3 { line-height: 1.15; margin: 0; }
   background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
 }
 .job-title { font-weight: 600; }
+.mass-badge {
+  display: inline-block; margin-left: 8px; padding: 1px 8px; border-radius: 999px; font-size: 12px; font-weight: 600;
+  vertical-align: 2px; color: #fde68a; background: rgba(245, 158, 11, 0.14); border: 1px solid rgba(245, 158, 11, 0.4);
+}
 .job-meta { font-size: 14px; color: var(--muted); }
 .mode { font-weight: 600; }
 .mode.remote { color: #c084fc; }
@@ -177,7 +167,6 @@ h1, h2, h3 { line-height: 1.15; margin: 0; }
 
 .footer { max-width: 1120px; margin: 40px auto 0; padding: 24px 20px 40px; border-top: 1px solid var(--border); font-size: 14px; text-align: center; }
 .footer p { margin: 4px 0; }
-.footer .footer-tool { font-size: 13px; margin-top: 10px; }
 
 @media (max-width: 860px) {
   .hero { grid-template-columns: 1fr; padding-top: 32px; }
@@ -185,7 +174,7 @@ h1, h2, h3 { line-height: 1.15; margin: 0; }
 @media (max-width: 520px) {
   main { padding: 0 16px; }
   .nav { padding: 10px 16px; }
-  .nav nav a:not(.nav-cta):not(.nav-resume) { display: none; }
+  .nav nav a:not(.nav-cta) { display: none; }
   .job { flex-direction: column; align-items: flex-start; }
   .card { padding: 18px; }
   .exp-nav { top: 56px; }

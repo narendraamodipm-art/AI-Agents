@@ -60,8 +60,12 @@ class SupabaseStore:
             self._req("PATCH", "jobs", {"id": f"in.({','.join(map(str, ids))})"}, {"posted_on": day}, "return=minimal")
 
     def save_daily_post(self, day, jobs, teaser):
-        row = {"day": day, "job_ids": [j["id"] for j in jobs], "jobs": [public_job(j) for j in jobs],
-               "teaser": [public_job(j) for j in teaser]}
+        """One row per day. A second run that day adds its jobs to the row; the website shows the newest samples."""
+        old = (self._req("GET", "daily_posts", {"select": "job_ids,jobs", "day": f"eq.{day}"}) or [{}])[0]
+        new_ids = {j["id"] for j in jobs}
+        kept = [j for j in old.get("jobs") or [] if j.get("id") not in new_ids]
+        row = {"day": day, "job_ids": [i for i in old.get("job_ids") or [] if i not in new_ids] + [j["id"] for j in jobs],
+               "jobs": kept + [public_job(j) for j in jobs], "teaser": [public_job(j) for j in teaser]}
         self._req("POST", "daily_posts", {"on_conflict": "day"}, row, "resolution=merge-duplicates,return=minimal")
 
     def database_bytes(self):
@@ -97,8 +101,9 @@ class SupabaseStore:
 
 def public_job(j):
     """What the website shows for a job."""
-    return {k: j.get(k) for k in ("id", "title", "company", "location", "work_mode", "fields", "experience", "url",
-                                  "posted_at")}
+    return {**{k: j.get(k) for k in ("id", "title", "company", "location", "work_mode", "fields", "experience", "url",
+                                     "posted_at")},
+            "mass_recruiter": config.is_mass_recruiter(j.get("company"))}
 
 
 def today_ist() -> str:

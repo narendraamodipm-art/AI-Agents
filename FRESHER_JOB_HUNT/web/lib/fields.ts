@@ -31,6 +31,7 @@ export type Job = {
   work_mode: string | null;
   fields: string[] | null;
   experience?: string | null;
+  mass_recruiter?: boolean;
   url: string;
   posted_at: string | null;
 };

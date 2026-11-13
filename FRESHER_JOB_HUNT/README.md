@@ -11,7 +11,7 @@ Daily tech job alerts in AI, ML, Data Engineering, Data Analytics, Full Stack an
 
 A job goes in the section that contains the minimum years it asks for. A Senior / Lead / Principal / Manager title sets the lowest section it can go in. Jobs that state no years are placed by title, or by Mistral when the title doesn't say.
 
-Every day at **10:00 AM IST** an agent finds new jobs on company career pages and job boards, picks **10–12 per section**, posts them to a **private Telegram channel** for paying members (₹99/month through Razorpay), and shows one sample job per section on the website.
+Twice a day, at **10:00 AM and 6:00 PM IST**, an agent finds new jobs on company career pages and job boards, picks **10–12 per section**, posts them to a **private Telegram channel** for paying members (₹99/month through Razorpay), and shows one sample job per section on the website.
 
 ```
 FRESHER_JOB_HUNT/
@@ -49,7 +49,7 @@ FRESHER_JOB_HUNT/
 | `MISTRAL_API_KEY`, `TAVILY_API_KEY` | ✅ | your keys |
 | `ADZUNA_APP_ID`, `ADZUNA_APP_KEY`, `RAPIDAPI_KEY` | optional | more job sources |
 
-The workflow starts at 9:30 AM IST, finds jobs, then **waits until 10:00 AM** to post. Go to **Actions → Fresher job alerts → Run workflow** to post right away.
+The workflow runs twice a day, starting at 9:30 AM and 5:30 PM IST. Each run finds jobs, then **waits until 10:00 AM or 6:00 PM** to post. Go to **Actions → Fresher job alerts → Run workflow** to post right away.
 
 ## Run locally
 
