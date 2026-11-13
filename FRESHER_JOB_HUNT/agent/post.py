@@ -84,6 +84,12 @@ def where(j):
 MODE_ICON = {"remote": "🏠 Remote", "hybrid": "🔀 Hybrid"}
 
 
+def heads_up():
+    """Short message sent one minute before each run's jobs."""
+    return (f"⏰ <b>{slot_label()} jobs drop in 1 minute!</b>\n"
+            "Keep your resume ready. Apply early, don't be late. 🚀")
+
+
 def slot_label():
     """'🌅 Morning' or '🌆 Evening' by the current time in India (posts go out at 10 AM and 6 PM)."""
     hour = (datetime.now(timezone.utc) + timedelta(hours=5, minutes=30)).hour

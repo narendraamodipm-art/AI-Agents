@@ -38,13 +38,14 @@ def log(msg):
     print(f"[{datetime.now().strftime('%H:%M:%S')}] {msg}", flush=True)
 
 
-def wait_until_send_time():
-    """Wait for the next posting slot if it's at most 90 minutes away; otherwise (a late start) post now."""
+def wait_until_send_time(lead=0):
+    """Wait until `lead` seconds before the next posting slot, if that's at most 90 minutes away.
+    On a late start there's nothing to wait for, so the run carries on straight away."""
     now_ist = datetime.now(timezone.utc) + timedelta(hours=5, minutes=30)
     waits = []
     for slot in config.SEND_TIMES_IST:
         hh, mm = map(int, slot.split(":"))
-        wait = (now_ist.replace(hour=hh, minute=mm, second=0, microsecond=0) - now_ist).total_seconds()
+        wait = (now_ist.replace(hour=hh, minute=mm, second=0, microsecond=0) - now_ist).total_seconds() - lead
         if 0 < wait <= 90 * 60:
             waits.append((wait, slot))
     if waits:
@@ -133,9 +134,15 @@ def main():
     store.save_daily_post(day, chosen, post.teaser_jobs(sections))
 
     if args.wait:
-        wait_until_send_time()
+        wait_until_send_time(lead=config.HEADS_UP_SECONDS)
 
-    # 3. Send
+    # 3. Send: a short "get ready" heads-up, then the jobs a minute later
+    try:
+        notify.telegram(paid_channel, post.heads_up(), html=True)
+        log("Sent the heads-up; posting jobs in 1 minute")
+        time.sleep(config.HEADS_UP_SECONDS)
+    except Exception as e:
+        errors.append(f"Heads-up not sent: {e}")
     posted = []                                          # only jobs that really went out count as posted
     for key, tg_text in zip(sections, tg_posts):
         try:
