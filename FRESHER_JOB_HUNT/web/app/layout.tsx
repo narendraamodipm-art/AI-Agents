@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import Link from "next/link";
+import { FREE_JOIN_URL } from "@/lib/contact";
 import { PAYMENTS_OPEN } from "@/lib/flags";
 import "./globals.css";
 
@@ -21,10 +22,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </Link>
           <nav>
             <Link href="/today">Sample jobs</Link>
-            {PAYMENTS_OPEN && (
+            {PAYMENTS_OPEN ? (
               <Link href="/#subscribe" className="nav-cta">
                 Subscribe
               </Link>
+            ) : (
+              <a href={FREE_JOIN_URL} className="nav-cta" target="_blank" rel="noopener noreferrer">
+                Join free
+              </a>
             )}
           </nav>
         </header>

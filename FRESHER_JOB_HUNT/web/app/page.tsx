@@ -1,8 +1,8 @@
 import { EXPERIENCE, FIELDS } from "@/lib/fields";
 import { latestPost, niceDay } from "@/lib/jobs";
 import { PAYMENTS_OPEN } from "@/lib/flags";
-import ComingSoonCard from "./components/ComingSoonCard";
 import ExperienceSections from "./components/ExperienceSections";
+import JoinFreeCard from "./components/JoinFreeCard";
 import SubscribeCard from "./components/SubscribeCard";
 
 export const revalidate = 300; // refresh the jobs preview every 5 minutes
@@ -40,7 +40,7 @@ export default async function Home() {
           </div>
           <ul className="how">
             <li>
-              <b>1.</b> {PAYMENTS_OPEN ? "Subscribe and join" : "Premium members join"} our private Telegram channel
+              <b>1.</b> {PAYMENTS_OPEN ? "Subscribe and join our private Telegram channel" : "Join our Telegram channel free"}
             </li>
             <li>
               <b>2.</b> Our agent scans company career pages every morning
@@ -50,7 +50,7 @@ export default async function Home() {
             </li>
           </ul>
         </div>
-        <div id="subscribe">{PAYMENTS_OPEN ? <SubscribeCard /> : <ComingSoonCard />}</div>
+        <div id="subscribe">{PAYMENTS_OPEN ? <SubscribeCard /> : <JoinFreeCard />}</div>
       </section>
 
       <section className="section">
