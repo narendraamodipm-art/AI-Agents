@@ -43,6 +43,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Link href="/privacy">Privacy</Link> · <Link href="/contact">Contact</Link>
           </p>
           <p className="muted">Jobs link to the company&apos;s own career page. Always check details before applying.</p>
+          <p className="footer-tool">
+            📄 Before you apply:{" "}
+            <a href="https://ai-resume-validator.streamlit.app/" target="_blank" rel="noopener noreferrer">
+              Resume Match + Cover Letter
+            </a>
+          </p>
         </footer>
       </body>
     </html>
