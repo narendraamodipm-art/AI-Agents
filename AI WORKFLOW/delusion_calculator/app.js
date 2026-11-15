@@ -411,6 +411,12 @@ $("form").addEventListener("submit", (e) => {
   getVerdict(last);
 });
 
+if (!VERDICT_API) {
+  $("verdictTitle").textContent = "Verdict";
+  $("verdictSrc").textContent = "· desi auto-judge";
+  $("verdict").textContent = "Hit the button and the auto-judge will rate your list.";
+}
+
 syncAge();
 syncLooks();
 update();
