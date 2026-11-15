@@ -134,31 +134,45 @@ def box_table(ordered):
     return "\n".join(lines)
 
 
+def posted_day(j):
+    """'14 Nov 2026' from the job's posted_at, or None if missing/unreadable."""
+    try:
+        return nice_day(str(j.get("posted_at") or "")[:10])
+    except ValueError:
+        return None
+
+
 def telegram_posts(sections, day, site_url):
-    """One Telegram message per experience section: each job in its own box (blockquote) with
-    Apply beside the details. Links can't be clicked inside a monospace table, so boxes are used instead.
+    """One Telegram message per experience section, in a bulleted alert layout:
+
+        🛠️ Tech Job Alerts — 14 Nov 2026
+        🎓 0–2 yrs · Freshers & interns
+        📢 Company – Title
+        • Experience / Role / Location / Work mode / Posted / Apply
+
     Returns [{"text": html, "buttons": None}]."""
     e = html.escape
     posts = []
     keys = list(sections)
     for key, jobs in sections.items():
         emoji, label, heading = section_title(key)
-        ordered = grouped(jobs)
-        count = sum(len(items) for _, items in ordered)
-        lines = [f"{emoji} <b>{e(heading.upper())} · {e(label)}</b>",
-                 f"📅 {nice_day(day)} · {slot_label()} · 🆕 {count} jobs", ""]
-        n = 0
-        for f, items in ordered:
-            flabel, femoji, _ = config.FIELDS[f]
-            lines.append(f"{femoji} <b>{e(flabel.upper())}</b>")
+        lines = [f"🛠️ <b>Tech Job Alerts — {nice_day(day)}</b> · {slot_label()}", "",
+                 f"{emoji} <b>{e(label)} · {e(heading)}</b>", ""]
+        for f, items in grouped(jobs):
+            flabel = config.FIELDS[f][0]
             for j in items:
-                n += 1
-                place = MODE_ICON.get(j.get("work_mode")) or f"📍 {where(j)}"
-                badge = " · 🏭 <i>Mass recruiter</i>" if config.is_mass_recruiter(j.get("company")) else ""
-                lines.append(f"<blockquote><b>{n}. {e(cut(j['title'], 70))}</b>{badge}\n"
-                             f"🏢 {e(cut(j['company'], 30))} · {e(place)} · "
-                             f'<a href="{e(j["url"], quote=True)}"><b>Apply ↗</b></a></blockquote>')
-            lines.append("")
+                lines.append(f"📢 <b>{e(cut(j['company'], 40))} – {e(cut(j['title'], 80))}</b>")
+                lines.append(f"• Experience: {e(label)}")
+                lines.append(f"• Role: {e(flabel)}")
+                lines.append(f"• Location: {e(short_loc(j))}")
+                lines.append(f"• Work mode: {mode_label(j)}")
+                if posted_day(j):
+                    lines.append(f"• Posted: {posted_day(j)}")
+                if config.is_mass_recruiter(j.get("company")):
+                    lines.append("• Note: 🏭 Mass recruiter")
+                url = e(j["url"], quote=True)
+                lines.append(f'• Apply: <a href="{url}">{url}</a>')
+                lines.append("")
         if key == keys[-1]:
             lines.append(f'🤝 Know someone job hunting? <a href="{e(config.SHARE_URL, quote=True)}">Share this channel</a>')
         posts.append({"text": "\n".join(lines).rstrip(), "buttons": None})
