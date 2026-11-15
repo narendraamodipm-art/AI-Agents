@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import Link from "next/link";
-import { FREE_JOIN_URL } from "@/lib/contact";
+import { FREE_JOIN_URL, INSTAGRAM_URL } from "@/lib/contact";
 import { PAYMENTS_OPEN } from "@/lib/flags";
 import "./globals.css";
 
@@ -37,6 +37,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <footer className="footer">
           <p>
             Daily tech job alerts, freshers to 6+ years
+          </p>
+          <p>
+            📸 Follow us on{" "}
+            <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer">
+              Instagram @jobhunter101
+            </a>{" "}
+            · ✈️{" "}
+            <a href={FREE_JOIN_URL} target="_blank" rel="noopener noreferrer">
+              Telegram
+            </a>
           </p>
           <p>
             <Link href="/terms">Terms</Link> · <Link href="/refunds">Cancellation &amp; Refunds</Link> ·{" "}

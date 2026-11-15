@@ -85,6 +85,8 @@ h1, h2, h3 { line-height: 1.15; margin: 0; }
 }
 .btn.small { padding: 8px 12px; font-size: 14px; white-space: nowrap; }
 .btn.telegram { background: #229ed9; color: #fff; border: 0; }
+.btn.instagram { color: #fff; border: 0;
+  background: linear-gradient(45deg, #f09433, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888); }
 .join { display: flex; flex-wrap: wrap; gap: 10px; margin: 8px 0; }
 
 /* Cards */

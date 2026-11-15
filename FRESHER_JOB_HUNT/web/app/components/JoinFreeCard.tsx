@@ -1,4 +1,4 @@
-import { FREE_JOIN_URL } from "@/lib/contact";
+import { FREE_JOIN_URL, INSTAGRAM_URL } from "@/lib/contact";
 
 /** Shown instead of the Subscribe card while payments are off: the channel is free to join. */
 export default function JoinFreeCard() {
@@ -13,6 +13,9 @@ export default function JoinFreeCard() {
       </ul>
       <a className="btn telegram block" href={FREE_JOIN_URL} target="_blank" rel="noopener noreferrer">
         ✈️ Join the channel free
+      </a>
+      <a className="btn instagram block" href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer">
+        📸 Follow us on Instagram
       </a>
     </div>
   );
