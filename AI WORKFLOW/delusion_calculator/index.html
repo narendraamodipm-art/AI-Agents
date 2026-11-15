@@ -21,18 +21,18 @@
       </div>
     </header>
 
-    <form id="form" class="main" novalidate>
+    <form id="form" class="main" novalidate autocomplete="off">
       <!-- COLUMN 1 -->
       <div class="col">
         <section class="panel">
           <div class="panel-head"><span class="num">01</span><h2>The basics</h2></div>
 
           <div class="field">
-            <div class="label-row"><label>🎂 Age range</label><output id="ageOut">25 – 32 yrs</output></div>
+            <div class="label-row"><label>🎂 Age range</label><output id="ageOut">18 – 60 yrs</output></div>
             <div class="dual">
               <div class="dual-track"><div class="dual-fill" id="ageFill"></div></div>
-              <input type="range" id="ageMin" min="18" max="60" value="25" aria-label="Minimum age">
-              <input type="range" id="ageMax" min="18" max="60" value="32" aria-label="Maximum age">
+              <input type="range" id="ageMin" min="18" max="60" value="18" aria-label="Minimum age">
+              <input type="range" id="ageMax" min="18" max="60" value="60" aria-label="Maximum age">
             </div>
           </div>
 
@@ -44,7 +44,7 @@
                 <option value="3">₹3 LPA+</option>
                 <option value="5">₹5 LPA+</option>
                 <option value="8">₹8 LPA+</option>
-                <option value="10" selected>₹10 LPA+</option>
+                <option value="10">₹10 LPA+</option>
                 <option value="15">₹15 LPA+</option>
                 <option value="20">₹20 LPA+</option>
                 <option value="30">₹30 LPA+</option>
@@ -61,7 +61,7 @@
                 <option value="162.6">5'4"</option>
                 <option value="167.6">5'6"</option>
                 <option value="172.7">5'8"</option>
-                <option value="177.8" selected>5'10"</option>
+                <option value="177.8">5'10"</option>
                 <option value="182.9">6'0"</option>
                 <option value="188">6'2"</option>
                 <option value="193">6'4"</option>
@@ -70,8 +70,8 @@
           </div>
 
           <div class="field">
-            <div class="label-row"><label for="looks">😍 Looks (min)</label><output id="looksOut">7 / 10</output></div>
-            <input type="range" id="looks" class="slider" min="0" max="10" value="7">
+            <div class="label-row"><label for="looks">😍 Looks (min)</label><output id="looksOut">Doesn't matter</output></div>
+            <input type="range" id="looks" class="slider" min="0" max="10" value="0">
             <div class="scale"><span>Doesn't matter</span><span>Average</span><span>Bollywood hero</span></div>
           </div>
         </section>
@@ -103,16 +103,16 @@
           <div class="field">
             <label>💍 Loyalty</label>
             <div class="seg">
-              <label><input type="radio" name="loyalty" value="any"><span>Any</span></label>
-              <label><input type="radio" name="loyalty" value="loyal" checked><span>Loyal</span></label>
+              <label><input type="radio" name="loyalty" value="any" checked><span>Any</span></label>
+              <label><input type="radio" name="loyalty" value="loyal"><span>Loyal</span></label>
               <label><input type="radio" name="loyalty" value="ultra"><span>Eyes only for me</span></label>
             </div>
           </div>
           <div class="field">
             <label>👔 Dressing sense</label>
             <div class="seg">
-              <label><input type="radio" name="dressing" value="any"><span>Any</span></label>
-              <label><input type="radio" name="dressing" value="decent" checked><span>Decent</span></label>
+              <label><input type="radio" name="dressing" value="any" checked><span>Any</span></label>
+              <label><input type="radio" name="dressing" value="decent"><span>Decent</span></label>
               <label><input type="radio" name="dressing" value="stylish"><span>Stylish</span></label>
               <label><input type="radio" name="dressing" value="model"><span>Model drip</span></label>
             </div>
@@ -120,8 +120,8 @@
           <div class="field">
             <label>🎓 Education</label>
             <div class="seg">
-              <label><input type="radio" name="education" value="any"><span>Any</span></label>
-              <label><input type="radio" name="education" value="grad" checked><span>Graduate</span></label>
+              <label><input type="radio" name="education" value="any" checked><span>Any</span></label>
+              <label><input type="radio" name="education" value="grad"><span>Graduate</span></label>
               <label><input type="radio" name="education" value="pg"><span>Post-grad</span></label>
               <label><input type="radio" name="education" value="elite"><span>IIT / IIM</span></label>
             </div>
