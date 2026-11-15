@@ -134,21 +134,13 @@ def box_table(ordered):
     return "\n".join(lines)
 
 
-def posted_day(j):
-    """'14 Nov 2026' from the job's posted_at, or None if missing/unreadable."""
-    try:
-        return nice_day(str(j.get("posted_at") or "")[:10])
-    except ValueError:
-        return None
-
-
 def telegram_posts(sections, day, site_url):
     """One Telegram message per experience section, in a bulleted alert layout:
 
         🛠️ Tech Job Alerts — 14 Nov 2026
         🎓 0–2 yrs · Freshers & interns
         📢 Company – Title
-        • Experience / Role / Location / Work mode / Posted / Apply
+        • Experience / Role / Location / Work mode / Apply
 
     Returns [{"text": html, "buttons": None}]."""
     e = html.escape
@@ -166,8 +158,6 @@ def telegram_posts(sections, day, site_url):
                 lines.append(f"• Role: {e(flabel)}")
                 lines.append(f"• Location: {e(short_loc(j))}")
                 lines.append(f"• Work mode: {mode_label(j)}")
-                if posted_day(j):
-                    lines.append(f"• Posted: {posted_day(j)}")
                 if config.is_mass_recruiter(j.get("company")):
                     lines.append("• Note: 🏭 Mass recruiter")
                 url = e(j["url"], quote=True)
