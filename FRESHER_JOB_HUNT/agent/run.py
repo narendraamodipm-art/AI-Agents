@@ -137,21 +137,34 @@ def main():
         wait_until_send_time(lead=config.HEADS_UP_SECONDS)
 
     # 3. Send: a short "get ready" heads-up, then the jobs a minute later
+    sent_ids = {}                                        # message IDs by kind, for deleting after a week
     try:
-        notify.telegram(paid_channel, post.heads_up(), html=True)
+        sent_ids["heads_up"] = notify.telegram(paid_channel, post.heads_up(), html=True)
         log("Sent the heads-up; posting jobs in 1 minute")
         time.sleep(config.HEADS_UP_SECONDS)
     except Exception as e:
         errors.append(f"Heads-up not sent: {e}")
     posted = []                                          # only jobs that really went out count as posted
-    for key, tg_text in zip(sections, tg_posts):
+    for key, msg in zip(sections, tg_posts):
         try:
-            notify.telegram(paid_channel, tg_text, html=True)
+            sent_ids.setdefault("jobs", []).extend(notify.telegram(paid_channel, msg["text"], html=True, buttons=msg["buttons"]))
             posted += sections[key]
         except Exception as e:
             errors.append(str(e))
     log(f"Posted {len(posted)} of {len(chosen)} jobs to the private channel")
     store.mark_posted([j["id"] for j in posted], day)
+
+    # Delete channel posts older than DELETE_AFTER_DAYS (only messages the bot recorded; never the pinned welcome)
+    try:
+        for kind, ids in sent_ids.items():
+            store.record_messages(ids, kind)
+        old = store.old_messages(config.DELETE_AFTER_DAYS)
+        gone = [i for i in old if notify.delete(paid_channel, i)]
+        store.forget_messages(gone)
+        if gone:
+            log(f"Deleted {len(gone)} channel messages older than {config.DELETE_AFTER_DAYS} days")
+    except Exception as e:
+        errors.append(f"Old-message cleanup skipped: {e}")
 
     try:
         admin(f"📋 WhatsApp post for {day}. Copy everything below this line and paste it in your group:")

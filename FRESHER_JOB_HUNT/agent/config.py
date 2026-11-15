@@ -20,7 +20,10 @@ TEASER_PER_SECTION = 1                       # jobs per section shown free on th
 DB_CLEANUP_BYTES = 450 * 1024 * 1024         # at this database size, each run starts deleting the oldest job records
 GRACE_DAYS = 2                              # days after paid_until before a non-renewing member is removed
 SEND_TIMES_IST = ["10:00", "18:00"]          # two posts a day; a scheduled run waits for the next of these
-HEADS_UP_SECONDS = 60                        # "jobs drop in 1 minute" message goes out this long before the jobs
+BOX_NUM_WIDTH, BOX_TEXT_WIDTH = 4, 27        # table columns; 34 characters wide in total, fits a phone
+BUTTONS_PER_ROW = 4                          # Apply buttons under each table
+DELETE_AFTER_DAYS = 7                        # channel posts older than this are deleted (the pinned welcome never is)
+HEADS_UP_SECONDS = 60                       # "jobs drop in 1 minute" message goes out this long before the jobs
 MODEL = "ministral-8b-latest"                # Mistral model for jobs whose experience level the rules can't tell
 MAX_LLM_CHECKS = 60                          # LLM checks per run (one batched call; keeps it inside the free tier)
 

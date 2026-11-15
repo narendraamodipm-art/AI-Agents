@@ -75,6 +75,15 @@ grant usage on schema public to service_role;
 grant select, insert, update, delete on public.subscribers, public.payments, public.jobs, public.daily_posts to service_role;
 grant usage, select on sequence public.jobs_id_seq to service_role;
 
+-- Channel messages the bot sent, so posts older than a week can be deleted. The pinned welcome is never recorded.
+create table if not exists public.channel_messages (
+  message_id  bigint primary key,
+  kind        text,                                      -- heads_up | jobs | old
+  sent_at     timestamptz not null default now()
+);
+alter table public.channel_messages enable row level security;
+grant select, insert, update, delete on public.channel_messages to service_role;
+
 -- Lets the daily job read the database size, so it can trim old job records at 450 MB.
 create or replace function public.database_size_bytes() returns bigint
   language sql security definer set search_path = '' as $$ select pg_database_size(current_database()) $$;

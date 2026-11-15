@@ -88,6 +88,21 @@ class SupabaseStore:
             self._req("DELETE", "daily_posts", {"day": f"in.({','.join(d['day'] for d in days)})"}, prefer="return=minimal")
         return len(rows)
 
+    def record_messages(self, ids, kind):
+        """Remember channel messages the bot sent, so they can be deleted after DELETE_AFTER_DAYS."""
+        if ids:
+            self._req("POST", "channel_messages", {"on_conflict": "message_id"},
+                      [{"message_id": i, "kind": kind} for i in ids], "resolution=ignore-duplicates,return=minimal")
+
+    def old_messages(self, days):
+        cutoff = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
+        return [r["message_id"] for r in self._req("GET", "channel_messages", {
+            "select": "message_id", "sent_at": f"lt.{cutoff}", "order": "message_id", "limit": 500})]
+
+    def forget_messages(self, ids):
+        if ids:
+            self._req("DELETE", "channel_messages", {"message_id": f"in.({','.join(map(str, ids))})"}, prefer="return=minimal")
+
     def expired_members(self):
         cutoff = (datetime.now(timezone.utc) - timedelta(days=config.GRACE_DAYS)).isoformat()
         return self._req("GET", "subscribers", {"select": "id,telegram_user_id", "paid_until": f"lt.{cutoff}",

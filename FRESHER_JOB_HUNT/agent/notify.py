@@ -30,11 +30,27 @@ def remove_member(chat_id, user_id):
             raise RuntimeError(f"Telegram {method} {user_id}: {r.status_code} {r.text[:200]}")
 
 
-def telegram(chat_id, text, html=True):
+def telegram(chat_id, text, html=True, buttons=None):
+    """Send a message (split if too long). `buttons` = inline keyboard rows, put on the last part.
+    Returns the sent message IDs."""
     token = os.environ["TELEGRAM_BOT_TOKEN"]
-    for part in split_message(text):
+    parts, ids = split_message(text), []
+    for i, part in enumerate(parts):
+        extra = {"reply_markup": {"inline_keyboard": buttons}} if buttons and i == len(parts) - 1 else {}
         r = requests.post(f"https://api.telegram.org/bot{token}/sendMessage", timeout=30, json={
             "chat_id": chat_id, "text": part, "disable_web_page_preview": True,
-            **({"parse_mode": "HTML"} if html else {})})
+            **({"parse_mode": "HTML"} if html else {}), **extra})
         if not r.ok:
             raise RuntimeError(f"Telegram {chat_id}: {r.status_code} {r.text[:200]}")
+        ids.append(r.json()["result"]["message_id"])
+    return ids
+
+
+def delete(chat_id, message_id):
+    """Delete one channel message. Returns True if it's gone (including if it was already deleted)."""
+    token = os.environ["TELEGRAM_BOT_TOKEN"]
+    r = requests.post(f"https://api.telegram.org/bot{token}/deleteMessage", timeout=30,
+                      json={"chat_id": chat_id, "message_id": message_id})
+    if r.ok or "not found" in r.text.lower():
+        return True
+    raise RuntimeError(f"Telegram delete {message_id}: {r.status_code} {r.text[:200]}")

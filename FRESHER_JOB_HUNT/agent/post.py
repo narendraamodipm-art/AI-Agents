@@ -2,6 +2,7 @@
 
 import html
 from collections import defaultdict
+import unicodedata
 from datetime import date, datetime, timedelta, timezone
 
 import config
@@ -96,12 +97,47 @@ def slot_label():
     return "🌅 Morning" if hour < 14 else "🌆 Evening"
 
 
-def telegram_posts(sections, day, site_url):
-    """One Telegram message per experience section: a clean card per job with Apply on the same line.
+def plain(text):
+    """Drop emoji and other double-width characters, which would break the table's borders."""
+    return "".join(ch for ch in " ".join((text or "").split())
+                   if unicodedata.east_asian_width(ch) not in ("W", "F") and ord(ch) < 0x2190 or ch in "–—…·")
 
-    Telegram has no real tables, and links inside fixed-width blocks can't be clicked, so each job is
-    a short two-line card: the role in bold, then company · place · Apply.
-    """
+
+def box_table(ordered):
+    """Fixed-width table with box borders. Each job: number column, then role on one line and
+    company · place on the next. Field names are full-width divider rows."""
+    num_w, text_w = config.BOX_NUM_WIDTH, config.BOX_TEXT_WIDTH
+    inner = num_w + 1 + text_w                                 # width between the outer borders
+    mid = f"├{'─' * num_w}┼{'─' * text_w}┤"
+    open_ = f"├{'─' * num_w}┬{'─' * text_w}┤"                  # field row → job rows
+    close = f"├{'─' * num_w}┴{'─' * text_w}┤"                  # job rows → field row
+    bottom = f"└{'─' * num_w}┴{'─' * text_w}┘"
+    row = lambda a, b: f"│{a:^{num_w}}│ {b:<{text_w - 1}}│"
+    full = lambda t: f"│ {t:<{inner - 1}}│"
+
+    lines = [f"┌{'─' * inner}┐", full("Tap a number below to apply"), f"├{'─' * inner}┤"]
+    n = 0
+    for gi, (f, items) in enumerate(ordered):
+        flabel = config.FIELDS[f][0].upper()
+        if gi:
+            lines.append(close)
+        lines.append(full(cut(flabel, inner - 1)))
+        lines.append(open_)
+        for ji, j in enumerate(items):
+            n += 1
+            if ji:
+                lines.append(mid)
+            star = "★" if config.is_mass_recruiter(j.get("company")) else ""
+            lines.append(row(f"{n}{star}", cut(plain(j["title"]), text_w - 1)))
+            lines.append(row("", cut(plain(f"{j['company']} · {where(j)}"), text_w - 1)))
+    lines.append(bottom)
+    return "\n".join(lines)
+
+
+def telegram_posts(sections, day, site_url):
+    """One Telegram message per experience section: each job in its own box (blockquote) with
+    Apply beside the details. Links can't be clicked inside a monospace table, so boxes are used instead.
+    Returns [{"text": html, "buttons": None}]."""
     e = html.escape
     posts = []
     keys = list(sections)
@@ -110,24 +146,52 @@ def telegram_posts(sections, day, site_url):
         ordered = grouped(jobs)
         count = sum(len(items) for _, items in ordered)
         lines = [f"{emoji} <b>{e(heading.upper())} · {e(label)}</b>",
-                 f"📅 {nice_day(day)} · {slot_label()}  ·  🆕 {count} new jobs",
-                 "━━━━━━━━━━━━━━━━━━", ""]
+                 f"📅 {nice_day(day)} · {slot_label()} · 🆕 {count} jobs", ""]
         n = 0
         for f, items in ordered:
             flabel, femoji, _ = config.FIELDS[f]
-            lines.append(f"{femoji} <b>{e(flabel)}</b>")
+            lines.append(f"{femoji} <b>{e(flabel.upper())}</b>")
             for j in items:
                 n += 1
                 place = MODE_ICON.get(j.get("work_mode")) or f"📍 {where(j)}"
-                badge = "  🏭 <i>Mass recruiter</i>" if config.is_mass_recruiter(j.get("company")) else ""
-                lines.append(f"<b>{n}. {e(cut(j['title'], 70))}</b>{badge}")
-                lines.append(f"     🏢 {e(cut(j['company'], 30))}  ·  {e(place)}  ·  "
-                             f'<a href="{e(j["url"], quote=True)}">👉 Apply</a>')
+                badge = " · 🏭 <i>Mass recruiter</i>" if config.is_mass_recruiter(j.get("company")) else ""
+                lines.append(f"<blockquote><b>{n}. {e(cut(j['title'], 70))}</b>{badge}\n"
+                             f"🏢 {e(cut(j['company'], 30))} · {e(place)} · "
+                             f'<a href="{e(j["url"], quote=True)}"><b>Apply ↗</b></a></blockquote>')
             lines.append("")
         if key == keys[-1]:
-            lines += ["━━━━━━━━━━━━━━━━━━",
-                      f'🤝 Know someone job hunting? <a href="{e(config.SHARE_URL, quote=True)}">Share this channel</a>']
-        posts.append("\n".join(lines).rstrip())
+            lines.append(f'🤝 Know someone job hunting? <a href="{e(config.SHARE_URL, quote=True)}">Share this channel</a>')
+        posts.append({"text": "\n".join(lines).rstrip(), "buttons": None})
+    return posts
+
+
+def telegram_table_posts(sections, day, site_url):
+    """Alternative layout (not used): a boxed monospace table, then numbered Apply buttons.
+
+    Telegram has no real tables and links inside fixed-width text can't be clicked, so the table is
+    monospaced text with box borders and each job's Apply link is a numbered button underneath.
+    Returns [{"text": html, "buttons": inline keyboard rows}].
+    """
+    e = html.escape
+    posts = []
+    keys = list(sections)
+    for key, jobs in sections.items():
+        emoji, label, heading = section_title(key)
+        ordered = grouped(jobs)
+        flat = [j for _, items in ordered for j in items]
+        has_mass = any(config.is_mass_recruiter(j.get("company")) for j in flat)
+        lines = [f"{emoji} <b>{e(heading.upper())} · {e(label)}</b>",
+                 f"📅 {nice_day(day)} · {slot_label()} · 🆕 {len(flat)} jobs",
+                 f"<pre>{e(box_table(ordered), quote=False)}</pre>"]
+        if has_mass:
+            lines.append("★ = 🏭 Mass recruiter")
+        lines.append("👇 <b>Tap a number to apply</b>")
+        if key == keys[-1]:
+            lines.append(f'🤝 Know someone job hunting? <a href="{e(config.SHARE_URL, quote=True)}">Share this channel</a>')
+        buttons = [{"text": f"{n}{'★' if config.is_mass_recruiter(j.get('company')) else ''} ↗", "url": j["url"]}
+                   for n, j in enumerate(flat, 1)]
+        rows = [buttons[i:i + config.BUTTONS_PER_ROW] for i in range(0, len(buttons), config.BUTTONS_PER_ROW)]
+        posts.append({"text": "\n".join(lines), "buttons": rows})
     return posts
 
 
