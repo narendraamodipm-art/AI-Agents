@@ -182,6 +182,91 @@ function delusionPos(pct) {
   return 1 - Math.max(0, Math.min(1, (Math.log10(pct) + 4) / 5));
 }
 
+// ---------- 100 men grid ----------
+const menEl = $("men"), tip = $("tip");
+const men = Array.from({ length: 100 }, (_, i) => {
+  const s = document.createElement("span");
+  s.className = "man";
+  s.dataset.idx = i + 1;
+  s.innerHTML = '<svg viewBox="0 0 24 32" aria-hidden="true"><use href="#manIcon"/></svg>';
+  menEl.appendChild(s);
+  return s;
+});
+
+function renderMen(steps, fraction) {
+  // Round the surviving count after each filter (stays monotonic), so each filter "rejects" whole men.
+  const R = steps.map(([, f], i) => (i === 0 ? 100 : Math.round(f * 100)));
+  const groups = [];
+  for (let i = 1; i < steps.length; i++) groups.push({ label: steps[i][0], n: R[i - 1] - R[i], key: "g" + i });
+  const survivors = R[R.length - 1];
+
+  // Fill order: matches first, then the men rejected by the latest filters (closest to the line).
+  const order = [];
+  for (let k = 0; k < survivors; k++) order.push({ key: "match", label: null });
+  for (let i = groups.length - 1; i >= 0; i--) for (let k = 0; k < groups[i].n; k++) order.push(groups[i]);
+  men.forEach((m, i) => {
+    const g = order[i] || { key: "match" };
+    m.classList.toggle("match", g.key === "match");
+    m.dataset.group = g.key;
+    m.dataset.reason = g.key === "match" ? "" : g.label;
+  });
+
+  $("menMatch").textContent = survivors;
+  const oneIn = fraction > 0 ? Math.round(1 / fraction) : Infinity;
+  $("menOdds").textContent = survivors >= 1
+    ? `About ${(fraction * 100).toFixed(fraction >= 0.1 ? 0 : 1)} in every 100 single men fit your list.`
+    : fraction > 0 ? `Not even one here. Only 1 in ${oneIn.toLocaleString("en-IN")} single men fits.` : "Nobody fits. Not one.";
+
+  const ul = $("menLegend");
+  ul.innerHTML = "";
+  const addRow = (key, swCls, label, n) => {
+    const li = document.createElement("li");
+    li.dataset.group = key;
+    li.innerHTML = `<span class="sw ${swCls}"></span><span class="lab"></span><span class="n"></span>`;
+    li.querySelector(".lab").textContent = label;
+    li.querySelector(".n").textContent = n;
+    ul.appendChild(li);
+  };
+  addRow("match", "match", "Match your list", survivors);
+  const big = groups.filter((g) => g.n > 0).sort((a, b) => b.n - a.n);
+  big.forEach((g) => addRow(g.key, "", g.label, "−" + g.n));
+  const minor = groups.filter((g) => g.n === 0);
+  if (minor.length) {
+    const li = document.createElement("li");
+    li.className = "minor";
+    li.textContent = `Also filtering (under 1 man each here): ${minor.map((g) => g.label).join(", ")}`;
+    ul.appendChild(li);
+  }
+}
+
+function showTip(text, x, y) {
+  tip.innerHTML = text;
+  tip.hidden = false;
+  const r = tip.getBoundingClientRect();
+  tip.style.left = Math.min(x + 14, innerWidth - r.width - 8) + "px";
+  tip.style.top = Math.min(y + 14, innerHeight - r.height - 8) + "px";
+}
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+menEl.addEventListener("mousemove", (e) => {
+  const m = e.target.closest(".man");
+  if (!m) return (tip.hidden = true);
+  showTip(m.classList.contains("match")
+    ? `Man #${m.dataset.idx} · <b>Matches your list ✅</b>`
+    : `Man #${m.dataset.idx} · rejected by <b>${esc(m.dataset.reason)}</b>`, e.clientX, e.clientY);
+});
+menEl.addEventListener("mouseleave", () => (tip.hidden = true));
+
+function focusGroup(key) {
+  menEl.classList.toggle("focus", !!key);
+  men.forEach((m) => m.classList.toggle("hl", m.dataset.group === key));
+}
+$("menLegend").addEventListener("mouseover", (e) => { const li = e.target.closest("li[data-group]"); focusGroup(li ? li.dataset.group : null); });
+$("menLegend").addEventListener("mouseleave", () => focusGroup(null));
+
+document.querySelectorAll(".tab").forEach((t) => t.addEventListener("click", () => {
+  document.querySelectorAll(".tab").forEach((x) => { const on = x === t; x.classList.toggle("active", on); x.setAttribute("aria-selected", on); $(x.dataset.view).hidden = !on; });
+}));
+
 function renderKillers(steps) {
   const ol = $("killers");
   ol.innerHTML = "";
@@ -236,6 +321,7 @@ function update() {
   $("pin").style.left = (delusionPos(pct) * 100).toFixed(1) + "%";
   showMeme(key, cls);
   renderFunnel(res.steps);
+  renderMen(res.steps, res.fraction);
   renderKillers(res.steps);
   last = { c, res, lvl };
 }
@@ -246,8 +332,45 @@ function biggestFilters(steps) {
   return drops.sort((a, b) => parseFloat(a[1]) - parseFloat(b[1])).slice(0, 3);
 }
 
+// Where the AI verdict comes from. Static hosting (GitHub Pages) has no server to keep the
+// Mistral key secret, so there we use the built-in verdict below. To use the real AI on the
+// live site, deploy api/verdict.js (e.g. on Vercel) and put its full URL here.
+const REMOTE_VERDICT_API = "";
+const VERDICT_API = location.hostname.endsWith("github.io") ? REMOTE_VERDICT_API : "api/verdict";
+
+const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+function localVerdict(c, res, lvl) {
+  const pct = fmtPct(res.fraction), count = fmtCount(res.fraction * SINGLE_MEN);
+  const cuts = [];
+  for (let i = 1; i < res.steps.length; i++) cuts.push([res.steps[i][0], 1 - res.steps[i][1] / res.steps[i - 1][1]]);
+  cuts.sort((a, b) => b[1] - a[1]);
+  const [k1, k2] = cuts;
+  const pctNum = res.fraction * 100;
+  const opener = pctNum >= 5
+    ? pick(["Arre wah, a sensible list! ", "Shabaash, realistic standards spotted. ", "Aunty is impressed. "])
+    : pctNum >= 0.1
+      ? pick(["Hmm, beta, interesting list. ", "Okay, thoda filmy, but not fully. ", "Not bad, but the maths is sweating a little. "])
+      : pick(["Beta, this is not a husband, this is a Marvel character. ", "Arre, you are not looking for a man, you are looking for a unicorn with a salary slip. ", "Matrimony sites are crying after reading this list. "]);
+  const stat = `${pctNum >= 5 ? "" : "Only "}${pct} of India's single men fit, roughly ${count} men in the whole country. `;
+  const blame = k1 && k1[1] > 0.05
+    ? `The biggest villain is ${k1[0]}, which rejects ${(k1[1] * 100).toFixed(0)}% of the men still standing` +
+      (k2 && k2[1] > 0.3 ? `, with ${k2[0]} as its sidekick. ` : ". ")
+    : "None of your filters are doing much damage. ";
+  const tip = pctNum >= 5
+    ? pick(["Go forth, the odds are on your side. 💚", "Now just find one who replies on time. 😄"])
+    : k1 ? `Tip: relax ${k1[0]} a little and watch your pool grow. 🙏` : "Tip: relax one filter and the pool grows fast. 🙏";
+  return opener + stat + blame + tip;
+}
+
 async function getVerdict({ c, res, lvl }) {
   const el = $("verdict"), btn = $("judge");
+  if (!VERDICT_API) {
+    $("verdictTitle").textContent = "Verdict";
+    $("verdictSrc").textContent = "· desi auto-judge";
+    el.classList.remove("muted");
+    el.textContent = localVerdict(c, res, lvl);
+    return;
+  }
   el.textContent = ""; el.classList.remove("muted"); el.classList.add("loading");
   btn.disabled = true;
   const readable = {
@@ -258,7 +381,7 @@ async function getVerdict({ c, res, lvl }) {
     education: EDUCATION[c.education][0], habits: HABITS[c.habits][0],
   };
   try {
-    const r = await fetch("/api/verdict", {
+    const r = await fetch(VERDICT_API, {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ criteria: readable, percent: fmtPct(res.fraction), count: fmtCount(res.fraction * SINGLE_MEN), level: lvl, filters: biggestFilters(res.steps) }),
     });
@@ -266,7 +389,7 @@ async function getVerdict({ c, res, lvl }) {
     if (!r.ok) throw new Error(j.error || r.statusText);
     el.textContent = j.verdict;
   } catch (e) {
-    el.textContent = `The AI is busy right now (${e.message}). Try again in a bit. Meanwhile, the numbers speak for themselves.`;
+    el.textContent = localVerdict(c, res, lvl) + `\n\n(AI is busy right now: ${e.message})`;
   } finally {
     el.classList.remove("loading");
     btn.disabled = false;

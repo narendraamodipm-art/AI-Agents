@@ -137,8 +137,24 @@
         </section>
 
         <section class="panel grow">
-          <div class="panel-head"><span class="num">📉</span><h2>Where your matches drop off</h2></div>
-          <ol class="funnel" id="funnel"></ol>
+          <div class="panel-head">
+            <span class="num">👨</span><h2>Out of 100 single men</h2>
+            <div class="tabs" role="tablist">
+              <button type="button" class="tab active" role="tab" aria-selected="true" data-view="viewMen">100 men</button>
+              <button type="button" class="tab" role="tab" aria-selected="false" data-view="viewSteps">Step by step</button>
+            </div>
+          </div>
+          <div class="view" id="viewMen">
+            <div class="men-wrap">
+              <div class="men" id="men" aria-label="Grid of 100 single men, highlighted if they match"></div>
+              <div class="men-side">
+                <p class="men-total"><b id="menMatch">0</b> of 100 match</p>
+                <p class="men-odds" id="menOdds"></p>
+                <ul class="men-legend" id="menLegend"></ul>
+              </div>
+            </div>
+          </div>
+          <div class="view" id="viewSteps" hidden><ol class="funnel" id="funnel"></ol></div>
         </section>
       </div>
 
@@ -170,7 +186,7 @@
         </div>
 
         <div class="verdict">
-          <div class="verdict-head"><span class="ai-dot"></span> AI verdict <span class="muted">· Mistral ministral-8b</span></div>
+          <div class="verdict-head"><span class="ai-dot"></span> <span id="verdictTitle">AI verdict</span> <span class="muted" id="verdictSrc">· Mistral ministral-8b</span></div>
           <p id="verdict" class="verdict-text muted">Hit the button and the AI will judge your list.</p>
         </div>
 
@@ -179,6 +195,11 @@
       </aside>
     </form>
   </div>
+
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="manIcon" viewBox="0 0 24 32"><circle cx="12" cy="6.5" r="5.5"/><path d="M3 31v-9.5C3 16.3 7 13.5 12 13.5s9 2.8 9 8V31z"/></symbol>
+  </svg>
+  <div class="tip" id="tip" role="tooltip" hidden></div>
 
   <script src="app.js"></script>
 </body>
