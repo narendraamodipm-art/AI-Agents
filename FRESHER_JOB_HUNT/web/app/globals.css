@@ -168,8 +168,27 @@ h1, h2, h3 { line-height: 1.15; margin: 0; }
 .footer { max-width: 1120px; margin: 40px auto 0; padding: 24px 20px 40px; border-top: 1px solid var(--border); font-size: 14px; text-align: center; }
 .footer p { margin: 4px 0; }
 
+/* Why this channel exists */
+.why { display: grid; gap: 16px; }
+.why-story { border-color: rgba(168, 85, 247, 0.45);
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.16), var(--surface) 65%); }
+.why-story .kicker { margin: 0 0 6px; font-size: 14px; font-weight: 700; color: #d8b4fe; }
+.why-story h2 { font-size: clamp(22px, 3vw, 28px); margin-bottom: 10px; }
+.why-story p { color: var(--text-2); margin: 0 0 10px; font-size: 16px; }
+.why-story p:last-child { margin-bottom: 0; }
+.why-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.why-card { padding: 18px; }
+.why-card h3 { font-size: 16px; margin: 8px 0 6px; }
+.why-card p { color: var(--text-2); margin: 0; font-size: 14px; }
+.why-icon { font-size: 26px; line-height: 1; }
+.scam-note {
+  margin: 0; padding: 12px 16px; border-radius: 12px; font-size: 14px; color: #fecaca;
+  background: rgba(248, 113, 113, 0.1); border: 1px solid rgba(248, 113, 113, 0.35);
+}
+
 @media (max-width: 860px) {
   .hero { grid-template-columns: 1fr; padding-top: 32px; }
+  .why-grid { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 520px) {
   main { padding: 0 16px; }
