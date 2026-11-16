@@ -9,3 +9,5 @@ JOB Agent/*.docx
 JOB Agent/applicant.json
 .vercel
 .env*
+# Deployed to Vercel from this PC only, not kept on GitHub
+AI WORKFLOW/delusion_calculator/

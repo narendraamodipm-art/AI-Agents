@@ -5,7 +5,6 @@ on:
     branches: [main]
     paths:
       - "MY_PORTFOLIO/**"
-      - "AI WORKFLOW/delusion_calculator/**"
       - ".github/workflows/deploy-portfolio.yml"
   workflow_dispatch: # allows a manual deploy from the Actions tab
 
@@ -30,19 +29,9 @@ jobs:
 
       - uses: actions/configure-pages@v5
 
-      # Portfolio at the site root, the delusion calculator at /delusion/
-      # (front-end files only: server.js and api/ need a server and are not published)
-      - name: Assemble site
-        run: |
-          mkdir -p _site/delusion
-          cp -r MY_PORTFOLIO/. _site/
-          cd "AI WORKFLOW/delusion_calculator"
-          cp index.html style.css app.js ../../_site/delusion/
-          cp -r memes ../../_site/delusion/
-
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: _site
+          path: MY_PORTFOLIO
 
       - id: deployment
         uses: actions/deploy-pages@v4
