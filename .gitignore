@@ -11,3 +11,8 @@ JOB Agent/applicant.json
 .env*
 # Deployed to Vercel from this PC only, not kept on GitHub
 AI WORKFLOW/delusion_calculator/
+# Blender: large re-downloadable zips, cloned skills repo, autosave backups
+Blender/downloads/
+Blender/blender-skills/
+*.blend1
+__MACOSX/
