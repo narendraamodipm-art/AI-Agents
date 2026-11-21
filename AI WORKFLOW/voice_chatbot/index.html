@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="hi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>अदिति</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="app">
+    <header class="top">
+      <h1>अदिति <span class="sub">आपकी हिंदी सहायक</span></h1>
+      <div class="controls">
+        <label class="toggle"><input type="checkbox" id="speakReplies" checked> जवाब बोलकर सुनाएँ</label>
+        <button type="button" id="clear" class="ghost">नई बातचीत</button>
+      </div>
+    </header>
+
+    <!-- Aditi's face: appears when the conversation starts. data-state = off | listening | thinking | speaking -->
+    <section class="stage" id="stage" data-state="off">
+      <div class="avatar-wrap" id="avatarWrap" hidden>
+        <div class="halo"></div>
+        <svg class="avatar" id="avatar" viewBox="0 0 300 360" role="img" aria-label="अदिति का चेहरा">
+          <defs>
+            <radialGradient id="skin" cx="45%" cy="38%" r="65%">
+              <stop offset="0" stop-color="#ffe0c8"/><stop offset=".55" stop-color="#f3b994"/><stop offset="1" stop-color="#d48a64"/>
+            </radialGradient>
+            <linearGradient id="neckSkin" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#c47a56"/><stop offset=".35" stop-color="#e9a982"/><stop offset="1" stop-color="#e2a07a"/>
+            </linearGradient>
+            <linearGradient id="hair" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#4a2c1d"/><stop offset=".5" stop-color="#26150d"/><stop offset="1" stop-color="#120a06"/>
+            </linearGradient>
+            <radialGradient id="hairShine" cx="40%" cy="30%" r="50%">
+              <stop offset="0" stop-color="#8a5a3c" stop-opacity=".75"/><stop offset="1" stop-color="#8a5a3c" stop-opacity="0"/>
+            </radialGradient>
+            <radialGradient id="iris" cx="45%" cy="40%" r="60%">
+              <stop offset="0" stop-color="#8a5a32"/><stop offset=".7" stop-color="#4a2a12"/><stop offset="1" stop-color="#1e0f06"/>
+            </radialGradient>
+            <radialGradient id="cheek" cx="50%" cy="50%" r="50%">
+              <stop offset="0" stop-color="#ff7a85" stop-opacity=".45"/><stop offset="1" stop-color="#ff7a85" stop-opacity="0"/>
+            </radialGradient>
+            <linearGradient id="lip" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#d9566e"/><stop offset="1" stop-color="#a3304a"/>
+            </linearGradient>
+            <linearGradient id="kurta" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#d81b60"/><stop offset="1" stop-color="#7b0f45"/>
+            </linearGradient>
+            <radialGradient id="gold" cx="35%" cy="35%" r="65%">
+              <stop offset="0" stop-color="#fff3b0"/><stop offset=".5" stop-color="#e6b422"/><stop offset="1" stop-color="#9a6b00"/>
+            </radialGradient>
+            <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#000" flood-opacity=".35"/>
+            </filter>
+          </defs>
+
+          <g class="head" filter="url(#soft)">
+            <!-- hair behind the head -->
+            <path d="M58 160 C40 55 260 55 242 160 L258 305 C232 335 68 335 42 305 Z" fill="url(#hair)"/>
+            <!-- shoulders and kurta -->
+            <path d="M30 360 C38 305 95 286 150 286 C205 286 262 305 270 360 Z" fill="url(#kurta)"/>
+            <path d="M118 288 Q150 330 182 288" fill="none" stroke="#f4c430" stroke-width="3"/>
+            <!-- neck -->
+            <path d="M124 228 L176 228 L180 292 C160 304 140 304 120 292 Z" fill="url(#neckSkin)"/>
+            <!-- ears and earrings -->
+            <ellipse cx="89" cy="176" rx="10" ry="18" fill="#e6a37e"/>
+            <ellipse cx="211" cy="176" rx="10" ry="18" fill="#e6a37e"/>
+            <g class="earring"><circle cx="89" cy="196" r="3.5" fill="url(#gold)"/><path d="M89 199 L83 214 Q89 222 95 214 Z" fill="url(#gold)"/></g>
+            <g class="earring"><circle cx="211" cy="196" r="3.5" fill="url(#gold)"/><path d="M211 199 L205 214 Q211 222 217 214 Z" fill="url(#gold)"/></g>
+            <!-- face -->
+            <path d="M150 74 C206 74 216 130 213 170 C210 216 186 252 150 257 C114 252 90 216 87 170 C84 130 94 74 150 74 Z" fill="url(#skin)"/>
+            <!-- cheeks -->
+            <ellipse cx="114" cy="203" rx="17" ry="10" fill="url(#cheek)"/>
+            <ellipse cx="186" cy="203" rx="17" ry="10" fill="url(#cheek)"/>
+            <!-- eyebrows -->
+            <path class="brow" d="M107 143 Q122 133 139 140" fill="none" stroke="#2a160a" stroke-width="4" stroke-linecap="round"/>
+            <path class="brow" d="M161 140 Q178 133 193 143" fill="none" stroke="#2a160a" stroke-width="4" stroke-linecap="round"/>
+            <!-- eyes -->
+            <g class="eye">
+              <ellipse cx="123" cy="161" rx="14.5" ry="9.5" fill="#fffaf5"/>
+              <g class="iris"><circle cx="123" cy="161" r="7.2" fill="url(#iris)"/><circle cx="123" cy="161" r="3.3" fill="#0d0603"/><circle cx="125.5" cy="158.5" r="2" fill="#fff"/></g>
+              <path d="M107 160 Q123 147 139 159" fill="none" stroke="#1a0d06" stroke-width="2.8" stroke-linecap="round"/>
+              <path d="M108 158 l-4 -3 M112 154 l-3 -4 M117 152 l-2 -4" stroke="#1a0d06" stroke-width="1.6" stroke-linecap="round"/>
+            </g>
+            <g class="eye">
+              <ellipse cx="177" cy="161" rx="14.5" ry="9.5" fill="#fffaf5"/>
+              <g class="iris"><circle cx="177" cy="161" r="7.2" fill="url(#iris)"/><circle cx="177" cy="161" r="3.3" fill="#0d0603"/><circle cx="179.5" cy="158.5" r="2" fill="#fff"/></g>
+              <path d="M161 159 Q177 147 193 160" fill="none" stroke="#1a0d06" stroke-width="2.8" stroke-linecap="round"/>
+              <path d="M192 158 l4 -3 M188 154 l3 -4 M183 152 l2 -4" stroke="#1a0d06" stroke-width="1.6" stroke-linecap="round"/>
+            </g>
+            <!-- nose -->
+            <path d="M151 168 Q147 189 142 197 Q150 203 158 197" fill="none" stroke="#b06a48" stroke-opacity=".6" stroke-width="2.2" stroke-linecap="round"/>
+            <!-- mouth -->
+            <g class="mouth">
+              <ellipse class="mouth-inner" cx="150" cy="222" rx="12" ry="2.2" fill="#5a1422"/>
+              <path class="lip-upper" d="M133 220 Q142 213 150 217 Q158 213 167 220 Q150 223 133 220 Z" fill="url(#lip)"/>
+              <path class="lip-lower" d="M133 221 Q150 235 167 221 Q150 226 133 221 Z" fill="url(#lip)"/>
+            </g>
+            <!-- bindi -->
+            <circle cx="150" cy="131" r="3.6" fill="#c2185b"/>
+            <!-- front hair: fringe and side locks -->
+            <path d="M85 168 C78 92 116 60 156 60 C202 60 224 100 215 168 C209 128 196 104 172 96 C152 120 122 126 101 120 C92 136 88 152 85 168 Z" fill="url(#hair)"/>
+            <path d="M87 150 C76 205 80 262 66 304 L94 304 C94 252 97 200 101 158 Z" fill="url(#hair)"/>
+            <path d="M213 150 C224 205 220 262 234 304 L206 304 C206 252 203 200 199 158 Z" fill="url(#hair)"/>
+            <ellipse cx="135" cy="88" rx="42" ry="18" fill="url(#hairShine)"/>
+          </g>
+        </svg>
+      </div>
+
+      <div class="status" id="status">बात करने के लिए नीचे का बटन दबाइए</div>
+      <button type="button" class="talk" id="talk">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.9V22h2v-3.1a7 7 0 0 0 6-6.9z"/></svg>
+        <span id="talkLabel">बात शुरू करें</span>
+      </button>
+    </section>
+
+    <section class="chat" id="chat" aria-live="polite">
+      <p class="hint" id="hint">नमस्ते! मैं अदिति हूँ। "बात शुरू करें" दबाइए और हिंदी में बोलिए, या नीचे लिखिए।</p>
+    </section>
+
+    <form class="bar" id="form" autocomplete="off">
+      <input id="text" type="text" placeholder="या यहाँ लिखिए…" aria-label="संदेश">
+      <button type="submit" class="send">भेजें</button>
+    </form>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

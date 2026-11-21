@@ -1,0 +1,8 @@
+{
+  "name": "voice-chatbot",
+  "private": true,
+  "description": "Browser voice chatbot: speech recognition -> Mistral -> text-to-speech",
+  "scripts": {
+    "start": "node server.js"
+  }
+}
