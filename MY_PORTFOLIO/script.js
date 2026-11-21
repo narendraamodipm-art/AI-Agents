@@ -12,6 +12,7 @@
     'graphify': 'https://ai-agents-sage-ten.vercel.app/',
     'travel': 'https://ai-agents-plan-my-trip.streamlit.app/',
     'jobhunter': 'https://job-hunter-kappa-mocha.vercel.app/',
+    'aditi': 'https://aditi-alpha.vercel.app/',
   };
   const tree = (p) => REPO + '/tree/main/' + encodeURI(p);
 
@@ -60,6 +61,27 @@
         'Company apply links never reach the page HTML; a server route redirects to them',
       ],
       link: tree('FRESHER_JOB_HUNT'),
+    },
+    {
+      id: 'aditi', icon: '🎙️', type: 'rag', label: 'Voice bot',
+      title: 'ADITI: Hindi Voice Assistant',
+      short: 'Talk to Aditi in Hindi and she answers out loud. The mic stays on for a hands-free conversation, and an animated face listens, thinks and moves her lips while she speaks.',
+      tags: ['JavaScript', 'Web Speech API', 'Mistral', 'SVG Animation', 'Vercel'],
+      steps: [
+        'Press "बात शुरू करें"; the browser\'s speech recognition listens in Hindi (hi-IN)',
+        'When you pause, the sentence is sent to a Vercel serverless function',
+        'The function adds Aditi\'s persona and the current India date and time, then calls Mistral',
+        'The reply comes back in Devanagari Hindi and is read aloud by a female Hindi voice',
+        'The face shows each state: green glow while listening, eyes up while thinking, moving lips while speaking',
+        'The mic pauses while she speaks so she never hears herself, then reopens until you press stop',
+      ],
+      highlights: [
+        'Free-tier friendly: when one Mistral model hits its per-minute limit, the server falls back to the next',
+        'The real date and time are injected into every request, so she never invents a date',
+        'Replies are cleaned for speech: no markdown or emojis, and her name is always written as अदिति',
+        'The Mistral key stays on the server; the whole page is plain HTML, CSS and JavaScript',
+      ],
+      link: tree('AI WORKFLOW/voice_chatbot'),
     },
     {
       id: 'resume-matcher', icon: '📄', type: 'workflow', label: 'Workflow',
