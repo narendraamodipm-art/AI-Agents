@@ -97,6 +97,7 @@ module.exports = async function handler(req, res) {
         .replace(/[*_#`]+/g, "")
         .replace(/[\p{Extended_Pictographic}\u{1F3FB}-\u{1F3FF}️‍]/gu, "")   // emojis would be read aloud
         .replace(/\bAditi\b/gi, "अदिति")                               // keep her name in Devanagari
+        .replace(/आदिति/g, "अदिति")                                     // and spelled correctly
         .replace(/[ \t]+\n/g, "\n")
         .trim();
       return send(res, 200, { reply: text || "माफ़ कीजिए, इस पर मेरे पास कहने को कुछ नहीं है।", model });
